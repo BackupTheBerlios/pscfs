@@ -3,6 +3,8 @@
  */
 package impl;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
 import org.csapi.P_INVALID_ADDRESS;
 import org.csapi.P_INVALID_ASSIGNMENT_ID;
@@ -44,12 +46,15 @@ public class IpCallControlManagerImpl implements IpCallControlManager {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	static Logger logger = Logger.getLogger(IpCallControlManagerImpl.class);
+
 	/**
 	 * 
 	 */
 	public IpCallControlManagerImpl() {
 		super();
-		// TODO Auto-generated constructor stub
+		BasicConfigurator.configure();
+		logger.info("ctor()");
 	}
 
 	/* (non-Javadoc)

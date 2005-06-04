@@ -3,6 +3,8 @@
  */
 package impl;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.TpCallEventInfo;
@@ -30,11 +32,15 @@ public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	static Logger logger = Logger.getLogger(IpAppCallControlManagerImpl.class);
+
 	/**
 	 * 
 	 */
 	public IpAppCallControlManagerImpl(ApplicationLogic logic) {
 		super();
+		BasicConfigurator.configure();
+		logger.info("ctor()");
 		// TODO Auto-generated constructor stub
 		appLogic = logic;
 	}

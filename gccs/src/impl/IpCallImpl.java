@@ -3,6 +3,8 @@
  */
 package impl;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
 import org.csapi.P_INVALID_ADDRESS;
 import org.csapi.P_INVALID_CRITERIA;
@@ -41,12 +43,14 @@ public class IpCallImpl implements IpCall {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	static Logger logger = Logger.getLogger(IpCallControlManagerImpl.class);
 	/**
 	 * 
 	 */
 	public IpCallImpl() {
 		super();
-		// TODO Auto-generated constructor stub
+		BasicConfigurator.configure();
+		logger.info("ctor()");
 	}
 
 	/* (non-Javadoc)
@@ -87,8 +91,8 @@ public class IpCallImpl implements IpCall {
 	 */
 	public void getCallInfoReq(int callSessionID, int callInfoRequested)
 			throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
-
+		logger.info("getCallInfoReq");
+		logger.debug("getCallInfoReq - Unimplemented");
 	}
 
 	/* (non-Javadoc)
@@ -97,8 +101,8 @@ public class IpCallImpl implements IpCall {
 	public void setCallChargePlan(int callSessionID,
 			TpCallChargePlan callChargePlan) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
-
+		logger.info("setCallChargePlan");
+		logger.debug("setCallChargePlan - Unimplemented");
 	}
 
 	/* (non-Javadoc)
@@ -106,8 +110,8 @@ public class IpCallImpl implements IpCall {
 	 */
 	public void setAdviceOfCharge(int callSessionID, TpAoCInfo aOCInfo,
 			int tariffSwitch) throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
-
+		logger.info("setAdviceOfCharge");
+		logger.debug("setAdviceOfCharge - Unimplemented");
 	}
 
 	/* (non-Javadoc)
@@ -115,8 +119,8 @@ public class IpCallImpl implements IpCall {
 	 */
 	public void getMoreDialledDigitsReq(int callSessionID, int length)
 			throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
-
+		logger.info("getMoreDialledDigietsReq");
+		logger.debug("getMoreDialledDigitsReq - Unimplemented");
 	}
 
 	/* (non-Javadoc)
@@ -124,7 +128,8 @@ public class IpCallImpl implements IpCall {
 	 */
 	public void superviseCallReq(int callSessionID, int time, int treatment)
 			throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
+		logger.info("superviseCallReq");
+		logger.debug("superviseCallReq - Unimplemented");
 
 	}
 
@@ -134,7 +139,8 @@ public class IpCallImpl implements IpCall {
 	public void continueProcessing(int callSessionID)
 			throws P_INVALID_NETWORK_STATE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
+		logger.info("continueProcessing");
+		logger.debug("continueProcessing - Unimplemented");
 
 	}
 
@@ -143,7 +149,8 @@ public class IpCallImpl implements IpCall {
 	 */
 	public void setCallback(IpInterface appInterface)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions {
-		// TODO Auto-generated method stub
+		logger.info("setCallback");
+		logger.debug("setCallback - Unimplemented");
 
 	}
 
@@ -161,7 +168,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_release()
 	 */
 	public void _release() {
-		// TODO Auto-generated method stub
+		logger.info("_release");
+		logger.debug("_release - Unimplemented");
 
 	}
 
@@ -169,7 +177,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_non_existent()
 	 */
 	public boolean _non_existent() {
-		// TODO Auto-generated method stub
+		logger.info("_non_existent");
+		logger.debug("_non_existent - Unimplemented");
 		return false;
 	}
 
@@ -177,7 +186,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_hash(int)
 	 */
 	public int _hash(int arg0) {
-		// TODO Auto-generated method stub
+		logger.info("_hash");
+		logger.debug("_hash - Unimplemented");
 		return 0;
 	}
 
@@ -185,7 +195,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_is_a(java.lang.String)
 	 */
 	public boolean _is_a(String arg0) {
-		// TODO Auto-generated method stub
+		logger.info("_is_a");
+		logger.debug("_is_a - Unimplemented");
 		return false;
 	}
 
@@ -193,7 +204,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_get_domain_managers()
 	 */
 	public DomainManager[] _get_domain_managers() {
-		// TODO Auto-generated method stub
+		logger.info("_get_domain_managers");
+		logger.debug("_get_domain_managers - Unimplemented");
 		return null;
 	}
 
@@ -201,7 +213,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_duplicate()
 	 */
 	public Object _duplicate() {
-		// TODO Auto-generated method stub
+		logger.info("_duplicate");
+		logger.debug("_duplicate - Unimplemented");
 		return null;
 	}
 
@@ -209,7 +222,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_get_interface_def()
 	 */
 	public Object _get_interface_def() {
-		// TODO Auto-generated method stub
+		logger.info("_get_interface_def");
+		logger.debug("_get_interface_def - Unimplemented");
 		return null;
 	}
 
@@ -217,7 +231,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_is_equivalent(org.omg.CORBA.Object)
 	 */
 	public boolean _is_equivalent(Object arg0) {
-		// TODO Auto-generated method stub
+		logger.info("_is_equivalent");
+		logger.debug("_is_equivalent - Unimplemented");
 		return false;
 	}
 
@@ -225,7 +240,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_get_policy(int)
 	 */
 	public Policy _get_policy(int arg0) {
-		// TODO Auto-generated method stub
+		logger.info("_get_policy");
+		logger.debug("_get_policy - Unimplemented");
 		return null;
 	}
 
@@ -233,7 +249,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_request(java.lang.String)
 	 */
 	public Request _request(String arg0) {
-		// TODO Auto-generated method stub
+		logger.info("_request");
+		logger.debug("_request - Unimplemented");
 		return null;
 	}
 
@@ -241,7 +258,8 @@ public class IpCallImpl implements IpCall {
 	 * @see org.omg.CORBA.Object#_set_policy_override(org.omg.CORBA.Policy[], org.omg.CORBA.SetOverrideType)
 	 */
 	public Object _set_policy_override(Policy[] arg0, SetOverrideType arg1) {
-		// TODO Auto-generated method stub
+		logger.info("_set_policy_override");
+		logger.debug("_set_policy_override - Unimplemented");
 		return null;
 	}
 
@@ -250,7 +268,8 @@ public class IpCallImpl implements IpCall {
 	 */
 	public Request _create_request(Context arg0, String arg1, NVList arg2,
 			NamedValue arg3) {
-		// TODO Auto-generated method stub
+		logger.info("_create_request");
+		logger.debug("_create_request - Unimplemented");
 		return null;
 	}
 
@@ -259,7 +278,8 @@ public class IpCallImpl implements IpCall {
 	 */
 	public Request _create_request(Context arg0, String arg1, NVList arg2,
 			NamedValue arg3, ExceptionList arg4, ContextList arg5) {
-		// TODO Auto-generated method stub
+		logger.info("_create_request");
+		logger.debug("_create_request - Unimplemented");
 		return null;
 	}
 

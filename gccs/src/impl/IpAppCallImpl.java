@@ -3,6 +3,8 @@
  */
 package impl;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.csapi.cc.TpCallError;
 import org.csapi.cc.gccs.IpAppCall;
 //import org.csapi.cc.gccs.IpAppCallControlManager;
@@ -22,6 +24,7 @@ import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
 import group5.ApplicationLogic;
+//import group5.testLog4j;
 /**
  * @author Nguyen Huu Hoa
  * Implementation of IpAppCall
@@ -33,11 +36,16 @@ public class IpAppCallImpl implements IpAppCall {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	static Logger logger = Logger.getLogger(IpAppCallImpl.class);
+
 	/**
 	 * 
 	 */
 	public IpAppCallImpl(ApplicationLogic logic) {
 		super();
+		BasicConfigurator.configure();
+		logger.info("ctor()");
+		logger.debug("ApplicationLogic="+logic);
 		// TODO Auto-generated constructor stub
 		appLogic = logic;
 	}
