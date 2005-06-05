@@ -18,7 +18,7 @@ import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallLoadControlMechanism;
 import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpAppCallControlManager;
-import org.csapi.cc.gccs.IpCallControlManager;
+import org.csapi.cc.gccs.IpCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
 import org.csapi.cc.gccs.TpCallIdentifier;
@@ -38,7 +38,7 @@ import org.omg.CORBA.SetOverrideType;
  * @author Nguyen Huu Hoa
  *
  */
-public class IpCallControlManagerImpl implements IpCallControlManager {
+public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 
 	private IpAppCallControlManager ipACCM_delegate;
 	/**
@@ -73,7 +73,7 @@ public class IpCallControlManagerImpl implements IpCallControlManager {
 		}
 		
 		org.csapi.cc.gccs.TpCallIdentifier ci = new TpCallIdentifier();
-		ci.CallReference = aCallReference;
+		ci.CallReference = aCallReference._this();
 		ci.CallSessionID = 0; //TODO: set appropriated value here
 		return ci;
 	}

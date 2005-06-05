@@ -17,11 +17,11 @@ import org.csapi.TpAddress;
 import org.csapi.TpAoCInfo;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallChargePlan;
-import org.csapi.cc.gccs.IpCall;
+import org.csapi.cc.gccs.IpCallPOA;
 import org.csapi.cc.gccs.TpCallAppInfo;
+import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReportRequest;
-import org.csapi.cc.gccs.TpCallIdentifier;
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
 import org.omg.CORBA.DomainManager;
@@ -37,7 +37,7 @@ import org.omg.CORBA.SetOverrideType;
  * @author Nguyen Huu Hoa
  *
  */
-public class IpCallImpl implements IpCall {
+public class IpCallImpl extends IpCallPOA {
 
 	/**
 	 * 

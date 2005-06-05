@@ -5,15 +5,27 @@
 
 package impl;
 
+import group5.ApplicationLogic;
+import group5.CallControlEvent;
+import group5.CallControlException;
+import group5.CallControlListener;
+import group5.CallCriteria;
+import group5.TypeConverter;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.csapi.TpCommonExceptions;
-import org.csapi.P_INVALID_SESSION_ID;
 import org.csapi.P_INVALID_INTERFACE_TYPE;
+import org.csapi.P_INVALID_SESSION_ID;
+import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallError;
 import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpAppCallControlManager;
+import org.csapi.cc.gccs.IpAppCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.omg.CORBA.Context;
@@ -27,14 +39,12 @@ import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
 import org.omg.CORBA.SystemException;
-import group5.*;
-import java.util.*;
 
 /**
  * @author Nguyen Huu Hoa
  * 
  */
-public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
+public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 
 	ApplicationLogic appLogic;
 
@@ -165,7 +175,7 @@ public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
 		}
 		if (m_logger.isEnabledFor(Level.INFO))
 			m_logger.info("After create notifyApplication thread!");
-		return callCriteria.isInterruptMode() ? ipAppCallImpl.getServant()
+		return callCriteria.isInterruptMode() ? ipAppCallImpl.getServant()._this()
 				: null;
 		//
 		// System.out.println("IpAppCallControlManager.callEventNotify() is
@@ -449,8 +459,8 @@ public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
 		}
 		if (m_logger.isEnabledFor(Level.INFO))
 			m_logger.info("Trying to call callControlListener.onEvent()!");
-		callControlListener.onEvent(new CallControlEvent(ccManager,
-				assignmentId, 3, call, ofEvent));
+		callControlListener.onEvent(new CallControlEvent(ccManager._this(),
+				assignmentId, 3, call._this(), ofEvent));
 	}
 
 	public void notifyApplication(int callSessionID, int ofEvent,

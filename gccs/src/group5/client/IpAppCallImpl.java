@@ -3,13 +3,13 @@
  */
 package impl;
 
+import group5.ApplicationLogic;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.csapi.cc.TpCallError;
-import org.csapi.cc.gccs.IpAppCall;
-//import org.csapi.cc.gccs.IpAppCallControlManager;
-//import org.csapi.cc.gccs.IpCallControlManager;
+import org.csapi.cc.gccs.IpAppCallPOA;
 import org.csapi.cc.gccs.TpCallEndedReport;
 import org.csapi.cc.gccs.TpCallFault;
 import org.csapi.cc.gccs.TpCallInfoReport;
@@ -24,13 +24,12 @@ import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
-import group5.ApplicationLogic;
 //import group5.testLog4j;
 /**
  * @author Nguyen Huu Hoa
  * Implementation of IpAppCall
  */
-public class IpAppCallImpl implements IpAppCall {
+public class IpAppCallImpl extends IpAppCallPOA {
 	ApplicationLogic appLogic;
 	/**
 	 * 
