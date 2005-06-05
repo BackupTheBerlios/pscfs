@@ -21,6 +21,7 @@ import org.csapi.cc.gccs.IpCall;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReportRequest;
+import org.csapi.cc.gccs.TpCallIdentifier;
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
 import org.omg.CORBA.DomainManager;
@@ -44,6 +45,12 @@ public class IpCallImpl implements IpCall {
 	private static final long serialVersionUID = 1L;
 
 	static Logger logger = Logger.getLogger(IpCallControlManagerImpl.class);
+
+    public IpCallImpl(TpCallIdentifier callid, String originatorAddress, String originalDestinationAddress, IpAppCallControlManagerImpl manager, IpAppCallImpl ipAppCallImpl)
+    throws TpCommonExceptions, P_INVALID_SESSION_ID, P_INVALID_INTERFACE_TYPE
+    {
+    	
+    }
 	/**
 	 * 
 	 */

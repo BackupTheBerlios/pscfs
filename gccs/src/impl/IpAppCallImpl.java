@@ -4,6 +4,7 @@
 package impl;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.csapi.cc.TpCallError;
 import org.csapi.cc.gccs.IpAppCall;
@@ -36,16 +37,35 @@ public class IpAppCallImpl implements IpAppCall {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	static Logger logger = Logger.getLogger(IpAppCallImpl.class);
+	static Logger m_logger = Logger.getLogger(IpAppCallImpl.class);
 
+	public IpAppCallImpl(IpCallControlManagerImpl ccManager, IpAppCallControlManagerImpl ccAppManager)
+	{
+		
+	}
+	/**
+	 * TODO: Return the appropriated reference here 
+	 * @return a reference to implementation of the interface IpAppCall
+	 */
+	public IpAppCallImpl getServant()
+	{
+		if (m_logger.isEnabledFor(Level.INFO))
+			m_logger.info("Entering getServant");
+		return this;
+	}
+	public void destroy()
+	{
+		if (m_logger.isEnabledFor(Level.INFO))
+			m_logger.info("Entering destroy!");
+	}
 	/**
 	 * 
 	 */
 	public IpAppCallImpl(ApplicationLogic logic) {
 		super();
 		BasicConfigurator.configure();
-		logger.info("ctor()");
-		logger.debug("ApplicationLogic="+logic);
+		m_logger.info("ctor()");
+		m_logger.debug("ApplicationLogic="+logic);
 		// TODO Auto-generated constructor stub
 		appLogic = logic;
 	}
