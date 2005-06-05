@@ -280,5 +280,214 @@ public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
+    public IpAppCallControlManagerImpl(CallControlAdapterImpl ccAdapter, CallCriteria criteria, CallControlListener listener, CallControlCallback callback)
+    throws CallControlException
+{
+    ipAppCallControlManager = null;
+    callControlListener = null;
+    callControlCallback = null;
+    callAdministration = null;
+    assignmentId = -1;
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering IpAppCallControlManagerImpl Construction!");
+    this.ccAdapter = ccAdapter;
+    callCriteria = criteria;
+    callControlListener = listener;
+    callControlCallback = callback;
+    callAdministration = Collections.synchronizedMap(new HashMap());
+    ipAppCallImpl = new IpAppCallImpl(ccAdapter, this);
+    try
+    {
+        ipAppCallControlManager = _this(ORBUtil.getOrb());
+    }
+    catch(SystemException ex)
+    {
+        if(m_log.isLoggable(Level.SEVERE))
+            m_log.severe(ex.toString());
+        throw new CallControlException(ex.toString(), 0, 3);
+    }
+    catch(Exception ex)
+    {
+        if(m_log.isLoggable(Level.SEVERE))
+            m_log.severe(ex.toString());
+        throw new CallControlException(ex.toString(), 0, 2);
+    }
+}
+
+void destroy()
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering destroy!");
+    ipAppCallImpl.destroy();
+    callAdministration.clear();
+    ipAppCallControlManager._release();
+}
+
+public IpAppCall callEventNotify(TpCallIdentifier callId, final TpCallEventInfo info, int assId)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering callEventNotify!");
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("(" + Integer.toString(callId.CallSessionID) + "," + TypeConverter.eventName(info.CallEventName) + "," + Integer.toString(assId) + ")");
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Trying to create notifyApplication thread!");
+    final CallImpl call = findCreateCall(callId, info);
+    if((callCriteria.getCriteria() & info.CallEventName) != 0)
+        (new Thread() {
+
+            public void run()
+            {
+                notifyApplication(call, info.CallEventName, null);
+            }
+
+        }).start();
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("After create notifyApplication thread!");
+    return callCriteria.isInterruptMode() ? ipAppCallImpl.getServant() : null;
+    TpCommonExceptions e;
+    e;
+    String msg = "TpCommonExceptions: " + e.ExtraInformation;
+    if(m_log.isLoggable(Level.SEVERE))
+        m_log.severe(msg);
+    throw new RuntimeException(msg);
+    P_INVALID_SESSION_ID e;
+    e;
+    String msg = "P_INVALID_SESSION_ID: " + e.ExtraInformation;
+    if(m_log.isLoggable(Level.SEVERE))
+        m_log.severe(msg);
+    throw new RuntimeException(msg);
+    P_INVALID_INTERFACE_TYPE e;
+    e;
+    String msg = "P_INVALID_INTERFACE_TYPE: " + e.ExtraInformation;
+    if(m_log.isLoggable(Level.SEVERE))
+        m_log.severe(msg);
+    throw new RuntimeException(msg);
+}
+
+public void callAborted(int callSessionID)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering callAborted! " + "(" + Integer.toString(callSessionID) + ")");
+    CallImpl call = (CallImpl)callAdministration.remove(new Integer(callSessionID));
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Trying to call notifyApplication!");
+    if(call != null)
+    {
+        call.onAborted();
+        notifyApplication(call, 2048, null);
+    }
+}
+
+public void callNotificationContinued()
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering callNotificationContinued!");
+}
+
+public void callNotificationInterrupted()
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering callNotificationInterrupted!");
+}
+
+public void callOverloadCeased(int arg0)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering callOverloadCeased! " + "(" + Integer.toString(arg0) + ")");
+}
+
+public void callOverloadEncountered(int arg0)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering callOverloadEncountered! " + "(" + Integer.toString(arg0) + ")");
+}
+
+public IpAppCallControlManager getServant()
+{
+    return ipAppCallControlManager;
+}
+
+public int getAssignmentId()
+{
+    return assignmentId;
+}
+
+void setAssignmentId(int id)
+{
+    assignmentId = id;
+}
+
+public CallCriteria getCallCriteria()
+{
+    return callCriteria;
+}
+
+public void setCallCriteria(CallCriteria callCriteria)
+{
+    this.callCriteria = callCriteria;
+}
+
+public void notifyApplication(CallImpl call, int ofEvent, TpCallError error)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering actually notifyApplication!");
+    call.setError(error);
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Trying to deassign the call when Event.CALL_ENDED!");
+    if(ofEvent == 1024)
+        try
+        {
+            call.deassign();
+        }
+        catch(CallControlException e) { }
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Trying to call callControlListener.onEvent()!");
+    if(callControlListener != null)
+        callControlListener.onEvent(new CallControlEvent(ccAdapter, assignmentId, 3, call, ofEvent));
+    else
+        callControlCallback.event(assignmentId, call, ofEvent);
+}
+
+public void notifyApplication(int callSessionID, int ofEvent, TpCallError error)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering notifyApplication!");
+    CallImpl call = findCall(callSessionID);
+    if(call != null)
+        notifyApplication(call, ofEvent, error);
+}
+
+private CallImpl findCall(int callSessionID)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering findCall!");
+    return (CallImpl)callAdministration.get(new Integer(callSessionID));
+}
+
+private CallImpl findCreateCall(TpCallIdentifier callid, TpCallEventInfo info)
+    throws TpCommonExceptions, P_INVALID_SESSION_ID, P_INVALID_INTERFACE_TYPE
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering findCreateCall!");
+    Integer id = new Integer(callid.CallSessionID);
+    CallImpl call = (CallImpl)callAdministration.get(id);
+    if(call == null)
+    {
+        call = new CallImpl(callid, info.OriginatingAddress.AddrString, info.DestinationAddress.AddrString, this, ipAppCallImpl);
+        callAdministration.put(id, call);
+        if(m_log.isLoggable(Level.FINEST))
+            m_log.finest("Created call object id = " + callid.CallSessionID);
+    }
+    return call;
+}
+
+public void callDone(int callSessionId)
+{
+    if(m_log.isLoggable(Level.FINEST))
+        m_log.finest("Entering callDone!");
+    java.lang.Object o = callAdministration.remove(new Integer(callSessionId));
+    if(o == null && m_log.isLoggable(Level.FINEST))
+        m_log.finest("callDone(): call does not exist");
+}
 
 }
