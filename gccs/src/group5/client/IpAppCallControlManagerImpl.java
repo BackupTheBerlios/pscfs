@@ -4,6 +4,7 @@
 package impl;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpAppCallControlManager;
@@ -20,6 +21,8 @@ import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
 import group5.ApplicationLogic;
+import group5.CallControlListener;
+import group5.CallCriteria;
 /**
  * @author Nguyen Huu Hoa
  *
@@ -32,7 +35,22 @@ public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	static Logger logger = Logger.getLogger(IpAppCallControlManagerImpl.class);
+
+	/**
+	 * logger for the system
+	 */
+	static Logger m_logger;
+	
+	static {
+		m_logger = Logger.getLogger(IpAppCallControlManagerImpl.class);
+	}
+    private IpCallControlManagerImpl ccAdapter;
+    private IpAppCallControlManager ipAppCallControlManager;
+    private IpAppCallImpl ipAppCallImpl;
+    private CallControlListener callControlListener;
+    //private Map callAdministration;
+    private CallCriteria callCriteria;
+    private int assignmentId;
 
 	/**
 	 * 
@@ -40,7 +58,11 @@ public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
 	public IpAppCallControlManagerImpl(ApplicationLogic logic) {
 		super();
 		BasicConfigurator.configure();
-		logger.info("ctor()");
+		if (m_logger.isEnabledFor(Level.INFO))
+		{
+			m_logger.info("ctor()");
+		}
+	
 		// TODO Auto-generated constructor stub
 		appLogic = logic;
 	}
@@ -50,7 +72,10 @@ public class IpAppCallControlManagerImpl implements IpAppCallControlManager {
 	 */
 	public void callAborted(int callReference) {
 		// TODO Auto-generated method stub
-		System.out.println("IpAppCallControlManager.callAborted() is called with callReference=" + callReference);
+		if (m_logger.isEnabledFor(Level.INFO))
+		{
+			m_logger.info("callAborted() is called with callReference=" + callReference);
+		}
 	}
 
 	/**

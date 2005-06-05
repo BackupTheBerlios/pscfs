@@ -1,3 +1,4 @@
+package group5;
 public abstract class GeneralException extends Exception
 {
 
