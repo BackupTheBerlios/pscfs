@@ -34,8 +34,8 @@ import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
 
 /**
- * @author Nguyen Huu Hoa
- *
+ * @author Nguyen Duc Du Khuong
+ * Represent each call session by IpCallImpl object
  */
 public class IpCallImpl extends IpCallPOA {
 
