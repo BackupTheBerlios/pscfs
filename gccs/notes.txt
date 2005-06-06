@@ -1,0 +1,16 @@
+    Run NamingServer:
+        ns -Djacorb.naming.ior_filename=/path/to/NS_Ref
+
+    Run Server:
+        jaco demo.benchmark.Server
+
+    Run Client:
+        jaco demo.bemnchmark.Client
+Note:
+    Make sure that jacorb.properties is in place(in the current dir) and has 
+    the name server reference such as -
+    ORBInitRef.NameService=file:/path/to/NS_Ref
+
+Remember to set ORBInitRef.NameService in jacorb.properties of Jacorb to the value found in MilifeSDK/etc/jacorb.properties,
+by doing that, the Name manager can connect to name service of the SDK
+e.g. ORBInitRef.NameService=corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root
