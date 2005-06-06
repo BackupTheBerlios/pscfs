@@ -4,7 +4,7 @@ public final class CallControlException extends GeneralException
 {
 
     /**
-	 * 
+	 * Hallo
 	 */
 	private static final long serialVersionUID = 1811429993110792340L;
 	public CallControlException(String reason, int type)
