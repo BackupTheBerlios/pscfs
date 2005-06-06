@@ -2,6 +2,11 @@ package group5;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+/**
+ * call criteria to manage event notification routing
+ * @author Nguyen Duc Du Khuong
+ *
+ */
 public class CallCriteria
 {
 
