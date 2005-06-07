@@ -9,7 +9,7 @@ import org.csapi.mm.us.IpUserStatusHelper;
 
 /**
  * @author Nguyen Huu Hoa
- *
+ * Sample client that use ApplicationFramework
  */
 public class GCCSClient extends ApplicationFramework{
 	GCCSClient() throws org.omg.CORBA.UserException {
@@ -26,6 +26,7 @@ public class GCCSClient extends ApplicationFramework{
         }
         String user = args[0];
         try {
+        	System.setProperty("ORB.NameService", "corbaloc::localhost:2050/StandardNS/NameServer-POA/_root");
             GCCSClient sample = new GCCSClient();
             sample.initApplication(ApplicationFramework.clientAppID, ApplicationFramework.clientAppSharedSecret);
             IpUserStatus ipUS = IpUserStatusHelper.narrow(sample.selectSCFs("P_USER_STATUS"));
