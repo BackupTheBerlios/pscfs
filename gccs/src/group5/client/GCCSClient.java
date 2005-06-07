@@ -1,0 +1,39 @@
+/**
+ * 
+ */
+package group5.client;
+
+import org.apache.log4j.BasicConfigurator;
+import org.csapi.mm.us.IpUserStatus;
+import org.csapi.mm.us.IpUserStatusHelper;
+
+/**
+ * @author Nguyen Huu Hoa
+ *
+ */
+public class GCCSClient extends ApplicationFramework{
+	GCCSClient() throws org.omg.CORBA.UserException {
+		super();
+	}
+    /**
+     * The main method, runs the sample.
+     */
+    public static void main(String args[]) {
+		BasicConfigurator.configure();
+        if (args.length < 1) {
+            System.out.println("Error: user's MSISDN not specified");
+            System.exit(1);
+        }
+        String user = args[0];
+        try {
+            GCCSClient sample = new GCCSClient();
+            sample.initApplication(ApplicationFramework.clientAppID, ApplicationFramework.clientAppSharedSecret);
+            IpUserStatus ipUS = IpUserStatusHelper.narrow(sample.selectSCFs("P_USER_STATUS"));
+            sample.requestStatus(ipUS, user);
+            sample.endApplication();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
+}
