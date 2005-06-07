@@ -82,7 +82,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	public IpAppCallControlManagerImpl(ApplicationLogic logic) {
 		super();
 		BasicConfigurator.configure();
-		if (m_logger.isEnabledFor(Level.INFO)) {
+		if (m_logger.isInfoEnabled()) {
 			m_logger.info("ctor()");
 		}
 
