@@ -14,3 +14,33 @@ Note:
 Remember to set ORBInitRef.NameService in jacorb.properties of Jacorb to the value found in MilifeSDK/etc/jacorb.properties,
 by doing that, the Name manager can connect to name service of the SDK
 e.g. ORBInitRef.NameService=corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root
+
+
+LOGGING
+for each class, one should include the logging capabilities to it by following steps:
+1. import logger:
+	import org.apache.log4j.BasicConfigurator;
+	import org.apache.log4j.Level;
+	import org.apache.log4j.Logger;
+2. declare logger member variable:
+class Example {
+....
+	/**
+	 * m_logger for the system
+	 */
+	static Logger m_logger;
+
+	static {
+		m_logger = Logger.getLogger(Example.class);
+	}
+	...
+}
+3. When want to log information about the progress of running program
+	if (m_logger.isInfoEnabled()) {
+		m_logger.info("<<<<<Logging information here>>>>>>");
+	}
+4. When want to log debug information for debugging purpose
+	if (m_logger.isDebugEnabled()) {
+		m_logger.debug("<<<<<Logging information here>>>>>>");
+	}
+	
