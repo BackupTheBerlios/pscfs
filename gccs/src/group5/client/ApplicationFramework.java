@@ -3,6 +3,7 @@
  */
 package group5.client;
 
+import group5.P_INVALID_NAME_SERVICE;
 import group5.utils.CommonFuntions;
 
 import java.io.FileInputStream;
@@ -10,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
 import org.csapi.IpService;
 import org.csapi.P_APPLICATION_NOT_ACTIVATED;
@@ -67,11 +69,11 @@ import org.csapi.mm.us.IpAppUserStatus;
 import org.csapi.mm.us.IpAppUserStatusPOA;
 import org.csapi.mm.us.IpUserStatus;
 import org.omg.CORBA.ORB;
+import org.omg.CORBA.UserException;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
-import org.apache.log4j.Logger;
 
 /**
  * @author Nguyen Huu Hoa The application framework
@@ -350,15 +352,16 @@ public class ApplicationFramework {
 		} catch (P_SERVICE_ACCESS_DENIED e) {
 			// Exception is thrown if a signed service agreement already exists
 			// for this service.
-			System.out.println("Service access denied for " + serviceId + ": "
+			m_logger.error("Service access denied for " + serviceId + ": "
 					+ e.ExtraInformation);
 
 			try {
 				// Retrieve the service token for the service from a file and
 				// terminate the agreement
 				serviceToken = fetchToken("servicetoken");
-				System.out.println("Fetched stored token: " + serviceToken
-						+ ", terminating agreement");
+				if (m_logger.isInfoEnabled())
+					m_logger.info("Fetched stored token: " + serviceToken
+							+ ", terminating agreement");
 				terminateServiceAgreement(agmtIf, serviceToken);
 			} catch (IOException ioe) {
 				// File does not seem to exist; throw original exception
@@ -416,17 +419,20 @@ public class ApplicationFramework {
 				/***************************************************************
 				 * Do the OSA invocation: signServiceAgreement()
 				 **************************************************************/
-				System.out
-						.println("The client invokes signServiceAgreement() of framework with singing method of P_MD5_RSA_512 ...");
+				if (m_logger.isInfoEnabled())
+					m_logger
+							.info("The client invokes signServiceAgreement() of framework with singing method of P_MD5_RSA_512 ...");
 				TpSignatureAndServiceMgr signatureAndServiceMgr = agmtIf
 						.signServiceAgreement(svcToken, agreementText,
 								"P_MD5_RSA_512");
 
 				fwSignature = signatureAndServiceMgr.DigitalSignature;
-				System.out.println("Digital Signature of the framework is: "
-						+ CommonFuntions.hexBytesToString(fwSignature));
+				if (m_logger.isInfoEnabled())
+					m_logger.info("Digital Signature of the framework is: "
+							+ CommonFuntions.hexBytesToString(fwSignature));
 
-				System.out.println("Verifying the framework signature...");
+				if (m_logger.isInfoEnabled())
+					m_logger.info("Verifying the framework signature...");
 
 				// verify the signature
 				// boolean v=verifier.verify(fwSignature);
@@ -499,7 +505,8 @@ public class ApplicationFramework {
 			String svcToken) throws TpCommonExceptions,
 			P_INVALID_SERVICE_TOKEN, P_INVALID_SIGNATURE, P_ACCESS_DENIED {
 
-		System.out.println("Terminating service agreement by the client....");
+		if (m_logger.isInfoEnabled())
+			m_logger.info("Terminating service agreement by the client....");
 
 		svcAgmtIf.terminateServiceAgreement(svcToken, agreementText,
 				fwSignature);
@@ -572,7 +579,8 @@ public class ApplicationFramework {
 
 		// invoke the service
 		int assignmentId = usIf.statusReportReq(callback, addressList);
-		System.out.println("statusReportRequest id=" + assignmentId);
+		if (m_logger.isInfoEnabled())
+			m_logger.info("statusReportRequest id=" + assignmentId);
 
 		// Now we have to wait until the OSA API has called our
 		// callback object with a result.
@@ -589,9 +597,9 @@ public class ApplicationFramework {
 
 	/**
 	 * Initialize the application, connect to framework and obtain IpAccess
-	 * service.
-	 * Application can use the framework as follows:
-	 * <code>
+	 * service. Application can use the framework as follows: <code>
+	 * // Be sure to set ORB.NameService to Naming Service of actual ORB
+	 * e.g	System.setProperty("ORB.NameService", "corbaloc::localhost:2050/StandardNS/NameServer-POA/_root");
 	 * ApplicationFramework appFramework = new ApplicationFramework();
 	 * // Init application 
 	 * appFramework.initApplication("<ApplicationID>", "<ApplicationKey>");
@@ -605,14 +613,18 @@ public class ApplicationFramework {
 	 * </code>
 	 * TODO: Add more exception specification here
 	 */
-	public void initApplication(String clAppID, String clAppSharedSecretKey) {
+	public void initApplication(String clAppID, String clAppSharedSecretKey)
+			throws P_INVALID_NAME_SERVICE, UserException {
 		clientAppID = clAppID;
 		clientAppSharedSecret = clAppSharedSecretKey;
+		// Step 1: get a reference to the OSA IpInitial interface
+		String CORBA_NameService = System.getProperty("ORB.NameService");
+		if (CORBA_NameService == null)
+			throw new P_INVALID_NAME_SERVICE(
+					"can not get value of property: ORB.NameService",
+					"set value for that property before calling this function");
 		try {
-			// Step 1: get a reference to the OSA IpInitial interface
-			IpInitial ipInitial = initializeOSA(
-					"corbaloc::localhost:2050/StandardNS/NameServer-POA/_root",
-					"IpInitial");
+			IpInitial ipInitial = initializeOSA(CORBA_NameService, "IpInitial");
 
 			if (m_logger.isInfoEnabled()) {
 				m_logger.info("Obtained IpInitial, starting authentication");
@@ -658,18 +670,41 @@ public class ApplicationFramework {
 			if (m_logger.isInfoEnabled()) {
 				m_logger.info("Obtained IpServiceAgreementManagement");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (P_ACCESS_DENIED ex) {
+			m_logger
+					.error("Access denied while requesting access to interface IpAccess. More information: "
+							+ ex.getMessage());
+		} catch (P_INVALID_INTERFACE_TYPE ex) {
+			m_logger.error("Invalid interface type. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_INTERFACE_NAME ex) {
+			m_logger.error("Invalid interface name. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_ACCESS_TYPE ex) {
+			m_logger.error("Invalid access type. More information: "
+					+ ex.getMessage());
+		} catch (P_NO_ACCEPTABLE_ENCRYPTION_CAPABILITY ex) {
+			m_logger
+					.error("No acceptable encryption capability. More information: "
+							+ ex.getMessage());
+		} catch (P_INVALID_AUTH_TYPE ex) {
+			m_logger.error("Invalid authentication type. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_DOMAIN_ID ex) {
+			m_logger.error("Invalid domain id. More information: "
+					+ ex.getMessage());
 		}
 	}
 
 	/**
-	 * Use this function to get the reference to service interface. 
-	 * @param serviceName Name of the service, according to Parlay spec.  
-	 * (e.g if serviceName = P_USER_STATUS, the return interface will be IpUserStatus
-	 * @return reference to service, with type IpService.
-	 * In order to get the appropriate service type, one should call:
-	 * <code>
+	 * Use this function to get the reference to service interface.
+	 * 
+	 * @param serviceName
+	 *            Name of the service, according to Parlay spec. (e.g if
+	 *            serviceName = P_USER_STATUS, the return interface will be
+	 *            IpUserStatus
+	 * @return reference to service, with type IpService. In order to get the
+	 *         appropriate service type, one should call: <code>
 	 * IpService tempService = selectSCFs("P_USER_STATUS");
 	 * IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
 	 * </code>
@@ -700,14 +735,14 @@ public class ApplicationFramework {
 			}
 			return svcMgr;
 		} catch (Exception e) {
+			m_logger.error("Some errors occur: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
 	}
-	public void endApplication()
-	{
-		try
-		{
+
+	public void endApplication() {
+		try {
 			// Step 10: use the service
 			// requestStatus(ipUS, user);
 
@@ -724,6 +759,7 @@ public class ApplicationFramework {
 			}
 
 		} catch (Exception e) {
+			m_logger.error("Some errors occur: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -778,7 +814,8 @@ public class ApplicationFramework {
 			 * 
 			 */
 
-			System.out.println("Callback to authenticate");
+			if (m_logger.isInfoEnabled())
+				m_logger.info("Callback to authenticate");
 
 			byte[] cipher = new byte[10];
 			return cipher;
@@ -803,9 +840,10 @@ public class ApplicationFramework {
 		 * incorrectly to a challenge).
 		 */
 		public void abortAuthentication() {
-			System.out.println("AuthenticationCallback:");
-			System.out.println("\tAuthentication aborted by the framework!");
-			System.exit(1);
+			if (m_logger.isInfoEnabled()) {
+				m_logger.info("AuthenticationCallback:");
+				m_logger.info("\tAuthentication aborted by the framework!");
+			}
 		}
 
 		public byte[] challenge(byte[] arg0) {
@@ -827,9 +865,10 @@ public class ApplicationFramework {
 		 */
 		public void terminateAccess(String terminationText,
 				String signingAlgorithm, byte[] digitalSignature) {
-			System.out.println("AccessCallback:");
-			System.out.println("\tAccess session terminated by the framework!");
-			System.exit(1);
+			if (m_logger.isInfoEnabled()) {
+				m_logger.info("AccessCallback:");
+				m_logger.info("\tAccess session terminated by the framework!");
+			}
 		}
 	}
 
@@ -854,11 +893,13 @@ public class ApplicationFramework {
 				org.csapi.fw.P_INVALID_AGREEMENT_TEXT,
 				org.csapi.TpCommonExceptions {
 
-			System.out
-					.println("ServiceAgreementCallback: Signing service agreement ");
-			System.out.println("\tservicetoken     = " + serviceToken);
-			System.out.println("\tagreementText    = " + agreementText);
-			System.out.println("\tsigningAlgorithm = " + signingAlgorithm);
+			if (m_logger.isInfoEnabled()) {
+				m_logger
+						.info("ServiceAgreementCallback: Signing service agreement ");
+				m_logger.info("\tservicetoken     = " + serviceToken);
+				m_logger.info("\tagreementText    = " + agreementText);
+				m_logger.info("\tsigningAlgorithm = " + signingAlgorithm);
+			}
 			byte[] response;
 
 			// Validate Input Parameters
@@ -891,10 +932,11 @@ public class ApplicationFramework {
 		 */
 		public void terminateServiceAgreement(String serviceToken,
 				String terminationText, byte[] digitalSignature) {
-			System.out.println("Callback object:");
-			System.out
-					.println("\tService agreement terminated by the framework!");
-			System.exit(1);
+			if (m_logger.isInfoEnabled()) {
+				m_logger.info("Callback object:");
+				m_logger
+						.info("\tService agreement terminated by the framework!");
+			}
 		}
 	}
 
@@ -916,33 +958,36 @@ public class ApplicationFramework {
 		 */
 		public void statusReportRes(int assignmentId, TpUserStatus[] status) {
 
-			System.out
-					.println("UserStatusCallback: Received user status report:");
+			if (m_logger.isInfoEnabled()) {
+				m_logger
+						.info("UserStatusCallback: Received user status report:");
+			}
 
 			// For each user in the array, print the user ID and the status
 			for (int i = 0; i < status.length; i++) {
 				TpUserStatus s = status[i];
-				System.out.print("\t" + s.UserID.AddrString + ": ");
+				if (m_logger.isInfoEnabled())
+					m_logger.info("\t" + s.UserID.AddrString + ": ");
 
 				// Check if no error occurred
 				if (s.StatusCode.value() == TpMobilityError._P_M_OK) {
 					switch (s.Status.value()) {
 					case TpUserStatusIndicator._P_US_BUSY:
-						System.out.println("BUSY");
+						m_logger.info("BUSY");
 						break;
 					case TpUserStatusIndicator._P_US_NOT_REACHABLE:
-						System.out.println("NOT REACHABLE");
+						m_logger.info("NOT REACHABLE");
 						break;
 					case TpUserStatusIndicator._P_US_REACHABLE:
-						System.out.println("REACHABLE");
+						m_logger.info("REACHABLE");
 						break;
 					default:
-						System.out.println("Undefined status ("
-								+ s.Status.value() + ")");
+						m_logger.info("Undefined status (" + s.Status.value()
+								+ ")");
 						break;
 					}
 				} else {
-					System.out.println("error occured (code = "
+					m_logger.error("error occured (code = "
 							+ s.StatusCode.value() + ")");
 				}
 			}
@@ -970,35 +1015,37 @@ public class ApplicationFramework {
 		 */
 		public void statusReportErr(int assignmentId, TpMobilityError cause,
 				TpMobilityDiagnostic diagnostic) {
-			System.out.println("User Status error:");
-			System.out.println("Assignment ID = " + assignmentId);
-			System.out.print("Cause = ");
-			switch (cause.value()) {
-			case TpMobilityError._P_M_OK:
-				System.out.print("OK");
-				break;
-			case TpMobilityError._P_M_ABSENT_SUBSCRIBER:
-				System.out.print("ABSENT SUBSCRIBER");
-				break;
-			case TpMobilityError._P_M_SYSTEM_FAILURE:
-				System.out.print("SYSTEM FAILURE");
-				break;
-			case TpMobilityError._P_M_UNAUTHORIZED_APPLICATION:
-				System.out.print("UNAUTHORIZED APPLICATION");
-				break;
-			case TpMobilityError._P_M_UNAUTHORIZED_NETWORK:
-				System.out.print("UNAUTHORIZED NETWORK");
-				break;
-			case TpMobilityError._P_M_UNKNOWN_SUBSCRIBER:
-				System.out.print("UNKNOWN SUBSCRIBER");
-				break;
-			default:
-				System.out.print("UNKNOWN");
+			if (m_logger.isInfoEnabled())
+			{
+				m_logger.info("User Status error:");
+				m_logger.info("Assignment ID = " + assignmentId);
+				String causeString = "Cause = ";
+				switch (cause.value()) {
+				case TpMobilityError._P_M_OK:
+					causeString = "OK";
+					break;
+				case TpMobilityError._P_M_ABSENT_SUBSCRIBER:
+					causeString = "ABSENT SUBSCRIBER";
+					break;
+				case TpMobilityError._P_M_SYSTEM_FAILURE:
+					causeString = "SYSTEM FAILURE";
+					break;
+				case TpMobilityError._P_M_UNAUTHORIZED_APPLICATION:
+					causeString = "UNAUTHORIZED APPLICATION";
+					break;
+				case TpMobilityError._P_M_UNAUTHORIZED_NETWORK:
+					causeString = "UNAUTHORIZED NETWORK";
+					break;
+				case TpMobilityError._P_M_UNKNOWN_SUBSCRIBER:
+					causeString = "UNKNOWN SUBSCRIBER";
+					break;
+				default:
+					causeString = "UNKNOWN";
+				}
+				m_logger.info(causeString);
+				// Diagnostic could be analyzed the same way as cause, not done here
+				m_logger.info("Diagnostic = " + diagnostic.value());
 			}
-			System.out.println();
-
-			// Diagnostic could be analyzed the same way as cause, not done here
-			System.out.print("Diagnostic = " + diagnostic.value());
 
 			// Wake up our main object that is waiting for the report.
 			// Make sure the response is returned before the main object
@@ -1009,16 +1056,17 @@ public class ApplicationFramework {
 				return;
 			}
 		}
-
 		/** Not implemented in this sample. Only defined for completeness */
 		public void triggeredStatusReport(int assignmentId, TpUserStatus status) {
-			System.out.println("Triggered status report not implemented");
+			if (m_logger.isInfoEnabled())
+				m_logger.info("Triggered status report not implemented");
 		}
 
 		/** Not implemented in this sample. Only defined for completeness */
 		public void triggeredStatusReportErr(int assignmentId,
 				TpMobilityError cause, TpMobilityDiagnostic diagnostic) {
-			System.out.println("Triggered status report error not implemented");
+			if (m_logger.isInfoEnabled())
+				m_logger.info("Triggered status report error not implemented");
 		}
 
 		public void extendedStatusReportRes(int arg0,
