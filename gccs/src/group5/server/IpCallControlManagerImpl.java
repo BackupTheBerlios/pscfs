@@ -5,6 +5,7 @@ package impl;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 import org.csapi.IpInterface;
 import org.csapi.P_INVALID_ADDRESS;
 import org.csapi.P_INVALID_ASSIGNMENT_ID;
@@ -16,7 +17,10 @@ import org.csapi.P_UNSUPPORTED_ADDRESS_PLAN;
 import org.csapi.TpAddressRange;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallLoadControlMechanism;
+import org.csapi.cc.TpCallMonitorMode;
+import org.csapi.cc.gccs.TpCallNotificationType;
 import org.csapi.cc.gccs.IpAppCall;
+import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventCriteria;
@@ -29,10 +33,14 @@ import org.omg.CORBA.DomainManager;
 import org.omg.CORBA.ExceptionList;
 import org.omg.CORBA.NVList;
 import org.omg.CORBA.NamedValue;
-import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
+import java.util.HashMap;
+import java.util.Iterator;
+import group5.*;
+
+
 
 /**
  * @author Nguyen Huu Hoa
@@ -41,20 +49,22 @@ import org.omg.CORBA.SetOverrideType;
 public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 
 	private IpAppCallControlManager ipACCM_delegate;
+	private IpCallControlManager ipCallControlManager;
+	private HashMap administration;	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	static Logger logger = Logger.getLogger(IpCallControlManagerImpl.class);
-
+	static Logger m_logger = Logger.getLogger(IpCallControlManagerImpl.class);
+	
 	/**
 	 * 
 	 */
 	public IpCallControlManagerImpl() {
 		super();
 		BasicConfigurator.configure();
-		logger.info("ctor()");
+		m_logger.info("ctor()");
 	}
 
 	/* (non-Javadoc)
@@ -86,7 +96,58 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			TpCallEventCriteria eventCriteria) throws P_INVALID_INTERFACE_TYPE,
 			P_INVALID_EVENT_TYPE, TpCommonExceptions, P_INVALID_CRITERIA {
 		// TODO Auto-generated method stub
-		return 0;
+	   	if(m_logger.isInfoEnabled())
+            m_logger.info("Entering enableCallNotification");    		
+		if (appCallControlManager == null)
+			throw new CallControlException("Parameter 'appCallControlManager' is null", 3);
+		else
+		{
+//			checkCriteria(eventCriteria)
+			IpAppCallControlManagerImpl ccm = new IpAppCallControlManagerImpl(this,eventCriteria);
+			int assignmentID=0;
+			try
+			{
+				assignmentID=ipCallControlManager.enableCallNotification(ccm.getServant(),createCallCriteria(eventCriteria));
+				ccm.setAssignmentId(assignmentID);
+				administration.put(new Integer(assignmentID),ccm);
+			}
+			catch (P_INVALID_CRITERIA e)
+			{
+				String msgErr="Invalid criteria:" + e.ExtraInformation;
+				if(m_logger.isInfoEnabled())
+					m_logger.info(msgErr);				
+				ccm.destroy();
+				throw new CallControlException(msgErr,4,3);
+				
+			}
+			catch (P_INVALID_EVENT_TYPE e)
+			{
+				String msgErr="Error in enableCallNotification() call:" + e.ExtraInformation;
+				if(m_logger.isInfoEnabled())
+					m_logger.info(msgErr);						
+				ccm.destroy();
+				throw new CallControlException(msgErr,4,3);
+				
+			}
+			catch (P_INVALID_INTERFACE_TYPE e)
+			{
+				String msgErr="Error in enableCallNotification() call: Invalid Interface Type." + e.ExtraInformation;
+				ccm.destroy();
+				if(m_logger.isInfoEnabled())
+			        m_logger.info(msgErr);						
+				throw new CallControlException(msgErr,4,3);
+				
+			}
+			catch (TpCommonExceptions e)
+			{
+				String msgErr="Error in enableCallNotification() call" + e.ExtraInformation;
+				if(m_logger.isInfoEnabled())
+			        m_logger.info(msgErr);						
+				ccm.destroy();
+				throw new CallControlException(msgErr,4,3);
+				
+			}
+		}		
 	}
 
 	/* (non-Javadoc)
@@ -95,7 +156,32 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	public void disableCallNotification(int assignmentID)
 			throws P_INVALID_ASSIGNMENT_ID, TpCommonExceptions {
 		// TODO Auto-generated method stub
-
+		IpAppCallControlManagerImpl ccm;
+		try
+		{
+			ccm=findRegistration(assignmentID);
+			administration.remove(new Integer(assignmentID));
+			ipCallControlManager.disableCallNotification(assignmentID);
+			ccm.destroy();
+		}		
+		catch(P_INVALID_ASSIGNMENT_ID e)
+		{
+			String msgErr="Invalid assignmentID:" + e.ExtraInformation;
+//			ccm.destroy();
+		
+		}
+		catch(TpCommonExceptions e)
+		{
+			String msgErr="Error in disableCallNotification:" + e.ExceptionType;
+//			ccm.destroy();
+			
+		}
+		catch (CallControlException e)
+		{
+			String msgErr="Error in disableCallNotification" + e.getMessage();
+//			ccm.destroy();
+		}
+			
 	}
 
 	/* (non-Javadoc)
@@ -197,7 +283,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	/* (non-Javadoc)
 	 * @see org.omg.CORBA.Object#_get_interface_def()
 	 */
-	public Object _get_interface_def() {
+	public org.omg.CORBA.Object _get_interface_def() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -251,5 +337,91 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	/* (non-Javadoc)
+	 */	
+	 static int analyseEventMask(int eventMask)
+	    {
+	        return eventMask & 0xfe;
+	    }
+	 /* (non-Javadoc)
+	  */
+	 
+	 private void checkCriteria(CallCriteria crit)
+	    throws CallControlException
+	    {
+	        if(crit == null || crit.getCriteria() == 0)
+	        {
+	            throw new CallControlException("No events specified", 2, 2);
+	        }
+	        if((crit.getCriteria() & 0xffffe000) != 0)
+	        {
+	            throw new CallControlException("Un known event", 1, 2);
+	        }
+	        if(analyseEventMask(crit.getCriteria()) == 0)
+	        {
+	            throw new CallControlException("No callbacks will be received for given events", 2, 2);
+	        } else
+	        {
+	            return;
+	        }
+	    }
+	 private CallCriteria createCallCriteria(TpCallEventCriteria input)
+	    {
+	        if(m_logger.isInfoEnabled())
+	            m_logger.info("Entering createCallCriteria!");
+	        TpCallNotificationType _tmp = input.CallNotificationType;
+	        TpCallMonitorMode _tmp1 = input.MonitorMode;
+	        return new CallCriteria(input.OriginatingAddress.AddrString, input.DestinationAddress.AddrString, input.CallEventName, input.CallNotificationType.value() == 0, input.MonitorMode.value() == 0);
+	    }	 
+	/* (non-Javadoc)
+	 */	
+	 private IpAppCallControlManagerImpl findRegistration(int id)
+        throws CallControlException
+    {
+		if(m_logger.isInfoEnabled())
+	            m_logger.info("Entering findRegistration!");
+        Object ccm = administration.get(new Integer(id));
+        if(ccm != null)
+        return (IpAppCallControlManagerImpl)ccm;
+        String msgErr="Invalid assignment ID " + id;
+        if(m_logger.isInfoEnabled())
+            m_logger.info(msgErr);
+        throw new CallControlException(msgErr, 3, 2);
+    }
+	 /* (non-Javadoc)
+	  */	
+    public void destroy()
+    	throws CallControlException
+    {
+    	if(m_logger.isInfoEnabled())
+              m_logger.info("Entering destroy");    	
+    	if(ipCallControlManager == null)
+    	{
+    		String msgErr ="Already destroyed";
+    	 	if(m_logger.isInfoEnabled())
+                m_logger.info(msgErr); 
+    		throw new CallControlException("Already destroyed", 0, 2);
+    	}
+	    int id;
+	    try
+	    {
+	    	for(Iterator i = administration.keySet().iterator(); i.hasNext(); disableCallNotification(id))
+		        id = ((Integer)i.next()).intValue();
+	    }
+	    catch (P_INVALID_ASSIGNMENT_ID e)
+	    {
+	    	String msgErr="Invalid assignment ID" + e.getMessage();
+	    	if(m_logger.isInfoEnabled())
+	              m_logger.info(msgErr);	    	
+	    }
+	    catch (TpCommonExceptions e)
+	    {
+	    	String msgErr="Error destroy" + e.getMessage();
+	    	if(m_logger.isInfoEnabled())
+	              m_logger.info(msgErr);	    	
+	    }
+	    administration.clear();
+	    ipCallControlManager._release();
+	    ipCallControlManager = null;
+    }
 }

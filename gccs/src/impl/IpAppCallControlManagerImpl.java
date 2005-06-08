@@ -223,7 +223,9 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	}
 
 	public IpAppCallControlManagerImpl(IpCallControlManagerImpl ccManager,
-			CallCriteria criteria, CallControlListener listener)
+			TpCallEventCriteria criteria
+			//, CallControlListener listener
+			)
 			throws CallControlException {
 		ipAppCallControlManager = null;
 		callControlListener = null;
@@ -232,8 +234,8 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering IpAppCallControlManagerImpl Construction!");
 		this.ccManager = ccManager;
-		callCriteria = criteria;
-		callControlListener = listener;
+//		callCriteria = criteria;
+		//callControlListener = listener;
 		callAdministration = Collections.synchronizedMap(new HashMap());
 		ipAppCallImpl = new IpAppCallImpl(ccManager, this);
 		try {

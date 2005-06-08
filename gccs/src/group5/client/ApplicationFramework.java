@@ -143,6 +143,8 @@ public class ApplicationFramework {
 		// Make sure the correct ORB is specified on the commandline, i.e.
 		// -Dorg.omg.CORBA.ORBClass=<your ORB class>
 		// -Dorg.omg.CORBA.ORBSingletonClass=<your ORB singleton class>
+		System.setProperty("org.omg.CORBA.ORBClass", "org.jacorb.orb.ORB");
+		System.setProperty("org.omg.CORBA.ORBSingletonClass", "org.jacorb.orb.ORBSingleton");
 		java.util.Properties props = System.getProperties();
 		orb = ORB.init(new String[0], props);
 
