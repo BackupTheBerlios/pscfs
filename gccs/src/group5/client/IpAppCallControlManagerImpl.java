@@ -5,7 +5,7 @@
 
 package impl;
 
-import group5.ApplicationLogic;
+import group5.client.number_translation.MyApplicationLogic;
 import group5.CallControlEvent;
 import group5.CallControlException;
 import group5.CallControlListener;
@@ -16,8 +16,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.csapi.P_INVALID_INTERFACE_TYPE;
 import org.csapi.P_INVALID_SESSION_ID;
@@ -28,16 +26,6 @@ import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpAppCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
-import org.omg.CORBA.Context;
-import org.omg.CORBA.ContextList;
-import org.omg.CORBA.DomainManager;
-import org.omg.CORBA.ExceptionList;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
-import org.omg.CORBA.Object;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.Request;
-import org.omg.CORBA.SetOverrideType;
 import org.omg.CORBA.SystemException;
 
 /**
@@ -46,7 +34,7 @@ import org.omg.CORBA.SystemException;
  */
 public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 
-	ApplicationLogic appLogic;
+	MyApplicationLogic appLogic;
 
 	/**
 	 * 
@@ -79,9 +67,8 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	/**
 	 * 
 	 */
-	public IpAppCallControlManagerImpl(ApplicationLogic logic) {
+	public IpAppCallControlManagerImpl(MyApplicationLogic logic) {
 		super();
-		BasicConfigurator.configure();
 		if (m_logger.isInfoEnabled()) {
 			m_logger.info("ctor()");
 		}
@@ -137,13 +124,13 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	public IpAppCall callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		// TODO clear out some confused about returning reference of appCall
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering callEventNotify!");
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("(" + Integer.toString(callReference.CallSessionID)
 					+ "," + TypeConverter.eventName(eventInfo.CallEventName)
 					+ "," + Integer.toString(assignmentID) + ")");
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Trying to create notifyApplication thread!");
 		try
 		{
@@ -173,7 +160,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 			if (m_logger.isInfoEnabled())
 				m_logger.info("Catch exception of TpCommonExceptions with more information: " + ex.getMessage());
 		}
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("After create notifyApplication thread!");
 		return callCriteria.isInterruptMode() ? ipAppCallImpl.getServant()._this()
 				: null;
@@ -187,12 +174,12 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	}
 
 	public void callAborted(int callReference) {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering callAborted! " + "("
 					+ Integer.toString(callReference) + ")");
 		IpCallImpl call = (IpCallImpl) callAdministration.remove(new Integer(
 				callReference));
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Trying to call notifyApplication!");
 		if (call != null) {
 			// call.onAborted();
@@ -201,24 +188,24 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	}
 
 	public void callNotificationContinued() {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering callNotificationContinued!");
 	}
 
 	public void callNotificationInterrupted() {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering callNotificationInterrupted!");
 	}
 
 	public void callOverloadCeased(int assignmentID) {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering callOverloadCeased! " + "("
 					+ Integer.toString(assignmentID) + ")");
 
 	}
 
 	public void callOverloadEncountered(int assignmentID) {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering callOverloadEncountered! " + "("
 					+ Integer.toString(assignmentID) + ")");
 	}
@@ -230,145 +217,9 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	 */
 	public void abortMultipleCalls(int[] callReferenceSet) {
 		// TODO Auto-generated method stub
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger
 					.info("IpAppCallControlManager.abortMultipleCalls() is called");
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_release()
-	 */
-	public void _release() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_non_existent()
-	 */
-	public boolean _non_existent() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_hash(int)
-	 */
-	public int _hash(int arg0) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_is_a(java.lang.String)
-	 */
-	public boolean _is_a(String arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_get_domain_managers()
-	 */
-	public DomainManager[] _get_domain_managers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_duplicate()
-	 */
-	public Object _duplicate() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_get_interface_def()
-	 */
-	public Object _get_interface_def() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_is_equivalent(org.omg.CORBA.Object)
-	 */
-	public boolean _is_equivalent(Object arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_get_policy(int)
-	 */
-	public Policy _get_policy(int arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_request(java.lang.String)
-	 */
-	public Request _request(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_set_policy_override(org.omg.CORBA.Policy[],
-	 *      org.omg.CORBA.SetOverrideType)
-	 */
-	public Object _set_policy_override(Policy[] arg0, SetOverrideType arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_create_request(org.omg.CORBA.Context,
-	 *      java.lang.String, org.omg.CORBA.NVList, org.omg.CORBA.NamedValue)
-	 */
-	public Request _create_request(Context arg0, String arg1, NVList arg2,
-			NamedValue arg3) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.omg.CORBA.Object#_create_request(org.omg.CORBA.Context,
-	 *      java.lang.String, org.omg.CORBA.NVList, org.omg.CORBA.NamedValue,
-	 *      org.omg.CORBA.ExceptionList, org.omg.CORBA.ContextList)
-	 */
-	public Request _create_request(Context arg0, String arg1, NVList arg2,
-			NamedValue arg3, ExceptionList arg4, ContextList arg5) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public IpAppCallControlManagerImpl(IpCallControlManagerImpl ccManager,
@@ -378,7 +229,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 		callControlListener = null;
 		callAdministration = null;
 		assignmentId = -1;
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering IpAppCallControlManagerImpl Construction!");
 		this.ccManager = ccManager;
 		callCriteria = criteria;
@@ -400,7 +251,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	}
 
 	void destroy() {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering destroy!");
 		ipAppCallImpl.destroy();
 		callAdministration.clear();
@@ -429,13 +280,13 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 
 	public void notifyApplication(IpCallImpl call, int ofEvent,
 			TpCallError error) {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering actually notifyApplication!");
 		/**
 		 * @TODO: call setError
 		 */
 		// call.setError(error);
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Trying to deassign the call when Event.CALL_ENDED!");
 		if (ofEvent == 1024)
 		{
@@ -448,16 +299,16 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 			}
 			catch (org.csapi.P_INVALID_SESSION_ID ex)
 			{
-				if (m_logger.isEnabledFor(Level.INFO))
+				if (m_logger.isInfoEnabled())
 					m_logger.info("Common exception with information: " + ex.getMessage());
 			}
 			catch (TpCommonExceptions ex)
 			{
-				if (m_logger.isEnabledFor(Level.INFO))
+				if (m_logger.isInfoEnabled())
 					m_logger.info("Common exception with information: " + ex.getMessage());
 			}
 		}
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Trying to call callControlListener.onEvent()!");
 		callControlListener.onEvent(new CallControlEvent(ccManager._this(),
 				assignmentId, 3, call._this(), ofEvent));
@@ -465,7 +316,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 
 	public void notifyApplication(int callSessionID, int ofEvent,
 			TpCallError error) {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering notifyApplication!");
 		IpCallImpl call = findCall(callSessionID);
 		if (call != null)
@@ -473,7 +324,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	}
 
 	private IpCallImpl findCall(int callSessionID) {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering findCall!");
 		return (IpCallImpl) callAdministration.get(new Integer(callSessionID));
 	}
@@ -481,7 +332,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	private IpCallImpl findCreateCall(TpCallIdentifier callid,
 			TpCallEventInfo info) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID, P_INVALID_INTERFACE_TYPE {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering findCreateCall!");
 		Integer id = new Integer(callid.CallSessionID);
 		IpCallImpl call = (IpCallImpl) callAdministration.get(id);
@@ -489,7 +340,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 			call = new IpCallImpl(callid, info.OriginatingAddress.AddrString,
 					info.DestinationAddress.AddrString, this, ipAppCallImpl);
 			callAdministration.put(id, call);
-			if (m_logger.isEnabledFor(Level.INFO))
+			if (m_logger.isInfoEnabled())
 				m_logger.info("Created call object id = "
 						+ callid.CallSessionID);
 		}
@@ -497,7 +348,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 	}
 
 	public void callDone(int callSessionId) {
-		if (m_logger.isEnabledFor(Level.INFO))
+		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering callDone!");
 		java.lang.Object o = callAdministration.remove(new Integer(
 				callSessionId));
