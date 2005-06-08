@@ -22,6 +22,7 @@ import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReportRequest;
+import org.csapi.cc.gccs.IpCall;
 import org.omg.CORBA.Context;
 import org.omg.CORBA.ContextList;
 import org.omg.CORBA.DomainManager;
@@ -32,11 +33,19 @@ import org.omg.CORBA.Object;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import group5.*;
+
 
 /**
  * @author Nguyen Duc Du Khuong
  * Represent each call session by IpCallImpl object
  */
+
+
+
 public class IpCallImpl extends IpCallPOA {
 
 	/**
@@ -45,7 +54,18 @@ public class IpCallImpl extends IpCallPOA {
 	private static final long serialVersionUID = 1L;
 
 	static Logger logger = Logger.getLogger(IpCallControlManagerImpl.class);
+	/**
+	 * Khuong added 9.28pm 07.06
+	 * /
+	/**
+	 * m_logger for the system
+	 */
+	static Logger m_logger;
 
+	static {
+		m_logger = Logger.getLogger(IpCallImpl.class);
+	}
+	
     public IpCallImpl(TpCallIdentifier callid, String originatorAddress, String originalDestinationAddress, IpAppCallControlManagerImpl manager, IpAppCallImpl ipAppCallImpl)
     throws TpCommonExceptions, P_INVALID_SESSION_ID, P_INVALID_INTERFACE_TYPE
     {
@@ -71,6 +91,13 @@ public class IpCallImpl extends IpCallPOA {
 			TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID,
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
 		// TODO Auto-generated method stub
+		
+		// K added
+		if(m_logger.isInfoEnabled())
+			m_logger.info(("route Request"));
+		checkEnd();
+		routeError = null;
+		TpCallReportRequest tpCallReportReq[] = 
 		return 0;
 	}
 
@@ -81,7 +108,27 @@ public class IpCallImpl extends IpCallPOA {
 			throws P_INVALID_NETWORK_STATE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-
+		//Khuong added
+		if(m_logger.isInfoEnabled())
+			m_logger.info("Entering release!");
+		IpCall localCopy = cleanupCall();
+		try
+		{
+			localCopy.release(callSessionID, new TpCallReleaseCause());
+			cleanupCall();
+		}
+		catch (TpCommonExceptions ex1)
+		{
+			m_logger.error("Error occurs: "+ex1.getMessage());
+		}
+		catch (P_INVALID_NETWORK_STATE ex2)
+		{
+			m_logger.error("Error occurs: "+ ex2.getMessage());
+		}
+		catch (P_INVALID_SESSION_ID ex3)
+		{
+			m_logger.error("Error occurs: "+ ex3.getMessage());
+		}
 	}
 
 	/* (non-Javadoc)
@@ -170,124 +217,83 @@ public class IpCallImpl extends IpCallPOA {
 		// TODO Auto-generated method stub
 
 	}
+	
+	// New
+	
+	 public void deassignCall(int i)
+     throws TpCommonExceptions, P_INVALID_SESSION_ID
+     {
+	     OSACallObserver osacallobserver = findCallObserver(i);
+	     osacallobserver.deassignCall(i);
+	     a(i);
+     }
 
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_release()
-	 */
-	public void _release() {
-		logger.info("_release");
-		logger.debug("_release - Unimplemented");
+	 public void release(int i, TpCallReleaseCause tpcallreleasecause)
+     throws P_INVALID_NETWORK_STATE, TpCommonExceptions, P_INVALID_SESSION_ID
+	 {
+	     OSACallObserver osacallobserver = findCallObserver(i);
+	     osacallobserver.release(i, tpcallreleasecause);
+	     a(i);
+	 }
+	 
+	 public int routeReq(int i, TpCallReportRequest atpcallreportrequest[], TpAddress tpaddress, TpAddress tpaddress1, TpAddress tpaddress2, TpAddress tpaddress3, TpCallAppInfo atpcallappinfo[])
+     throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE, TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID, P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA
+	 {
+	     _fldint.debug("routeReq() Invoked.\n\tCallSessionID=" + i + "\n\tResponseRequested=" + a(atpcallreportrequest) + "\n\tTargetAddr=" + tpaddress.AddrString + "\n\tOrigAddr=" + tpaddress1.AddrString + "\n\tDestAddr=" + tpaddress2.AddrString + "\n\tRedAddr=" + tpaddress3.AddrString);
+	     OSACallObserver osacallobserver = findCallObserver(i);
+	     osacallobserver.routeReq(i, atpcallreportrequest, tpaddress, tpaddress1, tpaddress2, tpaddress3, atpcallappinfo);
+	     return osacallobserver.getCallSessionId();
+	 }
 
-	}
+	 private String a(TpCallReportRequest atpcallreportrequest[])
+	 {
+	     String s = "";
+	     if(atpcallreportrequest.length == 0)
+	     {
+	         s = s + "\n\t\tEmpty";
+	         return s;
+	     }
+	     for(int i = 0; i < atpcallreportrequest.length; i++)
+	         s = s + "\n\t\tTpCallReportRequest[" + i + "]=" + "\n\t\t\tMonitorMode=" + atpcallreportrequest[i].MonitorMode.value() + "\n\t\t\tCallReportType=" + atpcallreportrequest[i].CallReportType.value() + "\n\t\t\tAdditionalReportCriteria=" + atpcallreportrequest[i].AdditionalReportCriteria.discriminator().value();
+	
+	     return s;
+	 }
 
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_non_existent()
-	 */
-	public boolean _non_existent() {
-		logger.info("_non_existent");
-		logger.debug("_non_existent - Unimplemented");
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_hash(int)
-	 */
-	public int _hash(int arg0) {
-		logger.info("_hash");
-		logger.debug("_hash - Unimplemented");
-		return 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_is_a(java.lang.String)
-	 */
-	public boolean _is_a(String arg0) {
-		logger.info("_is_a");
-		logger.debug("_is_a - Unimplemented");
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_get_domain_managers()
-	 */
-	public DomainManager[] _get_domain_managers() {
-		logger.info("_get_domain_managers");
-		logger.debug("_get_domain_managers - Unimplemented");
+	
+	
+	//Khuong added
+	
+	private synchronized IpCall cleanupCall()
+	throws CallControlException
+    {
+	    checkEnded();
+	    IpCall result = ipCall;
+	    ipCall = null;
+	    return result;
+    }
+	
+	private void checkEnded()
+    throws CallControlException
+    {
+	    if(ipCall == null)
+	        throw new CallControlException("Call has ended/already deassigned/already released", 0, 2);
+	    else
+	        return;
+    }
+	
+	private int callSessionID;
+	private IpCall ipCall;
+	
+	//Chua sua
+	public static String _mthdo() {
+		// TODO Auto-generated method stub
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_duplicate()
-	 */
-	public Object _duplicate() {
-		logger.info("_duplicate");
-		logger.debug("_duplicate - Unimplemented");
+	
+	//Chua sua
+	public static CallContext getInstance() {
+		// TODO Auto-generated method stub
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_get_interface_def()
-	 */
-	public Object _get_interface_def() {
-		logger.info("_get_interface_def");
-		logger.debug("_get_interface_def - Unimplemented");
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_is_equivalent(org.omg.CORBA.Object)
-	 */
-	public boolean _is_equivalent(Object arg0) {
-		logger.info("_is_equivalent");
-		logger.debug("_is_equivalent - Unimplemented");
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_get_policy(int)
-	 */
-	public Policy _get_policy(int arg0) {
-		logger.info("_get_policy");
-		logger.debug("_get_policy - Unimplemented");
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_request(java.lang.String)
-	 */
-	public Request _request(String arg0) {
-		logger.info("_request");
-		logger.debug("_request - Unimplemented");
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_set_policy_override(org.omg.CORBA.Policy[], org.omg.CORBA.SetOverrideType)
-	 */
-	public Object _set_policy_override(Policy[] arg0, SetOverrideType arg1) {
-		logger.info("_set_policy_override");
-		logger.debug("_set_policy_override - Unimplemented");
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_create_request(org.omg.CORBA.Context, java.lang.String, org.omg.CORBA.NVList, org.omg.CORBA.NamedValue)
-	 */
-	public Request _create_request(Context arg0, String arg1, NVList arg2,
-			NamedValue arg3) {
-		logger.info("_create_request");
-		logger.debug("_create_request - Unimplemented");
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_create_request(org.omg.CORBA.Context, java.lang.String, org.omg.CORBA.NVList, org.omg.CORBA.NamedValue, org.omg.CORBA.ExceptionList, org.omg.CORBA.ContextList)
-	 */
-	public Request _create_request(Context arg0, String arg1, NVList arg2,
-			NamedValue arg3, ExceptionList arg4, ContextList arg5) {
-		logger.info("_create_request");
-		logger.debug("_create_request - Unimplemented");
-		return null;
-	}
-
+	
 }
