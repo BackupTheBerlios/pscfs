@@ -90,7 +90,11 @@ public class ApplicationFramework {
 	}
 
 	/** The instance of the CORBA Object Request Broker */
-	private ORB orb;
+	private static ORB orb;
+	public static ORB getORB()
+	{
+		return orb;
+	}
 
 	/**
 	 * for synchronization
@@ -104,12 +108,12 @@ public class ApplicationFramework {
 	/**
 	 * ApplicationID for authentication with Milife SDK
 	 */
-	static String clientAppID = "TestEncryption";
+	protected static String clientAppID = "TestEncryption";
 
 	/**
 	 * secret key for authentication with Milife SDK
 	 */
-	static String clientAppSharedSecret = "ABCDEF0011";
+	protected static String clientAppSharedSecret = "ABCDEF0011";
 
 	private byte[] fwSignature = null;
 
@@ -133,7 +137,7 @@ public class ApplicationFramework {
 	/**
 	 * Default constructor, creates and starts the CORBA ORB and POA.
 	 */
-	ApplicationFramework() throws org.omg.CORBA.UserException {
+	protected ApplicationFramework() throws org.omg.CORBA.UserException {
 		// Create an instance of the ORB.
 		// Make sure the correct ORB is specified on the commandline, i.e.
 		// -Dorg.omg.CORBA.ORBClass=<your ORB class>
@@ -146,7 +150,7 @@ public class ApplicationFramework {
 		// because orb.run() blocks until the ORB is shut down.
 		Thread tCallback = new Thread() {
 			public void run() {
-				ApplicationFramework.this.orb.run();
+				ApplicationFramework.orb.run();
 			}
 		};
 		tCallback.setDaemon(true); // make sure the ORB quits when we're ready
@@ -558,7 +562,7 @@ public class ApplicationFramework {
 	 * @param user
 	 *            the MSISDN of the user
 	 */
-	void requestStatus(IpUserStatus usIf, String user)
+	protected void requestStatus(IpUserStatus usIf, String user)
 			throws TpCommonExceptions, P_INVALID_INTERFACE_TYPE,
 			P_INFORMATION_NOT_AVAILABLE, P_APPLICATION_NOT_ACTIVATED,
 			P_UNKNOWN_SUBSCRIBER {
