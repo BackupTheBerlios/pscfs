@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simulation xmlns="http://www.lucent.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.lucent.com simulation.xsd" name="CallControl Sim">
+
+	<behaviorSet>
+		<!-- defines behaviors that can be referenced elsewhere in this script -->
+		<ccBehaviorStatic name="available" act="willAnswer" answerDelay="4000"/>
+		<ccBehaviorStatic name="noanswer" act="willAnswer" answerDelay="60000"/>
+		<ccBehaviorStatic name="refuser" act="willRefuse"/>
+		<ccBehaviorSequenceCall name="seq" numberList="123456789012,123456789013,000180074992"
+		    duration="30000" delayBetweenCalls="1000" repeat="true"/>
+		<ccBehaviorFixed name="freeze" graceful="true"/>
+		<ccBehaviorRandom name="randomcaller" duration="10000" delayBetweenCalls="3000" successChance="0.95"/>
+
+		<usBehaviorStatic name="notReachable" status="OFF"/>
+	</behaviorSet>
+
+	<scsSet>
+		<ccState>
+			<!-- sets the initial state of the CC simulator-->
+			<latency>50</latency>
+			<defaultSubscriberState>
+				<!-- any newly added subscriber would have this behavior -->
+				<behaviorRef>available</behaviorRef>
+			</defaultSubscriberState>
+			<parameters noAnswerTime="30000"/>  <!-- half a minute before SCS sends no answer -->
+        </ccState>
+	</scsSet>
+	<subscriberSet>
+		<!-- a single subscriber -->
+		<subscriber name="aPerson">
+			<MSISDN>123456789011</MSISDN>
+		</subscriber>
+		<subscriber name="bPerson">
+			<MSISDN>123456789021</MSISDN>
+		</subscriber>
+		<subscriber name="hungryPerson">
+			<MSISDN>123456789012</MSISDN>
+		</subscriber>
+		<!-- a subscriber group of 1000 members -->
+		<subscriber name="subscriberGroup1" groupSize="1000">
+			<MSISDN>123456789013</MSISDN>
+			<alias name="NAI" value="user@test.com"/>
+		</subscriber>
+		<subscriber name="pizzaRestaurant" groupSize="1">
+			<MSISDN>000180074992</MSISDN>  <!-- 000-1800-PIZZA -->
+		</subscriber>
+	</subscriberSet>
+	<stepSet>
+		<step name="addSubscribers">
+			<ccStep>
+				<!-- adds the subscribers to CC simulator -->
+				<addSubscriber>
+					<subscriberRef>aPerson</subscriberRef>
+				</addSubscriber>
+				<addSubscriber>
+					<subscriberRef>bPerson</subscriberRef>
+				</addSubscriber>
+				<addSubscriber>
+					<subscriberRef>hungryPerson</subscriberRef>
+				</addSubscriber>
+				<addSubscriber>
+					<subscriberRef>subscriberGroup1</subscriberRef>
+				</addSubscriber>
+				<addSubscriber>
+					<subscriberRef>pizzaRestaurant</subscriberRef>
+				</addSubscriber>
+			</ccStep>
+
+			<!-- Also add 1 person to US for inter-SCS testing -->
+			<usStep>
+				<!-- adds the subscribers to US simulator -->
+				<addSubscriber>
+					<subscriberRef>aPerson</subscriberRef>
+				</addSubscriber>
+			</usStep>
+
+		</step>
+		<step name="A_calls_B_for_15_sec">
+		    <ccStep>
+				<ccSubscriberState>
+					<subscriberRef>aPerson</subscriberRef>
+					<ccBehaviorSingleCall number="123456789021" duration="15000" />
+				</ccSubscriberState>
+
+				<!-- Set hungryPerson to no answer (delay > SCS noanswer timer) -->
+				<ccSubscriberState>
+					<subscriberRef>hungryPerson</subscriberRef>
+					<behaviorRef>noanswer</behaviorRef>
+				</ccSubscriberState>
+			</ccStep>
+		</step>
+		<step name="A_makes_random_10_sec_calls">
+		    <ccStep>
+				<ccSubscriberState>
+					<subscriberRef>aPerson</subscriberRef>
+					<behaviorRef>randomcaller</behaviorRef>
+				</ccSubscriberState>
+			</ccStep>
+		</step>
+		<step name="B_calls_A_refused">
+		    <ccStep>
+				<ccSubscriberState>
+					<subscriberRef>aPerson</subscriberRef>
+					<behaviorRef>refuser</behaviorRef>
+				</ccSubscriberState>
+				<ccSubscriberState>
+					<subscriberRef>bPerson</subscriberRef>
+					<ccBehaviorSingleCall number="123456789011" duration="10000" />
+				</ccSubscriberState>
+			</ccStep>
+		</step>
+		<step name="B_calls_A_not_reachable">
+            <usStep>
+                <usSubscriberState>
+    				<subscriberRef>aPerson</subscriberRef>
+				    <behaviorRef>notReachable</behaviorRef>
+			    </usSubscriberState>
+			</usStep>
+
+		    <ccStep>
+				<ccSubscriberState>
+					<subscriberRef>aPerson</subscriberRef>
+					<behaviorRef>available</behaviorRef>
+				</ccSubscriberState>
+				<ccSubscriberState>
+					<subscriberRef>bPerson</subscriberRef>
+					<ccBehaviorSingleCall number="123456789011" duration="10000" />
+				</ccSubscriberState>
+			</ccStep>
+		</step>
+		<step name="removeSubscribers">
+		    <usStep>
+				<removeSubscriber>
+					<subscriberRef>aPerson</subscriberRef>
+				</removeSubscriber>
+		    </usStep>
+			<ccStep>
+				<!-- Cleans up the CC simulator by removing added subscribers-->
+				<removeSubscriber>
+					<subscriberRef>aPerson</subscriberRef>
+				</removeSubscriber>
+				<removeSubscriber>
+					<subscriberRef>bPerson</subscriberRef>
+				</removeSubscriber>
+				<removeSubscriber>
+					<subscriberRef>hungryPerson</subscriberRef>
+				</removeSubscriber>
+				<removeSubscriber>
+					<subscriberRef>pizzaRestaurant</subscriberRef>
+				</removeSubscriber>
+				<removeSubscriber>
+					<subscriberRef>subscriberGroup1</subscriberRef>
+				</removeSubscriber>
+			</ccStep>
+		</step>
+	</stepSet>
+	<programSet>
+		<program name="add subscribers">
+			<programStep seq="1">
+				<stepRef>addSubscribers</stepRef>
+				<delay>0</delay>
+			</programStep>
+		</program>
+		<program name="making call">	
+			<programStep seq="10">
+				<stepRef>A_calls_B_for_15_sec</stepRef>
+				<delay>0</delay>
+			</programStep>
+			<programStep seq="11">
+				<stepRef>A_makes_random_10_sec_calls</stepRef>
+				<delay>18000</delay>
+			</programStep>
+			<programStep seq="12">
+				<stepRef>B_calls_A_refused</stepRef>
+				<delay>30000</delay>
+			</programStep>
+			<programStep seq="13">
+				<stepRef>B_calls_A_not_reachable</stepRef>
+				<delay>5000</delay>
+			</programStep>
+		</program>
+		<program name="remove subscribers">	
+			<programStep seq="20">
+				<stepRef>removeSubscribers</stepRef>
+				<delay>5000</delay>
+			</programStep>
+		</program>
+	</programSet>
+</simulation>

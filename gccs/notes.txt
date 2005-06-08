@@ -44,3 +44,14 @@ class Example {
 5. For error reporting, we should always log the error message for debugging purpose
 	m_logger.error("<<<<Detail about error message here>>>>");
 	
+SIMULATION WITH NUMBER TRANSLATION
+In order to make demonstration about number translation with MiLife, we have to perform
+the following steps:
+1. Copy file aCallb.xml to folder %ISG_SDK%\etc\script\, where %ISG_SDK% is the installed
+directory of Milife SDK
+2. Start Milife SDK simulation tools, load script aCallb.xml
+3. Select program "add subscribers", run it (in Milife SDK)
+4. Start the monitor application (MyAppInit)
+5. In simulation tools, select program "making call", to make calls
+	you will see aPerson calling bPerson from the first step, but
+	if the number translation was started, the call will be routed to pizzaRestaurant
