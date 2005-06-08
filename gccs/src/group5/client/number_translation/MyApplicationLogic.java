@@ -29,13 +29,15 @@ import org.csapi.cc.gccs.TpCallReportRequest;
 
 /**
  * @author Nguyen Huu Hoa
- *
+ * 
  */
 public class MyApplicationLogic {
 	MyAppEventQueue osaEventQueue;
+
 	IpCallControlManager ipCCM;
+
 	String number;
-	
+
 	/**
 	 * m_logger for the system
 	 */
@@ -44,146 +46,112 @@ public class MyApplicationLogic {
 	static {
 		m_logger = Logger.getLogger(MyApplicationLogic.class);
 	}
-	MyApplicationLogic(IpCallControlManager ipCCM_param)
-	{
+
+	MyApplicationLogic(IpCallControlManager ipCCM_param) {
 		osaEventQueue = new MyAppEventQueue();
 		ipCCM = ipCCM_param;
-		number = "12345678900*";
+		number = "1234567890??";
 		start_logic();
 	}
-	void start_logic()
-	{
+
+	void start_logic() {
 		m_logger.info("Start monitoring number: " + number);
 		monitorOrigNumbers(ipCCM, new AppCallControlManager(this), number);
 		m_logger.info("Entering loop");
-		do 
-		{
+		do {
 			// wait for network events
 			MyAppEvent event = osaEventQueue.get();
 			// got event
-			m_logger.debug("Got event with eventID = " + event.eventInfo.CallEventName +
-					", from address " + event.eventInfo.OriginatingAddress.AddrString);
+			m_logger.debug("Got event with eventID = "
+					+ event.eventInfo.CallEventName + ", from address "
+					+ event.eventInfo.OriginatingAddress.AddrString);
 			// check event
-			if (event.eventInfo.CallEventName ==
-				P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value)
-			{
+			if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
 				// translate the address
 				String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
 				// route to new address
 				doRouteReq(event, addrString);
 				// deassign from call
 				doDeassignCall(event.callId);
-			}
-			else
-			{
+			} else {
 				m_logger.info("Unknown event");
 			}
 		} while (true);
 	}
+
 	public void callEventNotify(TpCallIdentifier callReference,
-			TpCallEventInfo eventInfo,
-			int assignmentID)
-	{
+			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.info("Call event notify");
-		osaEventQueue.put(new MyAppEvent(callReference, eventInfo, assignmentID));
+		osaEventQueue
+				.put(new MyAppEvent(callReference, eventInfo, assignmentID));
 	}
-	public void routeRes(int callSessionID,
-			TpCallReport eventReport,
-			int callLegSessionID)
-	{
+
+	public void routeRes(int callSessionID, TpCallReport eventReport,
+			int callLegSessionID) {
 		m_logger.error("Not implemented");
 	}
-	private void doRouteReq(MyAppEvent event, String newDestination)
-	{
+
+	private void doRouteReq(MyAppEvent event, String newDestination) {
 		int callLegSessionID = 0;
-		try
-		{
+		try {
 			callLegSessionID = event.callId.CallReference.routeReq(
-					event.callId.CallSessionID,
-					new TpCallReportRequest[0],
+					event.callId.CallSessionID, new TpCallReportRequest[0],
 					myAppCreateE164Address(newDestination),
 					event.eventInfo.OriginatingAddress,
 					event.eventInfo.OriginalDestinationAddress,
 					event.eventInfo.DestinationAddress,
 					event.eventInfo.CallAppInfo);
-		}
-		catch (P_INVALID_SESSION_ID ex)
-		{
+		} catch (P_INVALID_SESSION_ID ex) {
 			m_logger.error("Invalid session id, more " + ex.getMessage());
-		}
-		catch (P_UNSUPPORTED_ADDRESS_PLAN ex)
-		{
+		} catch (P_UNSUPPORTED_ADDRESS_PLAN ex) {
 			m_logger.error("Unsupported address plan, more " + ex.getMessage());
-		}
-		catch (P_INVALID_CRITERIA ex)
-		{
+		} catch (P_INVALID_CRITERIA ex) {
 			m_logger.error("Invalid criteria, more " + ex.getMessage());
-		}
-		catch (P_INVALID_ADDRESS ex)
-		{
+		} catch (P_INVALID_ADDRESS ex) {
 			m_logger.error("Invalid address, more " + ex.getMessage());
-		}
-		catch (P_INVALID_NETWORK_STATE ex)
-		{
+		} catch (P_INVALID_NETWORK_STATE ex) {
 			m_logger.error("Invalid network state, more " + ex.getMessage());
-		}
-		catch (P_INVALID_EVENT_TYPE ex)
-		{
+		} catch (P_INVALID_EVENT_TYPE ex) {
 			m_logger.error("Invalid event type, more " + ex.getMessage());
-		}
-		catch (TpCommonExceptions ex)
-		{
+		} catch (TpCommonExceptions ex) {
 			m_logger.error("Catch OSA exception, number: " + ex.ExceptionType);
 		}
 	}
-	private void doDeassignCall(TpCallIdentifier callID)
-	{
-		try
-		{
+
+	private void doDeassignCall(TpCallIdentifier callID) {
+		try {
 			callID.CallReference.deassignCall(callID.CallSessionID);
-		}
-		catch (P_INVALID_SESSION_ID ex)
-		{
-			m_logger.error("Invalid session ID exception, more: " + ex.getMessage());
-		}
-		catch (TpCommonExceptions ex)
-		{
+		} catch (P_INVALID_SESSION_ID ex) {
+			m_logger.error("Invalid session ID exception, more: "
+					+ ex.getMessage());
+		} catch (TpCommonExceptions ex) {
 			m_logger.error("Catch OSA exception, number: " + ex.ExceptionType);
 		}
 	}
+
 	private int monitorOrigNumbers(IpCallControlManager mgr,
-			AppCallControlManager appMgr,
-			String originating_address)
-	{
-		TpCallEventCriteria ec = createOrigEventCriteria (
-				originating_address, new String("*"),
-				P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value);
+			AppCallControlManager appMgr, String originating_address) {
+		TpCallEventCriteria ec = createOrigEventCriteria(originating_address,
+				new String("*"), P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value);
 		int assignment = 0;
 		m_logger.info("Calling enableCallNofitication()");
-		try
-		{
+		try {
 			assignment = mgr.enableCallNotification(appMgr.getServant(), ec);
-		}
-		catch (P_INVALID_INTERFACE_TYPE ex)
-		{
+		} catch (P_INVALID_INTERFACE_TYPE ex) {
 			m_logger.error("Invalid interface type: " + ex.getMessage());
-		}
-		catch (P_INVALID_EVENT_TYPE ex)
-		{
+		} catch (P_INVALID_EVENT_TYPE ex) {
 			m_logger.error("Invalid event type: " + ex.getMessage());
-		}
-		catch (P_INVALID_CRITERIA ex)
-		{
+		} catch (P_INVALID_CRITERIA ex) {
 			m_logger.error("Invalid criteria: " + ex.getMessage());
-		}
-		catch (TpCommonExceptions ex)
-		{
-			m_logger.error("Error in calling enableCallNofitication: " + ex.getMessage());
+		} catch (TpCommonExceptions ex) {
+			m_logger.error("Error in calling enableCallNofitication: "
+					+ ex.getMessage());
 		}
 		return assignment;
 	}
-	TpCallEventCriteria createOrigEventCriteria(String originating, String destination, int event_num)
-	{
+
+	TpCallEventCriteria createOrigEventCriteria(String originating,
+			String destination, int event_num) {
 		TpCallEventCriteria ec = new TpCallEventCriteria();
 		ec.DestinationAddress = myAppCreateE164AddressRange(destination);
 		ec.OriginatingAddress = myAppCreateE164AddressRange(originating);
@@ -192,8 +160,8 @@ public class MyApplicationLogic {
 		ec.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
 		return ec;
 	}
-	TpAddress myAppCreateE164Address(String address)
-	{
+
+	TpAddress myAppCreateE164Address(String address) {
 		TpAddress addr = new TpAddress();
 		addr.Plan = TpAddressPlan.P_ADDRESS_PLAN_E164;
 		addr.Presentation = TpAddressPresentation.P_ADDRESS_PRESENTATION_ALLOWED;
@@ -203,8 +171,8 @@ public class MyApplicationLogic {
 		addr.SubAddressString = new String("");
 		return addr;
 	}
-	TpAddressRange myAppCreateE164AddressRange(String address)
-	{
+
+	TpAddressRange myAppCreateE164AddressRange(String address) {
 		TpAddressRange addr = new TpAddressRange();
 		addr.Plan = TpAddressPlan.P_ADDRESS_PLAN_E164;
 		addr.AddrString = new String(address);
@@ -212,21 +180,28 @@ public class MyApplicationLogic {
 		addr.SubAddressString = new String("");
 		return addr;
 	}
-	String translateModulo10(String addressToTranslate)
-	{
+
+	String translateModulo10(String addressToTranslate) {
 		m_logger.info("Address to be translated: " + addressToTranslate);
-		int addrInt = Integer.parseInt(addressToTranslate);
-		String addressTranslated;
-		if (addrInt>10)
-		{
-			addrInt = addrInt % 10;
-			addressTranslated = Integer.toString(addrInt);
+		if (addressToTranslate.compareTo("123456789021") == 0) {
+			m_logger.info("Route to 000180074992");
+			return "000180074992";
 		}
-		else
-		{
-			addressTranslated = addressToTranslate; 
+
+		try {
+			int addrInt = Integer.parseInt(addressToTranslate);
+			String addressTranslated;
+			if (addrInt > 10) {
+				addrInt = addrInt % 10;
+				addressTranslated = Integer.toString(addrInt);
+			} else {
+				addressTranslated = addressToTranslate;
+			}
+			return addressTranslated;
+		} catch (NumberFormatException ex) {
+			m_logger.error("Invalid number format " + ex.getMessage());
 		}
-		return addressTranslated;
+		return addressToTranslate;
 	}
-	
+
 }

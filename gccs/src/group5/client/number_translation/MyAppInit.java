@@ -44,7 +44,7 @@ public class MyAppInit extends ApplicationFramework {
 	{
 		// run the application
 		BasicConfigurator.configure();
-    	System.setProperty("ORB.NameService", "corbaloc::localhost:2050/StandardNS/NameServer-POA/_root");
+    	System.setProperty("ORB.NameService", "corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root");
 		try
 		{
 			MyAppInit application = new MyAppInit();
