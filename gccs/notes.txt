@@ -19,8 +19,6 @@ e.g. ORBInitRef.NameService=corbaloc::localhost:2050/StandardNS/NameServer%2DPOA
 LOGGING
 for each class, one should include the logging capabilities to it by following steps:
 1. import logger:
-	import org.apache.log4j.BasicConfigurator;
-	import org.apache.log4j.Level;
 	import org.apache.log4j.Logger;
 2. declare logger member variable:
 class Example {
@@ -43,4 +41,6 @@ class Example {
 	if (m_logger.isDebugEnabled()) {
 		m_logger.debug("<<<<<Logging information here>>>>>>");
 	}
+5. For error reporting, we should always log the error message for debugging purpose
+	m_logger.error("<<<<Detail about error message here>>>>");
 	
