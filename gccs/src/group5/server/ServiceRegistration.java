@@ -20,7 +20,7 @@ public class ServiceRegistration {
 
 	private IpFwServiceRegistration registration;
 
-	private ServiceDescriptionHelper serviceDescriptionHelper;
+	private SCSProperties serviceDescriptionHelper;
 
 	private String serviceID;
 
@@ -30,17 +30,17 @@ public class ServiceRegistration {
 
 	private boolean registered;
 
-	public ServiceRegistration(FwSession theSession, Configuration config,
+	public ServiceRegistration(IpAccess theIPAccess, SCSProperties serviceProperties,
 			IpServiceInstanceLifecycleManager manager)
 			throws TpCommonExceptions, P_ACCESS_DENIED, P_INVALID_ACCESS_TYPE,
 			P_INVALID_INTERFACE_TYPE, P_INVALID_AUTH_TYPE, P_INVALID_DOMAIN_ID,
-			P_NO_ACCEPTABLE_ENCRYPTION_CAPABILITY, FwSessionException {
+			P_NO_ACCEPTABLE_ENCRYPTION_CAPABILITY {
 		registration = null;
 		announced = false;
 		registered = false;
 		this.manager = manager;
-		ipAccess = theSession.getAccess().getIpAccess();
-		serviceDescriptionHelper = new ServiceDescriptionHelper(config);
+		ipAccess = theIPAccess;
+		serviceDescriptionHelper = serviceProperties;
 	}
 
 	public String registerService() throws TpCommonExceptions, P_ACCESS_DENIED,
@@ -48,14 +48,14 @@ public class ServiceRegistration {
 			P_UNKNOWN_SERVICE_ID, P_PROPERTY_TYPE_MISMATCH,
 			P_DUPLICATE_PROPERTY_NAME, P_ILLEGAL_SERVICE_TYPE,
 			P_UNKNOWN_SERVICE_TYPE, P_MISSING_MANDATORY_PROPERTY,
-			P_SERVICE_TYPE_UNAVAILABLE, ConfigurationException {
+			P_SERVICE_TYPE_UNAVAILABLE {
 		if (!registered) {
 			org.csapi.IpInterface theInterface = ipAccess
 					.obtainInterface("P_REGISTRATION");
 			registration = IpFwServiceRegistrationHelper.narrow(theInterface);
-			serviceID = registration.registerService(serviceDescriptionHelper
-					.getServiceTypeName(), serviceDescriptionHelper
-					.getServicePropertyList());
+			serviceID = registration.registerService(
+					serviceDescriptionHelper.getServiceName(),
+					serviceDescriptionHelper.getServicePropertyList());
 			registered = true;
 		}
 		return serviceID;
