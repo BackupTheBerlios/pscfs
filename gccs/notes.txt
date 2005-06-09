@@ -55,3 +55,17 @@ directory of Milife SDK
 5. In simulation tools, select program "making call", to make calls
 	you will see aPerson calling bPerson from the first step, but
 	if the number translation was started, the call will be routed to pizzaRestaurant
+
+TROUBLESHOOTING
+1. When Application Framework can not initialized, one problem is the definition of the
+classpath, e.g with the following error description
+<<<Caused by: java.lang.NoClassDefFoundError: org/apache/avalon/framework/configuration/Configurable>>>
+The classpath should include:
+%JACORB_HOME%\lib\avalon-framework-4.1.5.jar;
+%JACORB_HOME%\lib\jacorb.jar;
+%JACORB_HOME%\lib\logkit-1.2.jar;
+%GROUP_HOME%\lib\parlay_interfaces-5.0.jar;
+%GROUP_HOME%\lib\log4j-1.2.9.jar;
+%GROUP_HOME%\bin\.
+
+
