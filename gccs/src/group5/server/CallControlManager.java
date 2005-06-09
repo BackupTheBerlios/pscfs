@@ -1,9 +1,9 @@
+package impl;
+
 import java.util.List;
 import org.apache.log4j.Category;
 import org.csapi.*;
-import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
-import org.csapi.cc.gccs.*;
 
 ///         CallNotifications, CallNotification, OSACallObserver, IpCallImpl, 
 //         IpCallControlManagerImpl
