@@ -5,12 +5,12 @@
 
 package impl;
 
-import group5.client.number_translation.MyApplicationLogic;
 import group5.CallControlEvent;
 import group5.CallControlException;
 import group5.CallControlListener;
 import group5.CallCriteria;
 import group5.TypeConverter;
+import group5.client.number_translation.MyApplicationLogic;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import org.csapi.cc.TpCallError;
 import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpAppCallControlManagerPOA;
+import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.omg.CORBA.SystemException;
