@@ -34,7 +34,7 @@ public final class OSACallObserver
  private static final int j = 23;
  private static final int v = 102;
  private int o;
- private CallNotification y;
+ private CallNotification callNotification;
  private IpAppCall g;
  private TpCallIdentifier q;
  private boolean f;
@@ -90,7 +90,6 @@ public final class OSACallObserver
                  OSACallObserver.i.info("application has responded within timeout period");
              }
          }
-
      }, IpCallImpl._mthdo());
  }
 

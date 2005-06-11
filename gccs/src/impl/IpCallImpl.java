@@ -94,10 +94,46 @@ public class IpCallImpl extends IpCallPOA {
 		
 		// K added
 		if(m_logger.isInfoEnabled())
-			m_logger.info(("route Request"));
+			m_logger.info(("Route Request"));
 		checkEnd();
 		routeError = null;
-		TpCallReportRequest tpCallReportReq[] = 
+		//TpCallReportRequest tpCallReportReq[] = 
+		try {
+			IpCallImpl.routReq(callSessionID, responseRequested, 
+			targetAddress, originalDestinationAddress, originatingAddress,
+			redirectingAddress, appInfo);
+			if (m_logger.isInfoEnabled())
+				m_logger.info("ipCall.routeReq successfully return!");
+			//targetAddress =
+		}
+		catch (P_INVALID_EVENT_TYPE ex1)
+		{
+			m_logger.error("Catch exception of P_INVALID_EVENT_TYPE with more information: " + ex1.getMessage());
+		}
+		catch (P_INVALID_NETWORK_STATE ex2)
+		{
+			m_logger.error("Catch exception of P_INVALID_NETWORK_STATE with more information: " + ex2.getMessage());
+		}
+		catch (TpCommonExceptions ex3)
+		{
+			m_logger.error("Error occurs: "+ex3.getMessage());
+		}
+		catch (P_INVALID_ADDRESS ex4)
+		{
+			m_logger.error("Error occurs:" + ex4.getMessage());
+		}
+		catch (P_INVALID_SESSION_ID ex5)
+		{
+			m_logger.error("Error occurs:" + ex5.getMessage());
+		}
+		catch (P_UNSUPPORTED_ADDRESS_PLAN ex6)
+		{
+			m_logger.error("Error occurs:" + ex6.getMessage());
+		}
+		catch (P_INVALID_CRITERIA ex7)
+		{
+			m_logger.error("Error occurs:" + ex7.getMessage());
+		}
 		return 0;
 	}
 
@@ -123,12 +159,14 @@ public class IpCallImpl extends IpCallPOA {
 		}
 		catch (P_INVALID_NETWORK_STATE ex2)
 		{
-			m_logger.error("Error occurs: "+ ex2.getMessage());
+			m_logger.error("Catch exception of P_INVALID_NETWORK_STATE with more information: " + ex2.getMessage());
 		}
 		catch (P_INVALID_SESSION_ID ex3)
 		{
-			m_logger.error("Error occurs: "+ ex3.getMessage());
+			m_logger.error("Catch exception of P_INVALID_SESSION_ID with more information: " + ex3.getMessage());
 		}
+		return 0;
+		
 	}
 
 	/* (non-Javadoc)
@@ -137,7 +175,22 @@ public class IpCallImpl extends IpCallPOA {
 	public void deassignCall(int callSessionID) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-
+		if(m_logger.isInfoEnabled())
+			m_logger.info("Entering release!");
+		IpCall localCopy = cleanupCall();
+		try{
+			localCopy.deassignCall(callSessionID);
+            cleanup(localCopy);
+		}
+		catch(TpCommonExceptions ex1)
+		{
+			m_logger.error("Error occurs: "+ex1.getMessage());
+		}
+		catch(P_INVALID_SESSION_ID ex2)
+		{
+			m_logger.error("Catch exception of P_INVALID_SESSION_ID with more information: " + ex2.getMessage());
+		}
+		
 	}
 
 	/* (non-Javadoc)
@@ -220,58 +273,32 @@ public class IpCallImpl extends IpCallPOA {
 	
 	// New
 	
-	 public void deassignCall(int i)
-     throws TpCommonExceptions, P_INVALID_SESSION_ID
-     {
-	     OSACallObserver osacallobserver = findCallObserver(i);
-	     osacallobserver.deassignCall(i);
-	     a(i);
-     }
-
-	 public void release(int i, TpCallReleaseCause tpcallreleasecause)
-     throws P_INVALID_NETWORK_STATE, TpCommonExceptions, P_INVALID_SESSION_ID
-	 {
-	     OSACallObserver osacallobserver = findCallObserver(i);
-	     osacallobserver.release(i, tpcallreleasecause);
-	     a(i);
-	 }
-	 
-	 public int routeReq(int i, TpCallReportRequest atpcallreportrequest[], TpAddress tpaddress, TpAddress tpaddress1, TpAddress tpaddress2, TpAddress tpaddress3, TpCallAppInfo atpcallappinfo[])
-     throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE, TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID, P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA
-	 {
-	     _fldint.debug("routeReq() Invoked.\n\tCallSessionID=" + i + "\n\tResponseRequested=" + a(atpcallreportrequest) + "\n\tTargetAddr=" + tpaddress.AddrString + "\n\tOrigAddr=" + tpaddress1.AddrString + "\n\tDestAddr=" + tpaddress2.AddrString + "\n\tRedAddr=" + tpaddress3.AddrString);
-	     OSACallObserver osacallobserver = findCallObserver(i);
-	     osacallobserver.routeReq(i, atpcallreportrequest, tpaddress, tpaddress1, tpaddress2, tpaddress3, atpcallappinfo);
-	     return osacallobserver.getCallSessionId();
-	 }
-
-	 private String a(TpCallReportRequest atpcallreportrequest[])
-	 {
-	     String s = "";
-	     if(atpcallreportrequest.length == 0)
-	     {
-	         s = s + "\n\t\tEmpty";
-	         return s;
-	     }
-	     for(int i = 0; i < atpcallreportrequest.length; i++)
-	         s = s + "\n\t\tTpCallReportRequest[" + i + "]=" + "\n\t\t\tMonitorMode=" + atpcallreportrequest[i].MonitorMode.value() + "\n\t\t\tCallReportType=" + atpcallreportrequest[i].CallReportType.value() + "\n\t\t\tAdditionalReportCriteria=" + atpcallreportrequest[i].AdditionalReportCriteria.discriminator().value();
-	
-	     return s;
-	 }
-
-	
 	
 	//Khuong added
 	
 	private synchronized IpCall cleanupCall()
 	throws CallControlException
     {
-	    checkEnded();
-	    IpCall result = ipCall;
-	    ipCall = null;
+//		try{
+			 checkEnded();
+			 IpCall result = ipCall;
+			 ipCall = null;
+//		}
+//		catch(CallControlException ex1)
+//		{
+//			m_logger.error("Error occurs: "+ex1.getMessage());
+//		}
 	    return result;
     }
 	
+	 private void cleanup(IpCall localCopy)
+	    {
+	        if(localCopy != null)
+	        {
+	            manager.callDone(callSessionID);
+	            localCopy._release();
+	        }
+	    }
 	private void checkEnded()
     throws CallControlException
     {
@@ -281,19 +308,21 @@ public class IpCallImpl extends IpCallPOA {
 	        return;
     }
 	
-	private int callSessionID;
-	private IpCall ipCall;
 	
 	//Chua sua
 	public static String _mthdo() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 	//Chua sua
 	public static CallContext getInstance() {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	}	
 	
+	private int callSessionID;
+	private IpCall ipCall;
+    private IpAppCallControlManagerImpl manager;
+    
 }
+	
