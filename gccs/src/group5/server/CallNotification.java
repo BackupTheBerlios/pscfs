@@ -1,187 +1,196 @@
 package impl;
 
-import org.apache.log4j.Category;
-import org.csapi.*;
+import org.apache.log4j.Logger;
+import org.csapi.IpInterface;
+import org.csapi.P_INVALID_ADDRESS;
+import org.csapi.P_INVALID_EVENT_TYPE;
+import org.csapi.P_INVALID_INTERFACE_TYPE;
+import org.csapi.TpAddressPlan;
 import org.csapi.cc.TpCallMonitorMode;
-import org.csapi.cc.gccs.*;
+import org.csapi.cc.gccs.IpAppCallControlManager;
+import org.csapi.cc.gccs.TpCallEventCriteria;
+import org.csapi.cc.gccs.TpCallEventInfo;
+import org.csapi.cc.gccs.TpCallIdentifier;
 
+final class CallNotification {
 
-final class CallNotification
-{
+	public CallNotification(IpCallControlManagerImpl ipcallcontrolmanagerimpl,
+			IpAppCallControlManager ipappcallcontrolmanager,
+			TpCallEventCriteria tpcalleventcriteria) throws P_INVALID_ADDRESS,
+			P_INVALID_EVENT_TYPE {
+		m_secondCallbackInterface = null;
+		m_logger.debug("New CallNotification being created");
+		ipCallManager = ipcallcontrolmanagerimpl;
+		m_firstCallbackInterface = ipappcallcontrolmanager;
+		checkEventType();
+		assignmentID = createAssignmentId();
+		callEventCriteria(tpcalleventcriteria);
+	}
 
- public CallNotification(IpCallControlManagerImpl ipcallcontrolmanagerimpl, IpAppCallControlManager ipappcallcontrolmanager, TpCallEventCriteria tpcalleventcriteria)
-     throws P_INVALID_ADDRESS, P_INVALID_EVENT_TYPE
- {
-     _flddo = null;
-     _fldfor.debug("New CallNotification being created");
-     _fldcase = ipcallcontrolmanagerimpl;
-     _fldint = ipappcallcontrolmanager;
-     _mthdo();
-     assignmentID = createAssignmentId();
-     callEventCriteria(tpcalleventcriteria);
- }
+	CallNotification(TpCallEventCriteria tpcalleventcriteria)
+			throws P_INVALID_ADDRESS, P_INVALID_EVENT_TYPE {
+		this(null, null, tpcalleventcriteria);
+	}
 
- CallNotification(TpCallEventCriteria tpcalleventcriteria)
-     throws P_INVALID_ADDRESS, P_INVALID_EVENT_TYPE
- {
-     this(null, null, tpcalleventcriteria);
- }
+	private boolean sameSourceAddr(CallNotification callnotification) {
+		return sourceAddress.equals(callnotification.sourceAddress);
+	}
 
- private boolean _mthdo(CallNotification callnotification)
- {
-     return _fldif.equals(callnotification._fldif);
- }
+	private boolean sameDestAddress(CallNotification callnotification) {
+		return destAddress.equals(callnotification.destAddress);
+	}
 
- private boolean a(CallNotification callnotification)
- {
-     return _fldbyte.equals(callnotification._fldbyte);
- }
+	private boolean sameAddrPlan(CallNotification callnotification) {
+		TpAddressPlan tpaddressplan = callEventCriteria.OriginatingAddress.Plan;
+		TpAddressPlan tpaddressplan1 = callEventCriteria.DestinationAddress.Plan;
+		TpAddressPlan tpaddressplan2 = callnotification.callEventCriteria.OriginatingAddress.Plan;
+		TpAddressPlan tpaddressplan3 = callnotification.callEventCriteria.DestinationAddress.Plan;
+		return tpaddressplan.value() == tpaddressplan2.value()
+				&& tpaddressplan1.value() == tpaddressplan3.value();
+	}
 
- private boolean _mthint(CallNotification callnotification)
- {
-     TpAddressPlan tpaddressplan = _fldtry.OriginatingAddress.Plan;
-     TpAddressPlan tpaddressplan1 = _fldtry.DestinationAddress.Plan;
-     TpAddressPlan tpaddressplan2 = callnotification._fldtry.OriginatingAddress.Plan;
-     TpAddressPlan tpaddressplan3 = callnotification._fldtry.DestinationAddress.Plan;
-     return tpaddressplan.value() == tpaddressplan2.value() && tpaddressplan1.value() == tpaddressplan3.value();
- }
+	private boolean sameNotificationType(CallNotification callnotification) {
+		return callEventCriteria.CallNotificationType.value() == callnotification.callEventCriteria.CallNotificationType
+				.value();
+	}
 
- private boolean _mthif(CallNotification callnotification)
- {
-     return _fldtry.CallNotificationType.value() == callnotification._fldtry.CallNotificationType.value();
- }
+	private boolean sameMonitorMode(CallNotification callnotification) {
+		return callnotification.callEventCriteria.MonitorMode == callEventCriteria.MonitorMode;
+	}
 
- private boolean _mthfor(CallNotification callnotification)
- {
-     return callnotification._fldtry.MonitorMode == _fldtry.MonitorMode;
- }
+	private boolean sameInterruptMode(CallNotification callnotification) {
+		return callnotification.callEventCriteria.MonitorMode == TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT
+				&& callEventCriteria.MonitorMode == TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
+	}
 
- private boolean _mthtry(CallNotification callnotification)
- {
-     return callnotification._fldtry.MonitorMode == TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT && _fldtry.MonitorMode == TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
- }
+	boolean sameCallNotification(CallNotification callnotification) {
+		if (ipCallManager != callnotification.ipCallManager
+				&& !sameInterruptMode(callnotification))
+			return false;
+		else
+			return sameMonitorMode(callnotification) && sameSourceAddr(callnotification)
+					&& sameDestAddress(callnotification) && sameAddrPlan(callnotification)
+					&& sameNotificationType(callnotification);
+	}
 
- boolean _mthnew(CallNotification callnotification)
- {
-     if(_fldcase != callnotification._fldcase && !_mthtry(callnotification))
-         return false;
-     else
-         return _mthfor(callnotification) && _mthdo(callnotification) && a(callnotification) && _mthint(callnotification) && _mthif(callnotification);
- }
+	private boolean matchCriteria(TpCallEventCriteria tpcalleventcriteria,
+			TpCallEventCriteria tpcalleventcriteria1) {
+		return tpcalleventcriteria.CallEventName == tpcalleventcriteria1.CallEventName
+				&& tpcalleventcriteria.CallNotificationType == tpcalleventcriteria1.CallNotificationType
+				&& tpcalleventcriteria.DestinationAddress.AddrString
+						.equals(tpcalleventcriteria1.DestinationAddress.AddrString)
+				&& tpcalleventcriteria.DestinationAddress.Plan == tpcalleventcriteria1.DestinationAddress.Plan
+				&& tpcalleventcriteria.OriginatingAddress.AddrString
+						.equals(tpcalleventcriteria1.OriginatingAddress.AddrString)
+				&& tpcalleventcriteria.OriginatingAddress.Plan == tpcalleventcriteria1.OriginatingAddress.Plan
+				&& tpcalleventcriteria.MonitorMode == tpcalleventcriteria1.MonitorMode;
+	}
 
- private boolean a(TpCallEventCriteria tpcalleventcriteria, TpCallEventCriteria tpcalleventcriteria1)
- {
-     return tpcalleventcriteria.CallEventName == tpcalleventcriteria1.CallEventName && tpcalleventcriteria.CallNotificationType == tpcalleventcriteria1.CallNotificationType && tpcalleventcriteria.DestinationAddress.AddrString.equals(tpcalleventcriteria1.DestinationAddress.AddrString) && tpcalleventcriteria.DestinationAddress.Plan == tpcalleventcriteria1.DestinationAddress.Plan && tpcalleventcriteria.OriginatingAddress.AddrString.equals(tpcalleventcriteria1.OriginatingAddress.AddrString) && tpcalleventcriteria.OriginatingAddress.Plan == tpcalleventcriteria1.OriginatingAddress.Plan && tpcalleventcriteria.MonitorMode == tpcalleventcriteria1.MonitorMode;
- }
+	public boolean exactlyMatchesCriteria(CallNotification callnotification) {
+		return ipCallManager == callnotification.ipCallManager
+				&& matchCriteria(callEventCriteria, callnotification.callEventCriteria);
+	}
 
- public boolean exactlyMatchesCriteria(CallNotification callnotification)
- {
-     return _fldcase == callnotification._fldcase && a(_fldtry, callnotification._fldtry);
- }
+	public int getAssignmentId() {
+		return assignmentID;
+	}
 
- public int getAssignmentId()
- {
-     return assignmentID;
- }
+	public void setFallback(CallNotification callnotification) {
+		if (callnotification.m_firstCallbackInterface != m_firstCallbackInterface) {
+			m_secondCallbackInterface = m_firstCallbackInterface;
+			m_firstCallbackInterface = callnotification.m_firstCallbackInterface;
+		}
+	}
 
- public void setFallback(CallNotification callnotification)
- {
-     if(callnotification._fldint != _fldint)
-     {
-         _flddo = _fldint;
-         _fldint = callnotification._fldint;
-     }
- }
+	public boolean hasManager(IpCallControlManagerImpl ipcallcontrolmanagerimpl) {
+		return ipCallManager == ipcallcontrolmanagerimpl;
+	}
 
- public boolean hasManager(IpCallControlManagerImpl ipcallcontrolmanagerimpl)
- {
-     return _fldcase == ipcallcontrolmanagerimpl;
- }
+	public IpInterface eventNotify(TpCallIdentifier tpcallidentifier,
+			TpCallEventInfo tpcalleventinfo) {
+		return m_firstCallbackInterface.callEventNotify(tpcallidentifier,
+				tpcalleventinfo, assignmentID);
+	}
 
- public IpInterface eventNotify(TpCallIdentifier tpcallidentifier, TpCallEventInfo tpcalleventinfo)
- {
-     return _fldint.callEventNotify(tpcallidentifier, tpcalleventinfo, assignmentID);
- }
+	public IpInterface eventNotifyFallback(TpCallIdentifier tpcallidentifier,
+			TpCallEventInfo tpcalleventinfo) {
+		return m_secondCallbackInterface.callEventNotify(tpcallidentifier,
+				tpcalleventinfo, assignmentID);
+	}
 
- public IpInterface eventNotifyFallback(TpCallIdentifier tpcallidentifier, TpCallEventInfo tpcalleventinfo)
- {
-     return _flddo.callEventNotify(tpcallidentifier, tpcalleventinfo, assignmentID);
- }
+	public boolean isActiveListener() {
+		return callEventCriteria == null ? false
+				: callEventCriteria.MonitorMode.value() == 0;
+	}
 
- public boolean isActiveListener()
- {
-     return _fldtry == null ? false : _fldtry.MonitorMode.value() == 0;
- }
+	public static int createAssignmentId() {
+		return staticAssignmentID != 0x7fffffff ? staticAssignmentID++ : 0;
+	}
 
- public static int createAssignmentId()
- {
-     return _fldnew != 0x7fffffff ? _fldnew++ : 0;
- }
+	void checkInterfaceType() throws P_INVALID_INTERFACE_TYPE {
+	}
 
- void a()
-     throws P_INVALID_INTERFACE_TYPE
- {
- }
+	void checkEventType() throws P_INVALID_EVENT_TYPE {
+	}
 
- void _mthdo()
-     throws P_INVALID_EVENT_TYPE
- {
- }
+	/**
+	 * getCallEventCriteria
+	 */
+	TpCallEventCriteria _mthif() {
+		return callEventCriteria;
+	}
 
- TpCallEventCriteria _mthif()
- {
-     return _fldtry;
- }
+	void callEventCriteria(TpCallEventCriteria tpcalleventcriteria)
+			throws P_INVALID_ADDRESS {
+		callEventCriteria = tpcalleventcriteria;
+		sourceAddress = new String(
+				tpcalleventcriteria.OriginatingAddress.AddrString);
+		destAddress = new String(
+				tpcalleventcriteria.DestinationAddress.AddrString);
+	}
 
- void callEventCriteria(TpCallEventCriteria tpcalleventcriteria)
-     throws P_INVALID_ADDRESS
- {
-     _fldtry = tpcalleventcriteria;
-     _fldif = new String(tpcalleventcriteria.OriginatingAddress.AddrString);
-     _fldbyte = new String(tpcalleventcriteria.DestinationAddress.AddrString);
- }
+	boolean callContext(CallContext callcontext) {
+		 return ((sourceAddress.compareTo(callcontext.getOriginatorNumber())==0) &&
+				 (destAddress.compareTo(callcontext.getDestinationNumber())==0));
+	}
 
- boolean callContext(CallContext callcontext)
- {
-     return _fldif.callContext(callcontext.getOriginatorNumber()) && _fldbyte.callContext(callcontext.getDestinationNumber());
-     P_INVALID_ADDRESS p_invalid_address;
-     //p_invalid_address;
-     _fldfor.error("No match for " + callcontext, p_invalid_address);
-     return false;
- }
+	public void reset() {
+		if (m_firstCallbackInterface != null) {
+			m_firstCallbackInterface._release();
+			m_firstCallbackInterface = null;
+		}
+		if (m_secondCallbackInterface != null) {
+			m_secondCallbackInterface._release();
+			m_secondCallbackInterface = null;
+		}
+		callEventCriteria = null;
+		sourceAddress = null;
+		destAddress = null;
+		ipCallManager = null;
+	}
 
- public void reset()
- {
-     if(_fldint != null)
-     {
-         _fldint._release();
-         _fldint = null;
-     }
-     if(_flddo != null)
-     {
-         _flddo._release();
-         _flddo = null;
-     }
-     _fldtry = null;
-	  _fldif = null;
-     _fldbyte = null;
-     _fldcase = null;
- }
+	public String toString() {
+		return "CallNotification: src=" + sourceAddress + " dest="
+				+ destAddress + " hasFallback="
+				+ (m_secondCallbackInterface != null);
+	}
 
- public String toString()
- {
-     return "CallNotification: src=" + _fldif + " dest=" + _fldbyte + " hasFallback=" + (_flddo != null);
- }
+	private static Logger m_logger = Logger.getLogger(CallNotification.class);
 
-  private static Category _fldfor;
- private static int _fldnew = 0;
- private int assignmentID;
- private IpAppCallControlManager _fldint;
- private IpAppCallControlManager _flddo;
- private TpCallEventCriteria _fldtry;
- private String _fldif;
- private String _fldbyte;
- private IpCallControlManagerImpl _fldcase;
+	private static int staticAssignmentID = 0;
 
- 
+	private int assignmentID;
+
+	private IpAppCallControlManager m_firstCallbackInterface;
+
+	private IpAppCallControlManager m_secondCallbackInterface;
+
+	private TpCallEventCriteria callEventCriteria;
+
+	private String sourceAddress;
+
+	private String destAddress;
+
+	private IpCallControlManagerImpl ipCallManager;
+
 }
