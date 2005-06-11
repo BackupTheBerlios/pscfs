@@ -50,7 +50,14 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	private IpCallControlManager ipCallControlManager;
 	private HashMap administration;	
 	private String C;
-
+	private int CallSessionID;
+	
+	private synchronized int getCallSessionID()
+	{
+		CallSessionID++;
+		return CallSessionID;
+	}
+	private HashMap mapIpCall;
 	/**
 	 * 
 	 */
@@ -83,7 +90,8 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		
 		org.csapi.cc.gccs.TpCallIdentifier ci = new TpCallIdentifier();
 		ci.CallReference = aCallReference._this();
-		ci.CallSessionID = 0; //TODO: set appropriated value here
+		ci.CallSessionID = getCallSessionID();
+		mapIpCall.put(new Integer(ci.CallSessionID), aCallReference);
 		return ci;
 	}
 
@@ -110,8 +118,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			{
 				 callEventCriteria(eventCriteria);
 			     CallNotification callnotification = new CallNotification(this, appCallControlManager, eventCriteria);
-//				 Old command			     
-//			     CallNotification callnotification = new CallNotification(this, a(ipappcallcontrolmanager) ? A : ipappcallcontrolmanager, tpcalleventcriteria);			     
 			     return CallControlManager.getInstance().addCallNotification(callnotification);
 			}
 			catch (P_INVALID_CRITERIA e)

@@ -1,9 +1,10 @@
 package impl;
 
 import java.util.List;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.csapi.*;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
+import org.csapi.cc.gccs.TpCallEventCriteria;
 
 ///         CallNotifications, CallNotification, OSACallObserver, IpCallImpl, 
 //         IpCallControlManagerImpl
@@ -14,35 +15,38 @@ import org.csapi.cc.gccs.TpCallEventCriteriaResult;
  */
 public final class CallControlManager
 {
+	 private static Logger m_logger=Logger.getLogger(CallControlManager.class);
+	 private static CallControlManager collControlMager = new CallControlManager();
+	 private CallNotifications callNotification;
 
  private CallControlManager()
  {
-     _fldgoto = new CallNotifications();
+	 callNotification = new CallNotifications();
  }
 
  public static CallControlManager getInstance()
  {
-     return _fldelse;
+     return collControlMager;
  }
 
  public TpCallEventCriteriaResult[] getCallEventCriteria(IpCallControlManagerImpl ipcallcontrolmanagerimpl)
  {
-     return _fldgoto.getCallEventCriteria(ipcallcontrolmanagerimpl);
+     return callNotification.getCallEventCriteria(ipcallcontrolmanagerimpl);
  }
 
  public int addCallNotification(CallNotification callnotification)
      throws P_INVALID_INTERFACE_TYPE, P_INVALID_EVENT_TYPE, TpCommonExceptions, P_INVALID_CRITERIA
  {
-     List list = _fldgoto.addCallNotification(callnotification);
+     List list = callNotification.addCallNotification(callnotification);
      if(list.size() > 0)
      {
-         _fldlong.debug("call notification " + callnotification.getAssignmentId() + " overlaps");
+    	 m_logger.debug("call notification " + callnotification.getAssignmentId() + " overlaps");
          if(list.size() == 1)
          {
              CallNotification callnotification1 = (CallNotification)list.get(0);
              if(callnotification1.exactlyMatchesCriteria(callnotification))
              {
-                 _fldlong.debug("  Perfect match. Setting fallback interface...");
+            	 m_logger.debug("  Perfect match. Setting fallback interface...");
                  callnotification1.setFallback(callnotification);
                  return callnotification1.getAssignmentId();
              }
@@ -54,53 +58,72 @@ public final class CallControlManager
      }
  }
 
- public void disableCallNotification(int i)
+ public void disableCallNotification(int assignmentID)
      throws P_INVALID_ASSIGNMENT_ID, TpCommonExceptions
  {
-     CallNotification callnotification = _fldgoto._mthif(i);
+     CallNotification callnotification = callNotification.getCallNotification(assignmentID);
      if(callnotification != null)
          callnotification.reset();
      else
-         throw new P_INVALID_ASSIGNMENT_ID(Integer.toString(i));
+         throw new P_INVALID_ASSIGNMENT_ID(Integer.toString(assignmentID));
  }
 
- /*public void changeCallNotification(int i, TpCallEventCriteria tpcalleventcriteria)
+ public void changeCallNotification(int assignmentID, TpCallEventCriteria tpcalleventcriteria)
      throws P_INVALID_ASSIGNMENT_ID, P_INVALID_EVENT_TYPE, TpCommonExceptions, P_INVALID_CRITERIA
  {
-     CallNotification callnotification = _fldgoto.a(i);
-     if(callnotification == null) goto _L2; else goto _L1
-_L1:
-     List list;
-     CallNotification callnotification1 = new CallNotification(tpcalleventcriteria);
-     list = _fldgoto.findOverlapping(callnotification1);
-     list.size();
-     JVM INSTR lookupswitch 2: default 180
- //                   0: 68
- //                   1: 109;
-        goto _L3 _L4 _L5
-_L4:
-     _fldlong.debug("call notification " + callnotification.getAssignmentId() + " has no overlap, setting event criteria...");
-     callnotification.a(tpcalleventcriteria);
-       goto _L6
-_L5:
-     CallNotification callnotification2;
-     _fldlong.debug("call notification " + callnotification.getAssignmentId() + " has overlap.");
-     callnotification2 = (CallNotification)list.get(0);
-     if(callnotification2.getAssignmentId() != i) goto _L3; else goto _L7
-_L7:
-     _fldlong.debug("  Assignment ids match, setting event criteria...");
-     callnotification.a(tpcalleventcriteria);
-       goto _L6
-_L3:
-     throw new P_INVALID_CRITERIA("Overlapping registration");
-     P_INVALID_ADDRESS p_invalid_address;
-     p_invalid_address;
-     throw new P_INVALID_CRITERIA("Invalid address encountered in event criteria");
-_L2:
-     throw new P_INVALID_ASSIGNMENT_ID(Integer.toString(i));
-_L6:
+	 try
+	 {
+     CallNotification callnotification = callNotification.getCallNotification(assignmentID);
+     if(callnotification != null)
+     {
+	 	 List list;
+	     CallNotification callnotification1 = new CallNotification(tpcalleventcriteria);
+	     list = callNotification.findOverlapping(callnotification1);
+	     list.size();
+	     if (list.size()==2)
+	     {
+    		
+        	 throw new P_INVALID_CRITERIA("Assignment ids match, setting event criteria...");
+	     }    
+	     else
+	     { 	if (list.size()==0)
+		     {
+	    	 	m_logger.debug("call notification " + callnotification.getAssignmentId() + " has no overlap, setting event criteria...");
+	    	 	callnotification.callEventCriteria(tpcalleventcriteria);
+	    	 	
+		     }
+		     else
+		     {
+			    CallNotification callnotification2;
+			    m_logger.debug("call notification " + callnotification.getAssignmentId() + " has overlap.");
+			    callnotification2 = (CallNotification)list.get(0);
+			    if(callnotification2.getAssignmentId() != assignmentID)
+			    {
+					 String msgErr= "Assignment ids match, setting event criteria...";	
+			    	 m_logger.debug(msgErr );
+			    	 throw new P_INVALID_CRITERIA(msgErr);
+			    }
+			    else
+			    {
+				    m_logger.debug("  Assignment ids match, setting event criteria...");
+			        callnotification.callEventCriteria(tpcalleventcriteria);
+		        }
+		     }
+		 }
+     }
+     else
+     {
+    	 throw new P_INVALID_ASSIGNMENT_ID(Integer.toString(assignmentID));
+     }
+	 }
+	 catch (P_INVALID_ADDRESS e)
+	 {
+		 String msgErr= "Invalid valid address" + e.ExtraInformation;	
+    	 m_logger.debug(msgErr );
+    	 throw new TpCommonExceptions(msgErr,10,"changeCallNotification");
+	 }
  }
-
+/*
  public void onAddSubscriber(CCSubscriberGroup ccsubscribergroup)
  {
  }
@@ -126,16 +149,11 @@ _L6:
 
  public void onStateCleared()
  {
-     _fldgoto.clearState();
+	 callNotification.clearState();
  }
 
  /*public void onPowerSwitch(CCSubscriberGroup ccsubscribergroup, boolean flag)
  {
  }*/
-
- 
- private static Category _fldlong;
- private static CallControlManager _fldelse = new CallControlManager();
- private CallNotifications _fldgoto;
 
 }
