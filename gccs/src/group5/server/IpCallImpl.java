@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.11 2005/06/12 22:24:03 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.12 2005/06/12 22:33:05 huuhoa Exp $
 /**
  * 
  */
@@ -25,7 +25,8 @@ import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReportRequest;
 
 /**
- * @author Nguyen Duc Du Khuong Represent each call session by IpCallImpl object
+ * Represent each call session by IpCallImpl object
+ * @author Nguyen Duc Du Khuong 
  */
 
 public class IpCallImpl extends IpCallPOA {
@@ -36,7 +37,8 @@ public class IpCallImpl extends IpCallPOA {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Khuong added 9.28pm 07.06 / /** m_logger for the system
+	 * Khuong added 9.28pm 07.06
+	 * logger for the system
 	 */
 	static Logger m_logger;
 

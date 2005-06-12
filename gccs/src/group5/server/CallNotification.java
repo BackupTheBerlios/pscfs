@@ -1,4 +1,4 @@
-//$Id: CallNotification.java,v 1.3 2005/06/12 22:24:03 huuhoa Exp $
+//$Id: CallNotification.java,v 1.4 2005/06/12 22:33:05 huuhoa Exp $
 package impl;
 
 import org.apache.log4j.Logger;

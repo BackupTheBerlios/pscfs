@@ -1,4 +1,7 @@
-// $Id: CallControlError.java,v 1.3 2005/06/12 22:33:05 huuhoa Exp $
+// $Id: CallControlError.java,v 1.4 2005/06/12 22:34:07 huuhoa Exp $
+/**
+ * 
+ */
 package group5;
 
 import java.io.Serializable;
