@@ -79,9 +79,21 @@ public class IpCallImpl extends IpCallPOA {
 
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
-				originatingAddress, CallEvent.eventRouteReq, 0);
+				originatingAddress, CallEvent.eventRouteReq, null, null, 0);
+				
+				
 		queue.put(evtCall);
-		return callSessionID;
+		
+		
+		
+		/**
+		 *Returns callLegSessionID: Specifies the sessionID assigned by the gateway. 
+		 *This is the sessionID of the implicitly created call leg. The same ID 
+		 *will be returned in the routeRes or Err. This allows the application 
+		 *to correlate the request and the result. 
+		 */
+		return callLegSessionID;
+		
 		// // K added
 		// if(m_m_logger.isInfoEnabled())
 		// m_m_logger.info(("Route Request"));
@@ -142,8 +154,10 @@ public class IpCallImpl extends IpCallPOA {
 		// Khuong added
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventReleaseCall, 0);
+				null, CallEvent.eventRouteReq, null, null, 0);
 		queue.put(evtCall);
+
+		
 
 //		if (m_logger.isInfoEnabled())
 //			m_logger.info("Entering release!");
@@ -176,8 +190,9 @@ public class IpCallImpl extends IpCallPOA {
 		// TODO Auto-generated method stub
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventDeassignCall, 0);
+				null, CallEvent.eventRouteReq, null, null, 0);
 		queue.put(evtCall);
+		
 		
 //		if (m_logger.isInfoEnabled())
 //			m_logger.info("Entering release!");

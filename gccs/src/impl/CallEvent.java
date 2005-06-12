@@ -1,9 +1,9 @@
 package impl;
 
 
-
-
 import org.csapi.TpAddress;
+import org.csapi.cc.TpCallError;
+import org.csapi.cc.gccs.TpCallReport;
 
 
 /**
@@ -14,8 +14,7 @@ public class CallEvent {
 	/**
 	 * 
 	 */
-	//public TpCallIdentifier callId;
-	//public TpCallEventInfo eventInfo;
+
 	public int CallSessionID;
 	public TpAddress targetAddress;
 	public TpAddress originatingAddress;
@@ -31,17 +30,43 @@ public class CallEvent {
 	public static final int eventRouteReq = 1;
 	public static final int eventDeassignCall = 2;
 	public static final int eventReleaseCall = 3;
-	public int eventID;
-
+	
+	/**
+	 * Specifies the result of the request to route the call to the destination 
+	 * party. It also includes the network event, date and 
+	 * time, monitoring mode and event specific information such as release cause
+	 */
+	public TpCallReport eventReport;
+	
+	/**
+	 * Specifies the sessionID of the associated call leg. This corresponds 
+	 * to the sessionID returned at the routeReq() and can 
+	 * be used to correlate the response with the request.
+	 */
+	public int callLegSessionID;
+	
+	/**
+	 * Specifies the error which led to the original request failing.
+	 */
+	public TpCallError errorIndication;
+	
 	/**
 	 * 
 	 * @throws org.omg.CORBA.BAD_PARAM throw when eventType is not valid
 	 */
-	CallEvent ( int CallSession_ID, TpAddress targetAddr, TpAddress origAddr, int eventType,
-		int eventID ) throws org.omg.CORBA.BAD_PARAM {
+	CallEvent ( int CallSession_ID, TpAddress targetAddr, TpAddress origAddr, 
+			int event_Type, TpCallReport event_Report, TpCallError error ,int callLegsssion_ID)
+			throws org.omg.CORBA.BAD_PARAM
+			{
+		
 		CallSessionID = CallSession_ID;
 		targetAddress = targetAddr;
 		originatingAddress = origAddr;
+		eventType = event_Type;
+		eventReport = event_Report;
+		errorIndication = error;
+		callLegSessionID = callLegsssion_ID;
+		
 		switch (eventType)
 		{
 		case eventRouteReq:
@@ -52,6 +77,5 @@ public class CallEvent {
 		default:
 			throw new org.omg.CORBA.BAD_PARAM();
 		}
-		this.eventID = eventID;
 	}
 }
