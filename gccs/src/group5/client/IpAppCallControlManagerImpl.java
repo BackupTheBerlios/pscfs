@@ -1,3 +1,4 @@
+//$Id: IpAppCallControlManagerImpl.java,v 1.11 2005/06/12 22:24:03 huuhoa Exp $
 /**
  * IpAppCallControlManagerImpl: Implementation of the interface IpAppCallControlManager
  * This class will manage the calls from the application's side 
@@ -133,8 +134,7 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 					+ "," + Integer.toString(assignmentID) + ")");
 		if (m_logger.isInfoEnabled())
 			m_logger.info("Trying to create notifyApplication thread!");
-		try
-		{
+		try {
 			final IpCallImpl call = findCreateCall(callReference, eventInfo);
 			final int CallEventName = eventInfo.CallEventName;
 			// further push event notification
@@ -145,26 +145,26 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 					}
 
 				}).start();
-		}
-		catch (P_INVALID_INTERFACE_TYPE ex)
-		{
+		} catch (P_INVALID_INTERFACE_TYPE ex) {
 			if (m_logger.isInfoEnabled())
-				m_logger.info("Catch exception of P_INVALID_INTERFACE_TYPE with more information: " + ex.getMessage());
-		}
-		catch (P_INVALID_SESSION_ID ex)
-		{
+				m_logger
+						.info("Catch exception of P_INVALID_INTERFACE_TYPE with more information: "
+								+ ex.getMessage());
+		} catch (P_INVALID_SESSION_ID ex) {
 			if (m_logger.isInfoEnabled())
-				m_logger.info("Catch exception of P_INVALID_SESSION_ID with more information: " + ex.getMessage());
-		}
-		catch (TpCommonExceptions ex)
-		{
+				m_logger
+						.info("Catch exception of P_INVALID_SESSION_ID with more information: "
+								+ ex.getMessage());
+		} catch (TpCommonExceptions ex) {
 			if (m_logger.isInfoEnabled())
-				m_logger.info("Catch exception of TpCommonExceptions with more information: " + ex.getMessage());
+				m_logger
+						.info("Catch exception of TpCommonExceptions with more information: "
+								+ ex.getMessage());
 		}
 		if (m_logger.isInfoEnabled())
 			m_logger.info("After create notifyApplication thread!");
-		return callCriteria.isInterruptMode() ? ipAppCallImpl.getServant()._this()
-				: null;
+		return callCriteria.isInterruptMode() ? ipAppCallImpl.getServant()
+				._this() : null;
 		//
 		// System.out.println("IpAppCallControlManager.callEventNotify() is
 		// called with callReference=" + callReference);
@@ -225,9 +225,8 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 
 	public IpAppCallControlManagerImpl(IpCallControlManagerImpl ccManager,
 			TpCallEventCriteria criteria
-			//, CallControlListener listener
-			)
-			throws CallControlException {
+	// , CallControlListener listener
+	) throws CallControlException {
 		ipAppCallControlManager = null;
 		callControlListener = null;
 		callAdministration = null;
@@ -235,8 +234,8 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering IpAppCallControlManagerImpl Construction!");
 		this.ccManager = ccManager;
-//		callCriteria = criteria;
-		//callControlListener = listener;
+		// callCriteria = criteria;
+		// callControlListener = listener;
 		callAdministration = Collections.synchronizedMap(new HashMap());
 		ipAppCallImpl = new IpAppCallImpl(ccManager, this);
 		try {
@@ -291,24 +290,20 @@ public class IpAppCallControlManagerImpl extends IpAppCallControlManagerPOA {
 		// call.setError(error);
 		if (m_logger.isInfoEnabled())
 			m_logger.info("Trying to deassign the call when Event.CALL_ENDED!");
-		if (ofEvent == 1024)
-		{
-			try
-			{
+		if (ofEvent == 1024) {
+			try {
 				/**
 				 * @TODO: assign the call session ID
 				 */
 				call.deassignCall(0);
-			}
-			catch (org.csapi.P_INVALID_SESSION_ID ex)
-			{
+			} catch (org.csapi.P_INVALID_SESSION_ID ex) {
 				if (m_logger.isInfoEnabled())
-					m_logger.info("Common exception with information: " + ex.getMessage());
-			}
-			catch (TpCommonExceptions ex)
-			{
+					m_logger.info("Common exception with information: "
+							+ ex.getMessage());
+			} catch (TpCommonExceptions ex) {
 				if (m_logger.isInfoEnabled())
-					m_logger.info("Common exception with information: " + ex.getMessage());
+					m_logger.info("Common exception with information: "
+							+ ex.getMessage());
 			}
 		}
 		if (m_logger.isInfoEnabled())

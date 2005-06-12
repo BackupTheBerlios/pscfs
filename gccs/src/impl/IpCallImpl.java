@@ -1,3 +1,4 @@
+//$Id: IpCallImpl.java,v 1.11 2005/06/12 22:24:03 huuhoa Exp $
 /**
  * 
  */
@@ -22,7 +23,6 @@ import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReportRequest;
-
 
 /**
  * @author Nguyen Duc Du Khuong Represent each call session by IpCallImpl object
@@ -92,7 +92,7 @@ public class IpCallImpl extends IpCallPOA {
 		 *will be returned in the routeRes or Err. This allows the application 
 		 *to correlate the request and the result. 
 		 */
-		return callLegSessionID;
+		return 0;
 		
 		// // K added
 		// if(m_m_logger.isInfoEnabled())
@@ -115,7 +115,8 @@ public class IpCallImpl extends IpCallPOA {
 		// }
 		// catch (P_INVALID_NETWORK_STATE ex2)
 		// {
-		// m_m_logger.error("Catch exception of P_INVALID_NETWORK_STATE with more
+		// m_m_logger.error("Catch exception of P_INVALID_NETWORK_STATE with
+		// more
 		// information: " + ex2.getMessage());
 		// }
 		// catch (TpCommonExceptions ex3)
@@ -154,29 +155,8 @@ public class IpCallImpl extends IpCallPOA {
 		// Khuong added
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventRouteReq, null, null, 0);
+				null, CallEvent.eventReleaseCall, null, null, 0);
 		queue.put(evtCall);
-
-		
-
-//		if (m_logger.isInfoEnabled())
-//			m_logger.info("Entering release!");
-//		IpCall localCopy = cleanupCall();
-//		try {
-//			localCopy.release(callSessionID, new TpCallReleaseCause());
-//			cleanupCall();
-//		} catch (TpCommonExceptions ex1) {
-//			m_logger.error("Error occurs: " + ex1.getMessage());
-//		} catch (P_INVALID_NETWORK_STATE ex2) {
-//			m_logger
-//					.error("Catch exception of P_INVALID_NETWORK_STATE with more information: "
-//							+ ex2.getMessage());
-//		} catch (P_INVALID_SESSION_ID ex3) {
-//			m_logger
-//					.error("Catch exception of P_INVALID_SESSION_ID with more information: "
-//							+ ex3.getMessage());
-//		}
-//		return 0;
 
 	}
 
@@ -190,23 +170,8 @@ public class IpCallImpl extends IpCallPOA {
 		// TODO Auto-generated method stub
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventRouteReq, null, null, 0);
+				null, CallEvent.eventDeassignCall, null, null, 0);
 		queue.put(evtCall);
-		
-		
-//		if (m_logger.isInfoEnabled())
-//			m_logger.info("Entering release!");
-//		IpCall localCopy = cleanupCall();
-//		try {
-//			localCopy.deassignCall(callSessionID);
-//			cleanup(localCopy);
-//		} catch (TpCommonExceptions ex1) {
-//			m_logger.error("Error occurs: " + ex1.getMessage());
-//		} catch (P_INVALID_SESSION_ID ex2) {
-//			m_logger
-//					.error("Catch exception of P_INVALID_SESSION_ID with more information: "
-//							+ ex2.getMessage());
-//		}
 	}
 
 	/*

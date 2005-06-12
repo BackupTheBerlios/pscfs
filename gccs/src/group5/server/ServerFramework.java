@@ -1,3 +1,4 @@
+//$Id: ServerFramework.java,v 1.3 2005/06/12 22:24:04 huuhoa Exp $
 /**
  * 
  */
@@ -377,9 +378,13 @@ public class ServerFramework {
 
 	/**
 	 * Register new service with OSA framework
-	 * @param serviceTypeName "P_GENERIC_CALL_CONTROL" in case of generic call control
-	 * @param scsproperties List of service capability properties
-	 * @param class1 Class of the interface life cycle manager
+	 * 
+	 * @param serviceTypeName
+	 *            "P_GENERIC_CALL_CONTROL" in case of generic call control
+	 * @param scsproperties
+	 *            List of service capability properties
+	 * @param class1
+	 *            Class of the interface life cycle manager
 	 * @return ServiceID
 	 * @throws TpCommonExceptions
 	 */
@@ -713,6 +718,7 @@ public class ServerFramework {
 	 * 
 	 * <pre>
 	 * IpService tempService = selectSCFs(&quot;P_USER_STATUS&quot;);IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
+	 *      
 	 *     
 	 *    
 	 *   

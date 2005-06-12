@@ -1,3 +1,4 @@
+//$Id: ApplicationFramework.java,v 1.6 2005/06/12 22:24:04 huuhoa Exp $
 /**
  * 
  */
@@ -77,6 +78,7 @@ import org.omg.PortableServer.POAHelper;
 
 /**
  * The application framework
+ * 
  * @author Nguyen Huu Hoa
  */
 public class ApplicationFramework {
@@ -92,8 +94,8 @@ public class ApplicationFramework {
 
 	/** The instance of the CORBA Object Request Broker */
 	private static ORB orb;
-	public static ORB getORB()
-	{
+
+	public static ORB getORB() {
 		return orb;
 	}
 
@@ -144,7 +146,8 @@ public class ApplicationFramework {
 		// -Dorg.omg.CORBA.ORBClass=<your ORB class>
 		// -Dorg.omg.CORBA.ORBSingletonClass=<your ORB singleton class>
 		System.setProperty("org.omg.CORBA.ORBClass", "org.jacorb.orb.ORB");
-		System.setProperty("org.omg.CORBA.ORBSingletonClass", "org.jacorb.orb.ORBSingleton");
+		System.setProperty("org.omg.CORBA.ORBSingletonClass",
+				"org.jacorb.orb.ORBSingleton");
 		java.util.Properties props = System.getProperties();
 		orb = ORB.init(new String[0], props);
 
@@ -712,37 +715,55 @@ public class ApplicationFramework {
 	 *            IpUserStatus
 	 * @return reference to service, with type IpService. In order to get the
 	 *         appropriate service type, one should call:
+	 * 
 	 * <pre>
-	 * IpService tempService = selectSCFs("P_USER_STATUS");
-	 * IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
+	 * IpService tempService = selectSCFs(&quot;P_USER_STATUS&quot;);IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
+	 *  
 	 * </pre>
+	 * 
 	 * Here is the list of services that can be query from OSA Framework
-	 * <ul>
-	 * <li><b>NULL</b> An empty (NULL) string indicates no SCF name.</li>
-	 * <li><b>P_GENERIC_CALL_CONTROL</b> The name of the Generic Call Control SCF.</li>
-	 * <li><b>P_MULTI_PARTY_CALL_CONTROL</b> The name of the MultiParty Call Control SCF.</li>
-	 * <li><b>P_MULTI_MEDIA_CALL_CONTROL</b> The name of the MultiMedia Call Control SCF.</li>
-	 * <li><b>P_CONFERENCE_CALL_CONTROL</b> The name of the Conference Call Control SCF.</li>
-	 * <li><b>P_USER_INTERACTION</b> The name of the User Interaction SCFs.</li>
-	 * <li><b>P_USER_INTERACTION_ADMIN</b> The name of the User Interaction Administration SCF.</li>
-	 * <li><b>P_TERMINAL_CAPABILITIES</b> The name of the Terminal Capabilities SCF.</li>
-	 * <li><b>P_USER_BINDING</b> The name of the User Binding SCF.</li>
-	 * <li><b>P_USER_LOCATION</b> The name of the User Location SCF.</li>
-	 * <li><b>P_USER_LOCATION_CAMEL</b> The name of the Network User Location SCF.</li>
-	 * <li><b>P_USER_LOCATION_EMERGENCY</b> The name of the User Location Emergency SCF.</li>
-	 * <li><b>P_USER_STATUS</b> The name of the User Status SCF.</li>
-	 * <li><b>P_EXTENDED_USER_STATUS</b> The name of Extended User Status SCF.</li>
-	 * <li><b>P_DATA_SESSION_CONTROL</b> The name of the Data Session Control SCF.</li>
-	 * <li><b>P_GENERIC_MESSAGING</b> The name of the Generic Messaging SCF.</li>
-	 * <li><b>P_CONNECTIVITY_MANAGER</b> The name of the Connectivity Manager SCF.</li>
-	 * <li><b>P_CHARGING</b> The name of the Charging SCF.</li>
-	 * <li><b>P_ACCOUNT_MANAGEMENT</b> The name of the Account Management SCF.</li>
-	 * <li><b>P_POLICY_PROVISIONING</b> The name of the Policy Management provisioning SCF.</li>
-	 * <li><b>P_POLICY_EVALUATION</b> The name of the Policy Management policy evaluation SCF.</li>
-	 * <li><b>P_PAM_ACCESS</b> The name of PAM presentity SCF.</li>
-	 * <li><b>P_PAM_EVENT_MANAGEMENT</b> The name of PAM watcher SCF.</li>
-	 * <li><b>P_PAM_PROVISIONING</b> The name of PAM provisioning SCF.</li>
-	 * </ul>
+	 *         <ul>
+	 *         <li><b>NULL</b> An empty (NULL) string indicates no SCF name.</li>
+	 *         <li><b>P_GENERIC_CALL_CONTROL</b> The name of the Generic Call
+	 *         Control SCF.</li>
+	 *         <li><b>P_MULTI_PARTY_CALL_CONTROL</b> The name of the
+	 *         MultiParty Call Control SCF.</li>
+	 *         <li><b>P_MULTI_MEDIA_CALL_CONTROL</b> The name of the
+	 *         MultiMedia Call Control SCF.</li>
+	 *         <li><b>P_CONFERENCE_CALL_CONTROL</b> The name of the Conference
+	 *         Call Control SCF.</li>
+	 *         <li><b>P_USER_INTERACTION</b> The name of the User Interaction
+	 *         SCFs.</li>
+	 *         <li><b>P_USER_INTERACTION_ADMIN</b> The name of the User
+	 *         Interaction Administration SCF.</li>
+	 *         <li><b>P_TERMINAL_CAPABILITIES</b> The name of the Terminal
+	 *         Capabilities SCF.</li>
+	 *         <li><b>P_USER_BINDING</b> The name of the User Binding SCF.</li>
+	 *         <li><b>P_USER_LOCATION</b> The name of the User Location SCF.</li>
+	 *         <li><b>P_USER_LOCATION_CAMEL</b> The name of the Network User
+	 *         Location SCF.</li>
+	 *         <li><b>P_USER_LOCATION_EMERGENCY</b> The name of the User
+	 *         Location Emergency SCF.</li>
+	 *         <li><b>P_USER_STATUS</b> The name of the User Status SCF.</li>
+	 *         <li><b>P_EXTENDED_USER_STATUS</b> The name of Extended User
+	 *         Status SCF.</li>
+	 *         <li><b>P_DATA_SESSION_CONTROL</b> The name of the Data Session
+	 *         Control SCF.</li>
+	 *         <li><b>P_GENERIC_MESSAGING</b> The name of the Generic
+	 *         Messaging SCF.</li>
+	 *         <li><b>P_CONNECTIVITY_MANAGER</b> The name of the Connectivity
+	 *         Manager SCF.</li>
+	 *         <li><b>P_CHARGING</b> The name of the Charging SCF.</li>
+	 *         <li><b>P_ACCOUNT_MANAGEMENT</b> The name of the Account
+	 *         Management SCF.</li>
+	 *         <li><b>P_POLICY_PROVISIONING</b> The name of the Policy
+	 *         Management provisioning SCF.</li>
+	 *         <li><b>P_POLICY_EVALUATION</b> The name of the Policy
+	 *         Management policy evaluation SCF.</li>
+	 *         <li><b>P_PAM_ACCESS</b> The name of PAM presentity SCF.</li>
+	 *         <li><b>P_PAM_EVENT_MANAGEMENT</b> The name of PAM watcher SCF.</li>
+	 *         <li><b>P_PAM_PROVISIONING</b> The name of PAM provisioning SCF.</li>
+	 *         </ul>
 	 */
 	public IpService selectSCFs(String serviceName) {
 		try {
@@ -769,50 +790,50 @@ public class ApplicationFramework {
 				m_logger.info("Signed service agreement");
 			}
 			return svcMgr;
-		}
-		catch (P_ILLEGAL_SERVICE_TYPE ex) {
+		} catch (P_ILLEGAL_SERVICE_TYPE ex) {
 			m_logger.error("Illegal service type: " + ex.getMessage());
-		}
-		catch (P_UNKNOWN_SERVICE_TYPE ex) {
+		} catch (P_UNKNOWN_SERVICE_TYPE ex) {
 			m_logger.error("Unknown service type: " + ex.getMessage());
-		}
-		catch (P_ACCESS_DENIED ex) {
-			m_logger.error("Access to service was denied. More information: " + ex.getMessage());
-		}
-		catch(P_INVALID_PROPERTY ex) {
-			m_logger.error("Invalid property. More information: " + ex.getMessage());
+		} catch (P_ACCESS_DENIED ex) {
+			m_logger.error("Access to service was denied. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_PROPERTY ex) {
+			m_logger.error("Invalid property. More information: "
+					+ ex.getMessage());
 		}
 		// catch exceptions from selectService
-		catch(IOException ex) {
-			m_logger.error("File IO exception. More information: " + ex.getMessage());
-		}
-		catch(P_INVALID_SERVICE_ID ex) {
-			m_logger.error("Invalid service ID. More information: " + ex.getMessage());
+		catch (IOException ex) {
+			m_logger.error("File IO exception. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_SERVICE_ID ex) {
+			m_logger.error("Invalid service ID. More information: "
+					+ ex.getMessage());
 		}
 		// catch exceptions from signServiceAgreement
 		catch (P_SERVICE_ACCESS_DENIED ex) {
-			m_logger.error("Access to service was denied. More information: " + ex.getMessage());
-		}
-		catch (P_INVALID_SIGNATURE ex) {
-			m_logger.error("The signature was invalid. More information: " + ex.getMessage());
-		}
-		catch (P_INVALID_SERVICE_TOKEN ex) {
-			m_logger.error("Invalid service token. More information: " + ex.getMessage());
-		}
-		catch (P_INVALID_SIGNING_ALGORITHM ex) {
-			m_logger.error("Invalid signing algorithm. More information: " + ex.getMessage());
-		}
-		catch (P_INVALID_AGREEMENT_TEXT ex) {
-			m_logger.error("Invalid agreement text. More information: " + ex.getMessage());
+			m_logger.error("Access to service was denied. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_SIGNATURE ex) {
+			m_logger.error("The signature was invalid. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_SERVICE_TOKEN ex) {
+			m_logger.error("Invalid service token. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_SIGNING_ALGORITHM ex) {
+			m_logger.error("Invalid signing algorithm. More information: "
+					+ ex.getMessage());
+		} catch (P_INVALID_AGREEMENT_TEXT ex) {
+			m_logger.error("Invalid agreement text. More information: "
+					+ ex.getMessage());
 		}
 		// common exceptions
 		catch (TpCommonExceptions ex) {
 			m_logger.error("Some errors occur: " + ex.getMessage());
 			ex.printStackTrace();
 		}
-//			m_logger.error("Some errors occur: " + e.getMessage());
-//			e.printStackTrace();
-//		}
+		// m_logger.error("Some errors occur: " + e.getMessage());
+		// e.printStackTrace();
+		// }
 		return null;
 	}
 
@@ -1090,8 +1111,7 @@ public class ApplicationFramework {
 		 */
 		public void statusReportErr(int assignmentId, TpMobilityError cause,
 				TpMobilityDiagnostic diagnostic) {
-			if (m_logger.isInfoEnabled())
-			{
+			if (m_logger.isInfoEnabled()) {
 				m_logger.info("User Status error:");
 				m_logger.info("Assignment ID = " + assignmentId);
 				String causeString = "Cause = ";
@@ -1118,7 +1138,8 @@ public class ApplicationFramework {
 					causeString = "UNKNOWN";
 				}
 				m_logger.info(causeString);
-				// Diagnostic could be analyzed the same way as cause, not done here
+				// Diagnostic could be analyzed the same way as cause, not done
+				// here
 				m_logger.info("Diagnostic = " + diagnostic.value());
 			}
 
@@ -1131,6 +1152,7 @@ public class ApplicationFramework {
 				return;
 			}
 		}
+
 		/** Not implemented in this sample. Only defined for completeness */
 		public void triggeredStatusReport(int assignmentId, TpUserStatus status) {
 			if (m_logger.isInfoEnabled())

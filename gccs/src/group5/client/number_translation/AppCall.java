@@ -1,3 +1,4 @@
+//$Id: AppCall.java,v 1.2 2005/06/12 22:24:04 huuhoa Exp $
 /**
  * 
  */
@@ -13,7 +14,7 @@ import org.csapi.cc.gccs.TpCallReport;
 
 /**
  * @author Nguyen Huu Hoa
- *
+ * 
  */
 public class AppCall extends IpAppCallPOA {
 	/**
@@ -26,19 +27,23 @@ public class AppCall extends IpAppCallPOA {
 	}
 
 	MyApplicationLogic appLogic;
-	public AppCall(MyApplicationLogic logic)
-	{
+
+	public AppCall(MyApplicationLogic logic) {
 		appLogic = logic;
 	}
-	public void routeRes(int callSessionID, TpCallReport eventReport, int callLegSessionID) {
+
+	public void routeRes(int callSessionID, TpCallReport eventReport,
+			int callLegSessionID) {
 		appLogic.routeRes(callSessionID, eventReport, callLegSessionID);
 	}
 
-	public void routeErr(int callSessionID, TpCallError errorIndication, int callLegSessionID) {
+	public void routeErr(int callSessionID, TpCallError errorIndication,
+			int callLegSessionID) {
 		m_logger.info("Unimplemented function");
 	}
 
-	public void getCallInfoRes(int callSessionID, TpCallInfoReport callInfoReport) {
+	public void getCallInfoRes(int callSessionID,
+			TpCallInfoReport callInfoReport) {
 		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
@@ -68,7 +73,8 @@ public class AppCall extends IpAppCallPOA {
 		m_logger.info("Unimplemented function");
 	}
 
-	public void getMoreDialledDigitsErr(int callSessionID, TpCallError errorIndication) {
+	public void getMoreDialledDigitsErr(int callSessionID,
+			TpCallError errorIndication) {
 		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}

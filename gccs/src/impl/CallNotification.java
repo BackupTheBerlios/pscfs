@@ -1,3 +1,4 @@
+//$Id: CallNotification.java,v 1.3 2005/06/12 22:24:03 huuhoa Exp $
 package impl;
 
 import org.apache.log4j.Logger;
@@ -68,8 +69,10 @@ final class CallNotification {
 				&& !sameInterruptMode(callnotification))
 			return false;
 		else
-			return sameMonitorMode(callnotification) && sameSourceAddr(callnotification)
-					&& sameDestAddress(callnotification) && sameAddrPlan(callnotification)
+			return sameMonitorMode(callnotification)
+					&& sameSourceAddr(callnotification)
+					&& sameDestAddress(callnotification)
+					&& sameAddrPlan(callnotification)
 					&& sameNotificationType(callnotification);
 	}
 
@@ -88,7 +91,8 @@ final class CallNotification {
 
 	public boolean exactlyMatchesCriteria(CallNotification callnotification) {
 		return ipCallManager == callnotification.ipCallManager
-				&& matchCriteria(callEventCriteria, callnotification.callEventCriteria);
+				&& matchCriteria(callEventCriteria,
+						callnotification.callEventCriteria);
 	}
 
 	public int getAssignmentId() {
@@ -150,8 +154,8 @@ final class CallNotification {
 	}
 
 	boolean callContext(CallContext callcontext) {
-		 return ((sourceAddress.compareTo(callcontext.getOriginatorNumber())==0) &&
-				 (destAddress.compareTo(callcontext.getDestinationNumber())==0));
+		return ((sourceAddress.compareTo(callcontext.getOriginatorNumber()) == 0) && (destAddress
+				.compareTo(callcontext.getDestinationNumber()) == 0));
 	}
 
 	public void reset() {

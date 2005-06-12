@@ -1,3 +1,4 @@
+//$Id: AppCallControlManager.java,v 1.2 2005/06/12 22:24:04 huuhoa Exp $
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
@@ -9,7 +10,6 @@ import org.csapi.cc.gccs.IpAppCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 
-
 public class AppCallControlManager extends IpAppCallControlManagerPOA {
 	/**
 	 * m_logger for the system
@@ -19,25 +19,27 @@ public class AppCallControlManager extends IpAppCallControlManagerPOA {
 	static {
 		m_logger = Logger.getLogger(AppCall.class);
 	}
+
 	private IpAppCallControlManager ipAppCallControlManager;
 
 	MyApplicationLogic appLogic;
 
-	public AppCallControlManager(MyApplicationLogic logic)
-	{
+	public AppCallControlManager(MyApplicationLogic logic) {
 		appLogic = logic;
 		ipAppCallControlManager = _this(ApplicationFramework.getORB());
 	}
+
 	public void callAborted(int callReference) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	IpAppCallControlManager getServant()
-	{
+	IpAppCallControlManager getServant() {
 		return ipAppCallControlManager;
 	}
-	public IpAppCall callEventNotify(TpCallIdentifier callReference, TpCallEventInfo eventInfo, int assignmentID) {
+
+	public IpAppCall callEventNotify(TpCallIdentifier callReference,
+			TpCallEventInfo eventInfo, int assignmentID) {
 		AppCall ipAppCall = new AppCall(appLogic);
 		appLogic.callEventNotify(callReference, eventInfo, assignmentID);
 		return ipAppCall._this();

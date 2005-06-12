@@ -1,3 +1,4 @@
+//$Id: SCSProperties.java,v 1.2 2005/06/12 22:24:03 huuhoa Exp $
 package group5.server;
 
 import java.util.*;

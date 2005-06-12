@@ -1,3 +1,4 @@
+//$Id: MyApplicationLogic.java,v 1.4 2005/06/12 22:24:04 huuhoa Exp $
 /**
  * 
  */
@@ -187,22 +188,22 @@ public class MyApplicationLogic {
 		// m_logger.info("Route to 000180074992");
 		return "000180074992";
 		// }
-//		try {
-//			String lastAddress = addressToTranslate.substring(addressToTranslate
-//					.length() - 2, addressToTranslate.length());
-//
-//			m_logger.info("lastAddress = " + lastAddress);
-//			int addrInt = Integer.parseInt(lastAddress);
-//			if (addrInt < 20)
-//				return "000180074992";
-//			else
-//				return addressToTranslate;
-//		} catch (NumberFormatException ex) {
-//			m_logger.error("Invalid number format " + ex.getMessage());
-//		} catch (StringIndexOutOfBoundsException ex) {
-//			m_logger.fatal("String index out of bounds. " + ex.getMessage());
-//		}
-//		return addressToTranslate;
+		// try {
+		// String lastAddress = addressToTranslate.substring(addressToTranslate
+		// .length() - 2, addressToTranslate.length());
+		//
+		// m_logger.info("lastAddress = " + lastAddress);
+		// int addrInt = Integer.parseInt(lastAddress);
+		// if (addrInt < 20)
+		// return "000180074992";
+		// else
+		// return addressToTranslate;
+		// } catch (NumberFormatException ex) {
+		// m_logger.error("Invalid number format " + ex.getMessage());
+		// } catch (StringIndexOutOfBoundsException ex) {
+		// m_logger.fatal("String index out of bounds. " + ex.getMessage());
+		// }
+		// return addressToTranslate;
 	}
 
 }

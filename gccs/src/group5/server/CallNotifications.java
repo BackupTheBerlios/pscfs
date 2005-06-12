@@ -1,3 +1,4 @@
+//$Id: CallNotifications.java,v 1.3 2005/06/12 22:24:03 huuhoa Exp $
 package impl;
 
 //	 Source File Name:   CallNotifications.java
@@ -21,7 +22,8 @@ final class CallNotifications {
 	public TpCallEventCriteriaResult[] getCallEventCriteria(
 			IpCallControlManagerImpl ipcallcontrolmanagerimpl) {
 		Vector vector = new Vector();
-		for (Iterator iterator = notificationTable.values().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = notificationTable.values().iterator(); iterator
+				.hasNext();) {
 			CallNotification callnotification = (CallNotification) iterator
 					.next();
 			if (callnotification.hasManager(ipcallcontrolmanagerimpl))
@@ -43,7 +45,8 @@ final class CallNotifications {
 
 	CallNotification[] callContext(CallContext callcontext) {
 		LinkedList linkedlist = new LinkedList();
-		for (Iterator iterator = notificationTable.values().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = notificationTable.values().iterator(); iterator
+				.hasNext();) {
 			CallNotification callnotification = (CallNotification) iterator
 					.next();
 			if (callnotification.callContext(callcontext))
@@ -56,7 +59,8 @@ final class CallNotifications {
 
 	public List findOverlapping(CallNotification callnotification) {
 		LinkedList linkedlist = new LinkedList();
-		for (Iterator iterator = notificationTable.values().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = notificationTable.values().iterator(); iterator
+				.hasNext();) {
 			CallNotification callnotification1 = (CallNotification) iterator
 					.next();
 			if (callnotification1.sameCallNotification(callnotification))
@@ -69,8 +73,8 @@ final class CallNotifications {
 	public List addCallNotification(CallNotification callnotification) {
 		List list = findOverlapping(callnotification);
 		if (list.size() == 0)
-			notificationTable.put(new Integer(callnotification.getAssignmentId()),
-					callnotification);
+			notificationTable.put(new Integer(callnotification
+					.getAssignmentId()), callnotification);
 		return list;
 	}
 

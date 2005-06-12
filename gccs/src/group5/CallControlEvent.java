@@ -1,4 +1,6 @@
+//$Id: CallControlEvent.java,v 1.2 2005/06/12 22:24:04 huuhoa Exp $
 package group5;
+
 import java.io.Serializable;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCall;
@@ -6,45 +8,43 @@ import org.csapi.cc.gccs.IpCall;
 // Referenced classes:
 //            IpCallControlManager, Event, IpCall
 
-public class CallControlEvent extends GeneralEvent
-    implements Event, Serializable
-{
+public class CallControlEvent extends GeneralEvent implements Event,
+		Serializable {
 
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5558427124773383154L;
-	public CallControlEvent(IpCallControlManager source, int assignmentId, int cause, IpCall call, int callEvent)
-    {
-        super(source, assignmentId, cause);
-        this.call = call;
-        this.callEvent = callEvent;
-    }
 
-    public IpCall getCall()
-    {
-        return call;
-    }
+	public CallControlEvent(IpCallControlManager source, int assignmentId,
+			int cause, IpCall call, int callEvent) {
+		super(source, assignmentId, cause);
+		this.call = call;
+		this.callEvent = callEvent;
+	}
 
-    public int getCallEvent()
-    {
-        return callEvent;
-    }
+	public IpCall getCall() {
+		return call;
+	}
 
-    /**
-     * was getAdapter
-     * @return IpCallControlManager
-     */
-    public IpCallControlManager getService()
-    {
-        return (IpCallControlManager)source;
-    }
+	public int getCallEvent() {
+		return callEvent;
+	}
 
-    public String toString()
-    {
-        return call.toString() + ",CallEvent=" + callEvent;
-    }
+	/**
+	 * was getAdapter
+	 * 
+	 * @return IpCallControlManager
+	 */
+	public IpCallControlManager getService() {
+		return (IpCallControlManager) source;
+	}
 
-    private IpCall call;
-    private int callEvent;
+	public String toString() {
+		return call.toString() + ",CallEvent=" + callEvent;
+	}
+
+	private IpCall call;
+
+	private int callEvent;
 }

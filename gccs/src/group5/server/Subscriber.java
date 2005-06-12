@@ -1,3 +1,4 @@
+//$Id: Subscriber.java,v 1.3 2005/06/12 22:24:04 huuhoa Exp $
 /**
  * 
  */
@@ -31,28 +32,29 @@ public class Subscriber {
 	 */
 	private String partnerAddress;
 
-	public Subscriber()
-	{
+	public Subscriber() {
 		subscribeAddress = "";
 		partnerAddress = "";
 		status = Reachable;
 	}
-	public Subscriber(String subscrAddr)
-	{
+
+	public Subscriber(String subscrAddr) {
 		subscribeAddress = subscrAddr;
 		partnerAddress = "";
 		status = Reachable;
 	}
+
 	/**
 	 * @param status
 	 *            The status to set.
-	 * @exception org.omg.CORBA.BAD_PARAM This exception is thrown when status
-	 * is not valid. The valid statuses are:
-	 * <ul>
-	 * <li>Subscriber.Reachable
-	 * <li>Subscriber.Unreachable
-	 * <li>Subscriber.Busy
-	 * </ul>
+	 * @exception org.omg.CORBA.BAD_PARAM
+	 *                This exception is thrown when status is not valid. The
+	 *                valid statuses are:
+	 *                <ul>
+	 *                <li>Subscriber.Reachable
+	 *                <li>Subscriber.Unreachable
+	 *                <li>Subscriber.Busy
+	 *                </ul>
 	 */
 	public void setStatus(int status) throws org.omg.CORBA.BAD_PARAM {
 		switch (status) {
@@ -74,7 +76,8 @@ public class Subscriber {
 	}
 
 	/**
-	 * @param subscribeAddress The subscribeAddress to set.
+	 * @param subscribeAddress
+	 *            The subscribeAddress to set.
 	 */
 	public void setSubscribeAddress(String subscribeAddress) {
 		this.subscribeAddress = subscribeAddress;
@@ -88,7 +91,8 @@ public class Subscriber {
 	}
 
 	/**
-	 * @param partnerAddress The partnerAddress to set.
+	 * @param partnerAddress
+	 *            The partnerAddress to set.
 	 */
 	public void setPartnerAddress(String partnerAddress) {
 		this.partnerAddress = partnerAddress;

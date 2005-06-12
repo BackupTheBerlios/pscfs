@@ -1,3 +1,4 @@
+//$Id: OSAServiceFactoryImpl.java,v 1.3 2005/06/12 22:24:04 huuhoa Exp $
 package group5.server;
 
 import java.lang.reflect.Constructor;
@@ -64,7 +65,8 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 		try {
 			org.omg.CORBA.Object obj;
 			Servant servant = (Servant) m_constructor
-					.newInstance(new java.lang.Object[] { applicationID, srvProp });
+					.newInstance(new java.lang.Object[] { applicationID,
+							srvProp });
 			Method method = servant.getClass().getMethod("_this",
 					new Class[] { org.omg.CORBA.ORB.class });
 			obj = (org.omg.CORBA.Object) method.invoke(servant,
@@ -91,7 +93,8 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 	 * Destroy a service given a serviceInstanceID
 	 */
 	public void destroyServiceManager(String serviceInstanceID) {
-		ServiceInstance serviceinstance = (ServiceInstance) siTable.get(serviceInstanceID);
+		ServiceInstance serviceinstance = (ServiceInstance) siTable
+				.get(serviceInstanceID);
 		if (serviceinstance != null) {
 			serviceinstance.destroy();
 			siTable.remove(serviceInstanceID);
