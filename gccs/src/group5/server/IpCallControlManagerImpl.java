@@ -3,7 +3,12 @@
  */
 package impl;
 
-import org.apache.log4j.BasicConfigurator;
+import group5.CallControlException;
+import group5.CallCriteria;
+
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
 import org.csapi.P_INVALID_ADDRESS;
@@ -17,8 +22,8 @@ import org.csapi.TpAddressRange;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallLoadControlMechanism;
 import org.csapi.cc.TpCallMonitorMode;
-import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpAppCall;
+import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventCriteria;
@@ -34,14 +39,10 @@ import org.omg.CORBA.NamedValue;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.Request;
 import org.omg.CORBA.SetOverrideType;
-import java.util.HashMap;
-import java.util.Iterator;
-import group5.*;
-
 
 
 /**
- * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
  *
  */
 public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
@@ -69,7 +70,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	 */
 	public IpCallControlManagerImpl() {
 		super();
-		BasicConfigurator.configure();
 		m_logger.info("ctor()");
 	}
 

@@ -11,24 +11,24 @@ import org.apache.log4j.Logger;
  *
  */
 
-public class EventOfCallQueue {
+public class CallEventQueue {
 
 	List list;
 	/**
 	 * m_logger for the system
 	 */
 	static Logger m_logger;
-	static EventOfCallQueue m_evtQueue = new EventOfCallQueue();
+	static {
+		m_logger = Logger.getLogger(CallEventQueue.class);
+	}
+	static CallEventQueue m_evtQueue = new CallEventQueue();
 
-	public static EventOfCallQueue getInstance()
+	public static CallEventQueue getInstance()
 	{
 		return m_evtQueue;
 	}
-	static {
-		m_logger = Logger.getLogger(EventOfCallQueue.class);
-	}
 	
-	public EventOfCallQueue()
+	public CallEventQueue()
 	{
 		list = new ArrayList();
 	}

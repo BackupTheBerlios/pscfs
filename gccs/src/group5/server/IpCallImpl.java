@@ -16,22 +16,13 @@ import org.csapi.TpAddress;
 import org.csapi.TpAoCInfo;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallChargePlan;
+import org.csapi.cc.gccs.IpCall;
 import org.csapi.cc.gccs.IpCallPOA;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReportRequest;
-import org.csapi.cc.gccs.IpCall;
-import org.omg.CORBA.Context;
-import org.omg.CORBA.ContextList;
-import org.omg.CORBA.DomainManager;
-import org.omg.CORBA.ExceptionList;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
-import org.omg.CORBA.Object;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.Request;
-import org.omg.CORBA.SetOverrideType;
+
 
 /**
  * @author Nguyen Duc Du Khuong Represent each call session by IpCallImpl object
@@ -86,7 +77,7 @@ public class IpCallImpl extends IpCallPOA {
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
 		// TODO Auto-generated method stub
 
-		EventOfCallQueue queue = EventOfCallQueue.getInstance();
+		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
 				originatingAddress, CallEvent.eventRouteReq, 0);
 		queue.put(evtCall);
@@ -149,7 +140,7 @@ public class IpCallImpl extends IpCallPOA {
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
 		// Khuong added
-		EventOfCallQueue queue = EventOfCallQueue.getInstance();
+		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
 				null, CallEvent.eventReleaseCall, 0);
 		queue.put(evtCall);
@@ -183,7 +174,7 @@ public class IpCallImpl extends IpCallPOA {
 	public void deassignCall(int callSessionID) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-		EventOfCallQueue queue = EventOfCallQueue.getInstance();
+		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
 				null, CallEvent.eventDeassignCall, 0);
 		queue.put(evtCall);
@@ -201,7 +192,6 @@ public class IpCallImpl extends IpCallPOA {
 //					.error("Catch exception of P_INVALID_SESSION_ID with more information: "
 //							+ ex2.getMessage());
 //		}
-
 	}
 
 	/*
