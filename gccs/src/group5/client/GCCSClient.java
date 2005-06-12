@@ -26,7 +26,7 @@ public class GCCSClient extends ApplicationFramework{
         }
         String user = args[0];
         try {
-        	System.setProperty("ORB.NameService", "corbaloc::localhost:2050/StandardNS/NameServer-POA/_root");
+        	System.setProperty("ORB.NameService", "corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root");
             GCCSClient sample = new GCCSClient();
             sample.initApplication(ApplicationFramework.clientAppID, ApplicationFramework.clientAppSharedSecret);
             IpUserStatus ipUS = IpUserStatusHelper.narrow(sample.selectSCFs("P_USER_STATUS"));

@@ -6,11 +6,6 @@ package group5.server;
 import group5.P_INVALID_NAME_SERVICE;
 import group5.utils.CommonFuntions;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
 import org.csapi.IpService;
@@ -26,7 +21,6 @@ import org.csapi.fw.P_INVALID_AGREEMENT_TEXT;
 import org.csapi.fw.P_INVALID_AUTH_TYPE;
 import org.csapi.fw.P_INVALID_DOMAIN_ID;
 import org.csapi.fw.P_INVALID_PROPERTY;
-import org.csapi.fw.P_INVALID_SERVICE_ID;
 import org.csapi.fw.P_INVALID_SERVICE_TOKEN;
 import org.csapi.fw.P_INVALID_SIGNATURE;
 import org.csapi.fw.P_INVALID_SIGNING_ALGORITHM;
@@ -40,8 +34,6 @@ import org.csapi.fw.P_UNKNOWN_SERVICE_TYPE;
 import org.csapi.fw.TpAuthDomain;
 import org.csapi.fw.TpDomainID;
 import org.csapi.fw.TpProperty;
-import org.csapi.fw.TpService;
-import org.csapi.fw.TpServiceProperty;
 import org.csapi.fw.TpSignatureAndServiceMgr;
 import org.csapi.fw.fw_access.trust_and_security.IpAPILevelAuthentication;
 import org.csapi.fw.fw_access.trust_and_security.IpAPILevelAuthenticationHelper;
@@ -487,87 +479,6 @@ public class ServerFramework {
 	}
 
 	/**
-	 * Discovers a service using the OSA IpServiceDiscovery interface.
-	 * 
-	 * @param discoveryIf
-	 *            reference to the OSA IpServiceDisovery interface
-	 * @param serviceName
-	 *            the name of the service
-	 * @return service ID for the service
-	 */
-	String discoverService(IpServiceDiscovery discoveryIf, String serviceName)
-			throws TpCommonExceptions, P_UNKNOWN_SERVICE_TYPE,
-			P_ILLEGAL_SERVICE_TYPE, P_INVALID_PROPERTY, P_ACCESS_DENIED {
-
-		// Create a list of service properties that indicates what kind of
-		// service we are looking for. In our case the service is identified
-		// only by its name.
-		TpServiceProperty prop = new TpServiceProperty("Service Name",
-				new String[] { serviceName });
-		TpServiceProperty[] props = new TpServiceProperty[0];
-
-		// Obtain a service ID of the service
-
-		/***********************************************************************
-		 * Do the OSA invocation: discoverService()
-		 **********************************************************************/
-		TpService[] svcList = discoveryIf
-				.discoverService(serviceName, props, 1);
-
-		// Return the service ID of the service
-		return svcList[0].ServiceID;
-	}
-
-	/**
-	 * Selects the indicated service.
-	 * 
-	 * @param agmtIf
-	 *            reference to the OSA service agreement management interface
-	 * @param serviceId
-	 *            ID for the service
-	 * @return service token for the selected service
-	 */
-	String selectService(IpServiceAgreementManagement agmtIf, String serviceId)
-			throws TpCommonExceptions, P_INVALID_SERVICE_ID,
-			P_INVALID_SERVICE_TOKEN, P_SERVICE_ACCESS_DENIED, P_ACCESS_DENIED,
-			P_INVALID_SIGNATURE, IOException {
-
-		String serviceToken = null;
-		try {
-			/*******************************************************************
-			 * Do the OSA invocation: selectService()
-			 ******************************************************************/
-			serviceToken = agmtIf.selectService(serviceId);
-
-		} catch (P_SERVICE_ACCESS_DENIED e) {
-			// Exception is thrown if a signed service agreement already exists
-			// for this service.
-			m_logger.error("Service access denied for " + serviceId + ": "
-					+ e.ExtraInformation);
-
-			try {
-				// Retrieve the service token for the service from a file and
-				// terminate the agreement
-				serviceToken = fetchToken("servicetoken");
-				if (m_logger.isInfoEnabled())
-					m_logger.info("Fetched stored token: " + serviceToken
-							+ ", terminating agreement");
-				terminateServiceAgreement(agmtIf, serviceToken);
-			} catch (IOException ioe) {
-				// File does not seem to exist; throw original exception
-				throw e;
-			}
-
-			serviceToken = agmtIf.selectService(serviceId); // try again
-		}
-
-		// Store the token in a file
-		storeToken("servicetoken", serviceToken);
-
-		return serviceToken;
-	}
-
-	/**
 	 * Performs mutually signing of a service agreement for the service.
 	 * 
 	 * @param agmtIf
@@ -580,7 +491,7 @@ public class ServerFramework {
 			String svcToken) throws TpCommonExceptions,
 			P_INVALID_SERVICE_TOKEN, P_INVALID_SIGNING_ALGORITHM,
 			P_INVALID_AGREEMENT_TEXT, P_SERVICE_ACCESS_DENIED, P_ACCESS_DENIED,
-			P_INVALID_SIGNATURE, IOException {
+			P_INVALID_SIGNATURE {
 		/***********************************************************************
 		 * Do the OSA invocation: initiateSignServiceAgreement()
 		 **********************************************************************/
@@ -648,40 +559,6 @@ public class ServerFramework {
 
 		// Retries exceeded; throw original exception
 		throw ex;
-	}
-
-	/**
-	 * Stores the service token in a file.
-	 * 
-	 * @param filename
-	 *            the file where the token needs to be stored
-	 * @param token
-	 *            the service token
-	 */
-	private void storeToken(String filename, String serviceToken)
-			throws IOException {
-
-		Properties props = new Properties();
-		props.setProperty("token", serviceToken);
-		FileOutputStream file = new FileOutputStream(filename);
-		props.store(file, null);
-		file.close();
-	}
-
-	/**
-	 * Retrieved the service token from a file.
-	 * 
-	 * @param filename
-	 *            the file in which the token is stored
-	 * @return the stored service token
-	 */
-	private String fetchToken(String filename) throws IOException {
-
-		Properties props = new Properties();
-		FileInputStream file = new FileInputStream(filename);
-		props.load(file);
-		file.close();
-		return props.getProperty("token");
 	}
 
 	/**

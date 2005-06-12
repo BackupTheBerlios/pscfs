@@ -183,25 +183,26 @@ public class MyApplicationLogic {
 
 	String translateModulo10(String addressToTranslate) {
 		m_logger.info("Address to be translated: " + addressToTranslate);
-		if (addressToTranslate.compareTo("123456789021") == 0) {
-			m_logger.info("Route to 000180074992");
-			return "000180074992";
-		}
-
-		try {
-			int addrInt = Integer.parseInt(addressToTranslate);
-			String addressTranslated;
-			if (addrInt > 10) {
-				addrInt = addrInt % 10;
-				addressTranslated = Integer.toString(addrInt);
-			} else {
-				addressTranslated = addressToTranslate;
-			}
-			return addressTranslated;
-		} catch (NumberFormatException ex) {
-			m_logger.error("Invalid number format " + ex.getMessage());
-		}
-		return addressToTranslate;
+		// if (addressToTranslate.compareTo("123456789021") == 0) {
+		// m_logger.info("Route to 000180074992");
+		return "000180074992";
+		// }
+//		try {
+//			String lastAddress = addressToTranslate.substring(addressToTranslate
+//					.length() - 2, addressToTranslate.length());
+//
+//			m_logger.info("lastAddress = " + lastAddress);
+//			int addrInt = Integer.parseInt(lastAddress);
+//			if (addrInt < 20)
+//				return "000180074992";
+//			else
+//				return addressToTranslate;
+//		} catch (NumberFormatException ex) {
+//			m_logger.error("Invalid number format " + ex.getMessage());
+//		} catch (StringIndexOutOfBoundsException ex) {
+//			m_logger.fatal("String index out of bounds. " + ex.getMessage());
+//		}
+//		return addressToTranslate;
 	}
 
 }

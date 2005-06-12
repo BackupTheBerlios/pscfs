@@ -51,7 +51,7 @@ public final class CallControlSCS extends ServerFramework
 
     public int startService()
     {
-        SCSProperties scsproperties = new SCSProperties("P_GENERIC_CALL_CONTROL", "3.3");
+        SCSProperties scsproperties = new SCSProperties("P_GENERIC_CALL_CONTROL", "1.0");
         // SCSProperties scsproperties = new SCSProperties("CamelCallControl", "3.3");
         scsproperties.setProperty("P_SUPPORTED_INTERFACES", new String[] {
             "IpService", "IpCallControlManager", "IpCall"

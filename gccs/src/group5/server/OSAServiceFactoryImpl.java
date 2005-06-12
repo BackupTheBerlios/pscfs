@@ -13,6 +13,14 @@ import org.csapi.fw.TpServiceProperty;
 import org.csapi.fw.fw_service.service_lifecycle.IpServiceInstanceLifecycleManagerPOA;
 import org.omg.PortableServer.Servant;
 
+/**
+ * Service Instance Lifecycle Manager This interface will create on demand
+ * service (i.e. IpCallControlManager), when the OSA Framework requests that
+ * interface.
+ * 
+ * @author Nguyen Huu Hoa
+ * 
+ */
 public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA {
 	/**
 	 * m_logger for the system
@@ -45,46 +53,48 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 		}
 	}
 
-	public IpService createServiceManager(String s,
-			TpServiceProperty atpserviceproperty[], String s1)
+	/**
+	 * Create an reference to IpService with given applicationID, property list,
+	 * serviceInstallID
+	 */
+	public IpService createServiceManager(String applicationID,
+			TpServiceProperty srvProp[], String serviceInstanceID)
 			throws TpCommonExceptions {
 		m_logger.info("createServiceManager");
 		try {
 			org.omg.CORBA.Object obj;
 			Servant servant = (Servant) m_constructor
-					.newInstance(new java.lang.Object[] { s, atpserviceproperty });
+					.newInstance(new java.lang.Object[] { applicationID, srvProp });
 			Method method = servant.getClass().getMethod("_this",
 					new Class[] { org.omg.CORBA.ORB.class });
 			obj = (org.omg.CORBA.Object) method.invoke(servant,
 					new java.lang.Object[] { ServerFramework.getORB() });
-			siTable.put(s1, (ServiceInstance) servant);
+			siTable.put(serviceInstanceID, (ServiceInstance) servant);
 			m_logger.info("Created new service manager instance");
 			return IpServiceHelper.narrow(obj);
-		} catch (IllegalArgumentException illegalargumentexception) {
-			m_logger.error("Error in creating instance",
-					illegalargumentexception);
-		} catch (InstantiationException instantiationexception) {
-			m_logger
-					.error("Error in creating instance", instantiationexception);
-		} catch (IllegalAccessException illegalaccessexception) {
-			m_logger
-					.error("Error in creating instance", illegalaccessexception);
-		} catch (InvocationTargetException invocationtargetexception) {
-			m_logger.error("Error in creating instance",
-					invocationtargetexception);
-		} catch (NoSuchMethodException nosuchmethodexception) {
-			m_logger
-					.error("Could not find _this method", nosuchmethodexception);
+		} catch (IllegalArgumentException ex) {
+			m_logger.error("Error in creating instance", ex);
+		} catch (InstantiationException ex) {
+			m_logger.error("Error in creating instance", ex);
+		} catch (IllegalAccessException ex) {
+			m_logger.error("Error in creating instance", ex);
+		} catch (InvocationTargetException ex) {
+			m_logger.error("Error in creating instance", ex);
+		} catch (NoSuchMethodException ex) {
+			m_logger.error("Could not find _this method", ex);
 			throw new TpCommonExceptions(15, "");
 		}
 		return null;
 	}
 
-	public void destroyServiceManager(String s) {
-		ServiceInstance serviceinstance = (ServiceInstance) siTable.get(s);
+	/**
+	 * Destroy a service given a serviceInstanceID
+	 */
+	public void destroyServiceManager(String serviceInstanceID) {
+		ServiceInstance serviceinstance = (ServiceInstance) siTable.get(serviceInstanceID);
 		if (serviceinstance != null) {
 			serviceinstance.destroy();
-			siTable.remove(s);
+			siTable.remove(serviceInstanceID);
 		}
 	}
 
