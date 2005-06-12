@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.6 2005/06/12 22:24:04 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.7 2005/06/12 22:46:51 huuhoa Exp $
 /**
  * 
  */

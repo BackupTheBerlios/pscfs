@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.3 2005/06/12 22:24:04 huuhoa Exp $
+//$Id: Subscriber.java,v 1.4 2005/06/12 22:46:51 huuhoa Exp $
 /**
  * 
  */
