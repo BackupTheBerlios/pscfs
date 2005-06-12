@@ -30,16 +30,6 @@ import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallTreatment;
-import org.omg.CORBA.Context;
-import org.omg.CORBA.ContextList;
-import org.omg.CORBA.DomainManager;
-import org.omg.CORBA.ExceptionList;
-import org.omg.CORBA.NVList;
-import org.omg.CORBA.NamedValue;
-import org.omg.CORBA.Policy;
-import org.omg.CORBA.Request;
-import org.omg.CORBA.SetOverrideType;
-
 
 /**
  * @author Hoang Trung Hai
@@ -227,112 +217,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
 
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_release()
-	 */
-	public void _release() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_non_existent()
-	 */
-	public boolean _non_existent() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_hash(int)
-	 */
-	public int _hash(int arg0) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_is_a(java.lang.String)
-	 */
-	public boolean _is_a(String arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_get_domain_managers()
-	 */
-	public DomainManager[] _get_domain_managers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_duplicate()
-	 */
-	public Object _duplicate() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_get_interface_def()
-	 */
-	public org.omg.CORBA.Object _get_interface_def() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_is_equivalent(org.omg.CORBA.Object)
-	 */
-	public boolean _is_equivalent(Object arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_get_policy(int)
-	 */
-	public Policy _get_policy(int arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_request(java.lang.String)
-	 */
-	public Request _request(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_set_policy_override(org.omg.CORBA.Policy[], org.omg.CORBA.SetOverrideType)
-	 */
-	public Object _set_policy_override(Policy[] arg0, SetOverrideType arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_create_request(org.omg.CORBA.Context, java.lang.String, org.omg.CORBA.NVList, org.omg.CORBA.NamedValue)
-	 */
-	public Request _create_request(Context arg0, String arg1, NVList arg2,
-			NamedValue arg3) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.omg.CORBA.Object#_create_request(org.omg.CORBA.Context, java.lang.String, org.omg.CORBA.NVList, org.omg.CORBA.NamedValue, org.omg.CORBA.ExceptionList, org.omg.CORBA.ContextList)
-	 */
-	public Request _create_request(Context arg0, String arg1, NVList arg2,
-			NamedValue arg3, ExceptionList arg4, ContextList arg5) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	/* (non-Javadoc)
 	 */	
