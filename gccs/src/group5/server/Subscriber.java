@@ -46,6 +46,13 @@ public class Subscriber {
 	/**
 	 * @param status
 	 *            The status to set.
+	 * @exception org.omg.CORBA.BAD_PARAM This exception is thrown when status
+	 * is not valid. The valid statuses are:
+	 * <ul>
+	 * <li>Subscriber.Reachable
+	 * <li>Subscriber.Unreachable
+	 * <li>Subscriber.Busy
+	 * </ul>
 	 */
 	public void setStatus(int status) throws org.omg.CORBA.BAD_PARAM {
 		switch (status) {

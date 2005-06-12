@@ -27,18 +27,31 @@ public class CallEvent {
 	 * <li> <b>eventReleaseCall</b>: Release call 
 	 * </ol>
 	 */
-	public int EventType;
+	public int eventType;
 	public static final int eventRouteReq = 1;
 	public static final int eventDeassignCall = 2;
 	public static final int eventReleaseCall = 3;
-	public int EventID;
+	public int eventID;
 
+	/**
+	 * 
+	 * @throws org.omg.CORBA.BAD_PARAM throw when eventType is not valid
+	 */
 	CallEvent ( int CallSession_ID, TpAddress targetAddr, TpAddress origAddr, int eventType,
-		int eventID ) {
+		int eventID ) throws org.omg.CORBA.BAD_PARAM {
 		CallSessionID = CallSession_ID;
 		targetAddress = targetAddr;
 		originatingAddress = origAddr;
-		EventType = eventType;
-		EventID = eventID;
+		switch (eventType)
+		{
+		case eventRouteReq:
+		case eventDeassignCall:
+		case eventReleaseCall:
+			this.eventType = eventType;
+			break;
+		default:
+			throw new org.omg.CORBA.BAD_PARAM();
+		}
+		this.eventID = eventID;
 	}
 }
