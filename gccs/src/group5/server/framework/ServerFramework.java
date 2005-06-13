@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.4 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.5 2005/06/13 08:12:18 huuhoa Exp $
 /**
  * 
  */
@@ -46,7 +46,6 @@ import org.csapi.fw.fw_access.trust_and_security.IpClientAccess;
 import org.csapi.fw.fw_access.trust_and_security.IpClientAccessPOA;
 import org.csapi.fw.fw_access.trust_and_security.IpInitial;
 import org.csapi.fw.fw_access.trust_and_security.IpInitialHelper;
-import org.csapi.fw.fw_application.discovery.IpServiceDiscovery;
 import org.csapi.fw.fw_application.service_agreement.IpAppServiceAgreementManagement;
 import org.csapi.fw.fw_application.service_agreement.IpAppServiceAgreementManagementPOA;
 import org.csapi.fw.fw_application.service_agreement.IpServiceAgreementManagement;
@@ -71,7 +70,7 @@ public class ServerFramework {
 	/**
 	 * m_logger for the system
 	 */
-	static Logger m_logger;
+	private static Logger m_logger;
 
 	static {
 		m_logger = Logger.getLogger(ServerFramework.class);
@@ -99,16 +98,6 @@ public class ServerFramework {
 	 * reference to IpAccess, obtained from OSA framework
 	 */
 	private IpAccess m_ipAccess;
-
-	/**
-	 * reference to IpServiceDiscovery, obtained from OSA framework
-	 */
-	private IpServiceDiscovery m_ipSvcDisc;
-
-	/**
-	 * reference to service agreement interface
-	 */
-	private IpServiceAgreementManagement m_ipSvcAgmt;
 
 	IpFwServiceRegistration m_ipFwSrvReg;
 
@@ -1003,7 +992,6 @@ public class ServerFramework {
 				m_logger.info("\tagreementText    = " + agreementText);
 				m_logger.info("\tsigningAlgorithm = " + signingAlgorithm);
 			}
-			byte[] response;
 
 			// Validate Input Parameters
 			if (serviceToken == null) {

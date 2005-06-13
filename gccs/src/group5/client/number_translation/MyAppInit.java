@@ -1,4 +1,4 @@
-//$Id: MyAppInit.java,v 1.4 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: MyAppInit.java,v 1.5 2005/06/13 08:12:18 huuhoa Exp $
 package group5.client.number_translation;
 
 import org.apache.log4j.BasicConfigurator;
@@ -37,6 +37,7 @@ public class MyAppInit extends ApplicationFramework {
 			IpCallControlManager ipCCM = IpCallControlManagerHelper
 					.narrow(ipTemp);
 			MyApplicationLogic appLogic = new MyApplicationLogic(ipCCM);
+			appLogic.run();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);

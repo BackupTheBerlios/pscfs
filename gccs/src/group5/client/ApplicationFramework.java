@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.7 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.8 2005/06/13 08:12:18 huuhoa Exp $
 /**
  * 
  */
@@ -120,7 +120,7 @@ public class ApplicationFramework {
 
 	private byte[] fwSignature = null;
 
-	private String agreementText = "Dummy agreement text";
+	private String agreeText = "Dummy agreement text";
 
 	/**
 	 * reference to IpAccess, obtained from OSA framework
@@ -322,8 +322,8 @@ public class ApplicationFramework {
 		// Create a list of service properties that indicates what kind of
 		// service we are looking for. In our case the service is identified
 		// only by its name.
-		TpServiceProperty prop = new TpServiceProperty("Service Name",
-				new String[] { serviceName });
+//		TpServiceProperty prop = new TpServiceProperty("Service Name",
+//				new String[] { serviceName });
 		TpServiceProperty[] props = new TpServiceProperty[0];
 
 		// Obtain a service ID of the service
@@ -433,7 +433,7 @@ public class ApplicationFramework {
 					m_logger
 							.info("The client invokes signServiceAgreement() of framework with singing method of P_MD5_RSA_512 ...");
 				TpSignatureAndServiceMgr signatureAndServiceMgr = agmtIf
-						.signServiceAgreement(svcToken, agreementText,
+						.signServiceAgreement(svcToken, agreeText,
 								"P_MD5_RSA_512");
 
 				fwSignature = signatureAndServiceMgr.DigitalSignature;
@@ -518,7 +518,7 @@ public class ApplicationFramework {
 		if (m_logger.isInfoEnabled())
 			m_logger.info("Terminating service agreement by the client....");
 
-		svcAgmtIf.terminateServiceAgreement(svcToken, agreementText,
+		svcAgmtIf.terminateServiceAgreement(svcToken, agreeText,
 				fwSignature);
 	}
 
@@ -996,7 +996,6 @@ public class ApplicationFramework {
 				m_logger.info("\tagreementText    = " + agreementText);
 				m_logger.info("\tsigningAlgorithm = " + signingAlgorithm);
 			}
-			byte[] response;
 
 			// Validate Input Parameters
 			if (serviceToken == null) {

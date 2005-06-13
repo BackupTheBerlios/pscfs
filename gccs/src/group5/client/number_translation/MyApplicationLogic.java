@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.5 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.6 2005/06/13 08:12:18 huuhoa Exp $
 /**
  * 
  */
@@ -52,10 +52,9 @@ public class MyApplicationLogic {
 		osaEventQueue = new MyAppEventQueue();
 		ipCCM = ipCCM_param;
 		number = "1234567890??";
-		start_logic();
 	}
 
-	void start_logic() {
+	public void run() {
 		m_logger.info("Start monitoring number: " + number);
 		monitorOrigNumbers(ipCCM, new AppCallControlManager(this), number);
 		m_logger.info("Entering loop");
@@ -93,9 +92,8 @@ public class MyApplicationLogic {
 	}
 
 	private void doRouteReq(MyAppEvent event, String newDestination) {
-		int callLegSessionID = 0;
 		try {
-			callLegSessionID = event.callId.CallReference.routeReq(
+			event.callId.CallReference.routeReq(
 					event.callId.CallSessionID, new TpCallReportRequest[0],
 					myAppCreateE164Address(newDestination),
 					event.eventInfo.OriginatingAddress,

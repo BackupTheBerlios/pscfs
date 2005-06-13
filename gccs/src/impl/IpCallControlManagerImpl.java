@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.9 2005/06/12 22:24:03 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.10 2005/06/13 08:12:18 huuhoa Exp $
 /**
  * 
  */
@@ -43,8 +43,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	private IpCallControlManager ipCallControlManager;
 
 	private HashMap administration;
-
-	private String C;
 
 	private int CallSessionID;
 
@@ -251,7 +249,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			throw new CallControlException("No events specified", 2, 2);
 		}
 		if ((crit.getCriteria() & 0xffffe000) != 0) {
-			throw new CallControlException("Un known event", 1, 2);
+			throw new CallControlException("Unknown event", 1, 2);
 		}
 		if (analyseEventMask(crit.getCriteria()) == 0) {
 			throw new CallControlException(

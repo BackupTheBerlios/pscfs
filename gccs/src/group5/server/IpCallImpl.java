@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.12 2005/06/12 22:33:05 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.13 2005/06/13 08:12:18 huuhoa Exp $
 /**
  * 
  */
@@ -17,7 +17,6 @@ import org.csapi.TpAddress;
 import org.csapi.TpAoCInfo;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallChargePlan;
-import org.csapi.cc.gccs.IpCall;
 import org.csapi.cc.gccs.IpCallPOA;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
@@ -272,11 +271,4 @@ public class IpCallImpl extends IpCallPOA {
 		// TODO Auto-generated method stub
 
 	}
-
-	private int callSessionID;
-
-	private IpCall ipCall;
-
-	private IpAppCallControlManagerImpl manager;
-
 }
