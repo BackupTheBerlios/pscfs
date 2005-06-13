@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.12 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.13 2005/06/13 11:18:22 huuhoa Exp $
 /**
  * 
  */
@@ -59,7 +59,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	static Logger m_logger = Logger.getLogger(IpCallControlManagerImpl.class);
+	private static Logger m_logger = Logger.getLogger(IpCallControlManagerImpl.class);
 
 	/**
 	 * 

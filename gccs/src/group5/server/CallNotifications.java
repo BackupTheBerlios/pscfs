@@ -1,7 +1,5 @@
-//$Id: CallNotifications.java,v 1.7 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: CallNotifications.java,v 1.8 2005/06/13 11:18:22 huuhoa Exp $
 package group5.server;
-
-//	 Source File Name:   CallNotifications.java
 
 import java.util.Hashtable;
 import java.util.Iterator;

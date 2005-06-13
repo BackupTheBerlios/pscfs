@@ -1,4 +1,4 @@
-//$Id: CallControlSCS.java,v 1.6 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.7 2005/06/13 11:18:22 huuhoa Exp $
 /**
  * 
  */
@@ -52,8 +52,6 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 	public int startService() {
 		SCSProperties scsproperties = new SCSProperties(
 				"P_GENERIC_CALL_CONTROL", "1.0");
-		// SCSProperties scsproperties = new SCSProperties("CamelCallControl",
-		// "3.3");
 		scsproperties.setProperty("P_SUPPORTED_INTERFACES", new String[] {
 				"IpService", "IpCallControlManager", "IpCall" });
 		scsproperties.setProperty("P_OPERATION_SET", new String[] {

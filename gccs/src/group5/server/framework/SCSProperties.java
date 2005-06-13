@@ -1,4 +1,4 @@
-//$Id: SCSProperties.java,v 1.5 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: SCSProperties.java,v 1.6 2005/06/13 11:18:22 huuhoa Exp $
 package group5.server.framework;
 
 import java.util.HashMap;
@@ -11,16 +11,16 @@ public final class SCSProperties {
 
 	private Map m_mapProperties;
 
-	public SCSProperties(String s, String s1) {
+	public SCSProperties(String serviceName, String serviceVersion) {
 		m_mapProperties = new HashMap();
-		m_mapProperties.put("P_SERVICE_NAME", new String[] { s });
-		m_mapProperties.put("P_SERVICE_VERSION", new String[] { s1 });
+		m_mapProperties.put("P_SERVICE_NAME", new String[] { serviceName });
+		m_mapProperties.put("P_SERVICE_VERSION", new String[] { serviceVersion });
 		m_mapProperties.put("P_PRODUCT_NAME", new String[] { "Group 5 - Lab" });
 		m_mapProperties.put("P_PRODUCT_VERSION", new String[] { "1.0" });
 	}
 
-	public void setProperty(String s, String as[]) {
-		m_mapProperties.put(s, as);
+	public void setProperty(String sKey, String propertyList[]) {
+		m_mapProperties.put(sKey, propertyList);
 	}
 
 	TpServiceProperty[] getServicePropertyList() {
@@ -39,13 +39,13 @@ public final class SCSProperties {
 	}
 
 	String getServiceName() {
-		String as[] = (String[]) m_mapProperties.get("P_SERVICE_NAME");
-		return as[0];
+		String srvName[] = (String[]) m_mapProperties.get("P_SERVICE_NAME");
+		return srvName[0];
 	}
 
 	String getServiceVersion() {
-		String as[] = (String[]) m_mapProperties.get("P_SERVICE_VERSION");
-		return as[0];
+		String srvVersion[] = (String[]) m_mapProperties.get("P_SERVICE_VERSION");
+		return srvVersion[0];
 	}
 
 }

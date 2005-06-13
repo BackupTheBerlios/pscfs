@@ -1,4 +1,4 @@
-//$Id: OSAServiceFactoryImpl.java,v 1.6 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: OSAServiceFactoryImpl.java,v 1.7 2005/06/13 11:18:22 huuhoa Exp $
 package group5.server.framework;
 
 import java.lang.reflect.Constructor;
@@ -26,7 +26,7 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 	/**
 	 * m_logger for the system
 	 */
-	static Logger m_logger;
+	private static Logger m_logger;
 
 	static {
 		m_logger = Logger.getLogger(ServerFramework.class);
