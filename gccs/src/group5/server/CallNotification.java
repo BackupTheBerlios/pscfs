@@ -1,5 +1,5 @@
-//$Id: CallNotification.java,v 1.6 2005/06/13 08:20:03 huuhoa Exp $
-package impl;
+//$Id: CallNotification.java,v 1.7 2005/06/13 09:11:51 huuhoa Exp $
+package group5.server;
 
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;

@@ -1,8 +1,8 @@
-//$Id: CallContext.java,v 1.6 2005/06/13 08:20:03 huuhoa Exp $
+//$Id: CallContext.java,v 1.7 2005/06/13 09:11:51 huuhoa Exp $
 /**
  * 
  */
-package impl;
+package group5.server;
 
 /**
  * @author Nguyen Huu Hoa

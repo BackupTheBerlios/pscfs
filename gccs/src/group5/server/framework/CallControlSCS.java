@@ -1,8 +1,8 @@
-//$Id: CallControlSCS.java,v 1.5 2005/06/13 08:20:05 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.6 2005/06/13 09:11:51 huuhoa Exp $
 /**
  * 
  */
-package group5.server;
+package group5.server.framework;
 
 import org.apache.log4j.Logger;
 import org.csapi.TpCommonExceptions;

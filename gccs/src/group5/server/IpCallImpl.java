@@ -1,8 +1,11 @@
-//$Id: IpCallImpl.java,v 1.14 2005/06/13 08:20:04 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.15 2005/06/13 09:11:51 huuhoa Exp $
 /**
  * 
  */
-package impl;
+package group5.server;
+
+import group5.client.IpAppCallControlManagerImpl;
+import group5.client.IpAppCallImpl;
 
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;

@@ -1,8 +1,8 @@
-//$Id: IpSCS.java,v 1.4 2005/06/13 08:20:04 huuhoa Exp $
+//$Id: IpSCS.java,v 1.5 2005/06/13 09:11:51 huuhoa Exp $
 /**
  * 
  */
-package group5.server;
+package group5.server.framework;
 
 /**
  * @author Nguyen Huu Hoa Interface to provide service management

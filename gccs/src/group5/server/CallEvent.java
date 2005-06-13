@@ -1,5 +1,5 @@
-//$Id: CallEvent.java,v 1.7 2005/06/13 08:20:04 huuhoa Exp $
-package impl;
+//$Id: CallEvent.java,v 1.8 2005/06/13 09:11:51 huuhoa Exp $
+package group5.server;
 
 import org.csapi.TpAddress;
 import org.csapi.cc.TpCallError;

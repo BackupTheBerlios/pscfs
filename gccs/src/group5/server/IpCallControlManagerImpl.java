@@ -1,11 +1,12 @@
-//$Id: IpCallControlManagerImpl.java,v 1.11 2005/06/13 08:20:04 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.12 2005/06/13 09:11:51 huuhoa Exp $
 /**
  * 
  */
-package impl;
+package group5.server;
 
 import group5.CallControlException;
 import group5.CallCriteria;
+import group5.client.IpAppCallControlManagerImpl;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -78,7 +79,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		// TODO Auto-generated method stub
 		if (ipACCM_delegate == null)
 			return null;
-		impl.IpCallImpl aCallReference = new impl.IpCallImpl();
+		IpCallImpl aCallReference = new IpCallImpl();
 		if (aCallReference == null) {
 			// TODO: hh
 			ipACCM_delegate.callAborted(0);

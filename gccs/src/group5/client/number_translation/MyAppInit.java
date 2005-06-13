@@ -1,5 +1,7 @@
-//$Id: MyAppInit.java,v 1.5 2005/06/13 08:12:18 huuhoa Exp $
+//$Id: MyAppInit.java,v 1.6 2005/06/13 09:11:52 huuhoa Exp $
 package group5.client.number_translation;
+
+import group5.client.ApplicationFramework;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -7,8 +9,6 @@ import org.csapi.IpService;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerHelper;
 import org.omg.CORBA.UserException;
-
-import group5.client.ApplicationFramework;
 
 public class MyAppInit extends ApplicationFramework {
 	MyAppInit() throws UserException {

@@ -1,11 +1,11 @@
-//$Id: testLog4j.java,v 1.2 2005/06/12 22:24:04 huuhoa Exp $
+//$Id: testLog4j.java,v 1.3 2005/06/13 09:11:51 huuhoa Exp $
 /**
  * 
  */
 package group5;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 /**
  * @author Nguyen Huu Hoa

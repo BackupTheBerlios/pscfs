@@ -1,10 +1,10 @@
-//$Id: IpAppCallControlManagerImpl.java,v 1.12 2005/06/13 08:20:04 huuhoa Exp $
+//$Id: IpAppCallControlManagerImpl.java,v 1.13 2005/06/13 09:11:51 huuhoa Exp $
 /**
  * IpAppCallControlManagerImpl: Implementation of the interface IpAppCallControlManager
  * This class will manage the calls from the application's side 
  */
 
-package impl;
+package group5.client;
 
 import group5.CallControlEvent;
 import group5.CallControlException;
@@ -12,6 +12,8 @@ import group5.CallControlListener;
 import group5.CallCriteria;
 import group5.TypeConverter;
 import group5.client.number_translation.MyApplicationLogic;
+import group5.server.IpCallControlManagerImpl;
+import group5.server.IpCallImpl;
 
 import java.util.Collections;
 import java.util.HashMap;
