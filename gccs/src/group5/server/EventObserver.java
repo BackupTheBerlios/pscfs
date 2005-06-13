@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.1 2005/06/13 11:17:51 huuhoa Exp $
+//$Id: EventObserver.java,v 1.2 2005/06/13 12:34:25 huuhoa Exp $
 /**
  * 
  */
@@ -21,6 +21,8 @@ import org.apache.log4j.Logger;
  * <li>Get existing instance of EventObserver
  * <pre>evObserver = EventObserver.getInstance();</pre>
  * <li>Set appropriated watcher by calling setWatcher()
+ * <li>Start the listener
+ * <pre>evObserver.listen();</pre>
  * </ol>
  * @author Nguyen Huu Hoa
  * 
@@ -43,8 +45,6 @@ public class EventObserver {
 	private EventObserver() {
 		m_logger.debug("ctor()");
 		evListener = new EventListener();
-		// start listener
-		listen();
 	}
 
 	// begin actual observer implementation
