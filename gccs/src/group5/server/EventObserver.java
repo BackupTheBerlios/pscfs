@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.2 2005/06/13 12:34:25 huuhoa Exp $
+//$Id: EventObserver.java,v 1.3 2005/06/13 22:00:46 huuhoa Exp $
 /**
  * 
  */
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  * <ol>
  * <li>Get existing instance of EventObserver
  * <pre>evObserver = EventObserver.getInstance();</pre>
- * <li>Set appropriated watcher by calling setWatcher()
+ * <li>Set appropriated watcher by calling addWatcher()
  * <li>Start the listener
  * <pre>evObserver.listen();</pre>
  * </ol>
@@ -76,7 +76,7 @@ public class EventObserver {
 		return watcherID;
 	}
 
-	public synchronized void setWatcher(IpEventHandler eventHandler,
+	public synchronized void addWatcher(IpEventHandler eventHandler,
 			EventCriteria eventCriteria) {
 		Observer newObserver = new Observer(eventHandler, eventCriteria);
 		int nWatcherID = getWatcherID();
