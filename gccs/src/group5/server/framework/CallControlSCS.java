@@ -1,8 +1,10 @@
-//$Id: CallControlSCS.java,v 1.7 2005/06/13 11:18:22 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.8 2005/06/14 08:21:59 huuhoa Exp $
 /**
  * 
  */
 package group5.server.framework;
+
+import group5.server.EventObserver;
 
 import org.apache.log4j.Logger;
 import org.csapi.TpCommonExceptions;
@@ -78,6 +80,12 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 		try {
 			m_serviceID = registerService("P_GENERIC_CALL_CONTROL",
 					scsproperties, this.getClass());
+			// after registering the service
+			// we have to start all the event observers
+			EventObserver evOb = EventObserver.getInstance();
+			// start a thread to listen to events
+			evOb.listen();
+			
 		} catch (TpCommonExceptions ex) {
 			m_logger.fatal("Error starting service CallControlSCS"
 					+ ex.getMessage(), ex);
