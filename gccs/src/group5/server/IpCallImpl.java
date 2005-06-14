@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.18 2005/06/14 20:56:47 aachenner Exp $
+//$Id: IpCallImpl.java,v 1.19 2005/06/14 21:03:10 huuhoa Exp $
 /**
  * 
  */
@@ -51,8 +51,6 @@ public class IpCallImpl extends IpCallPOA
 	static {
 		m_logger = Logger.getLogger(IpCallImpl.class);
 	}
-	
-	private EventObserver event_Observer = EventObserver.getInstance();
 	
 	public void setIpAppCall(IpAppCall appCall){
 		this.appCall = appCall;
