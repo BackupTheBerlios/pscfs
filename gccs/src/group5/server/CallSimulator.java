@@ -1,11 +1,10 @@
-//$Id: CallSimulator.java,v 1.3 2005/06/14 18:24:55 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.4 2005/06/14 18:37:56 aachenner Exp $
 /**
  * 
  */
 package group5.server;
 
 import org.csapi.TpAddress;
-import org.csapi.cc.TpCallError;
 import org.csapi.cc.gccs.TpCallReportType;
 
 /**
@@ -58,7 +57,6 @@ public class CallSimulator extends EventHandlerImpl {
 
 		if ((subTarg.getStatus() & Subscriber.Idle) == 0) {
 			// subscriber is not idle, can not make call
-			evRouteRes.errorIndication = new TpCallError();
 			// evRouteRes.errorIndication.ErrorType = TpCallErrorType;
 			if ((subTarg.getStatus() & Subscriber.Busy) != 0)
 				evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_BUSY;

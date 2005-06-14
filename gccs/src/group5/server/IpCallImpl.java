@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.15 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.16 2005/06/14 18:37:56 aachenner Exp $
 /**
  * 
  */
@@ -47,7 +47,10 @@ public class IpCallImpl extends IpCallPOA {
 	static {
 		m_logger = Logger.getLogger(IpCallImpl.class);
 	}
-
+	
+	private EventObserver event_Observer = EventObserver.getInstance();
+	
+	
 	public IpCallImpl(TpCallIdentifier callid, String originatorAddress,
 			String originalDestinationAddress,
 			IpAppCallControlManagerImpl manager, IpAppCallImpl ipAppCallImpl)
@@ -83,12 +86,10 @@ public class IpCallImpl extends IpCallPOA {
 
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
-				originatingAddress, CallEvent.eventRouteReq, null, null, 0);
-				
-				
+				originatingAddress, CallEvent.eventRouteReq, 0, 0);
 		queue.put(evtCall);
 		
-		
+		event_Observer.listen();
 		
 		/**
 		 *Returns callLegSessionID: Specifies the sessionID assigned by the gateway. 
@@ -159,9 +160,8 @@ public class IpCallImpl extends IpCallPOA {
 		// Khuong added
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventReleaseCall, null, null, 0);
+				null, CallEvent.eventReleaseCall, 0, 0);
 		queue.put(evtCall);
-
 	}
 
 	/*
@@ -174,7 +174,7 @@ public class IpCallImpl extends IpCallPOA {
 		// TODO Auto-generated method stub
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventDeassignCall, null, null, 0);
+				null, CallEvent.eventDeassignCall, 0, 0);
 		queue.put(evtCall);
 	}
 
