@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.3 2005/06/13 22:00:46 huuhoa Exp $
+//$Id: EventObserver.java,v 1.4 2005/06/14 19:30:33 aachenner Exp $
 /**
  * 
  */
@@ -19,11 +19,20 @@ import org.apache.log4j.Logger;
  * <b>Usage:</b><br>
  * <ol>
  * <li>Get existing instance of EventObserver
- * <pre>evObserver = EventObserver.getInstance();</pre>
+ * 
+ * <pre>
+ * evObserver = EventObserver.getInstance();
+ * </pre>
+ * 
  * <li>Set appropriated watcher by calling addWatcher()
  * <li>Start the listener
- * <pre>evObserver.listen();</pre>
+ * 
+ * <pre>
+ * evObserver.listen();
+ * </pre>
+ * 
  * </ol>
+ * 
  * @author Nguyen Huu Hoa
  * 
  */
@@ -34,12 +43,12 @@ public class EventObserver {
 	private static EventObserver m_eventObserver = null;
 
 	public static EventObserver getInstance() {
-		if (m_eventObserver == null)
-		{
+		if (m_eventObserver == null) {
 			m_eventObserver = new EventObserver();
 		}
 		return m_eventObserver;
 	}
+
 	private EventListener evListener;
 
 	private EventObserver() {
@@ -96,10 +105,10 @@ public class EventObserver {
 		evListener.start();
 	}
 
-	public void stop()
-	{
+	public void stop() {
 		evListener.stop();
 	}
+
 	private class EventListener extends Thread {
 		public void run() {
 			CallEventQueue evQueue = CallEventQueue.getInstance();
@@ -111,10 +120,35 @@ public class EventObserver {
 				while (iterator.hasNext()) {
 					Observer ob = (Observer) iterator.next();
 					if (ob.getCriteria().isWatched(ev.eventType)) {
-						ob.getHandler().onEvent(ev.eventType, ev);
+						dispatchEvent(ob.getHandler(), ev.eventType, ev);
 					}
 				}
 			}
+		}
+
+		private void dispatchEvent(IpEventHandler handler, int eventType,
+				CallEvent eventData) {
+			// get data
+			switch (eventType) {
+			case CallEvent.eventRouteReq:
+				// Event route request
+				handler.onRouteReq(eventData.CallSessionID,
+						eventData.targetAddress, eventData.originatingAddress);
+				break;
+			case CallEvent.eventDeassignCall:
+				handler.onDeassignCall(eventData.CallSessionID);
+				break;
+			case CallEvent.eventReleaseCall:
+				handler.onReleaseCall(eventData.CallSessionID);
+				break;
+			case CallEvent.eventRouteRes:
+				handler.onRouteRes(eventData.CallSessionID,
+						eventData.eventReport, eventData.callLegSessionID);
+			default:
+				handler.onEvent(eventType, eventData);
+				break;
+			}
+
 		}
 	}
 }

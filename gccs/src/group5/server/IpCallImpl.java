@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.16 2005/06/14 18:37:56 aachenner Exp $
+//$Id: IpCallImpl.java,v 1.17 2005/06/14 19:30:33 aachenner Exp $
 /**
  * 
  */
@@ -38,10 +38,7 @@ public class IpCallImpl extends IpCallPOA {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Khuong added 9.28pm 07.06
-	 * logger for the system
-	 */
+
 	static Logger m_logger;
 
 	static {
@@ -99,7 +96,7 @@ public class IpCallImpl extends IpCallPOA {
 		 */
 		return 0;
 		
-		// // K added
+		// 
 		// if(m_m_logger.isInfoEnabled())
 		// m_m_logger.info(("Route Request"));
 		// checkEnd();
@@ -275,3 +272,5 @@ public class IpCallImpl extends IpCallPOA {
 
 	}
 }
+
+

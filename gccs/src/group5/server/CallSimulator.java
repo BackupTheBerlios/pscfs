@@ -1,10 +1,11 @@
-//$Id: CallSimulator.java,v 1.4 2005/06/14 18:37:56 aachenner Exp $
+//$Id: CallSimulator.java,v 1.5 2005/06/14 19:30:33 aachenner Exp $
 /**
  * 
  */
 package group5.server;
 
 import org.csapi.TpAddress;
+import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportType;
 
 /**
@@ -18,12 +19,12 @@ import org.csapi.cc.gccs.TpCallReportType;
  * @author Nguyen Huu Hoa
  * 
  */
-public class CallSimulator extends EventHandlerImpl {
+public class CallSimulator implements IpEventHandler {
 
 	/**
 	 * @see group5.server.EventHandlerImpl#onDeassignCall(int)
 	 */
-	protected void onDeassignCall(int callSessionID) {
+	public void onDeassignCall(int callSessionID) {
 
 	}
 
@@ -32,7 +33,7 @@ public class CallSimulator extends EventHandlerImpl {
 	 * 
 	 * @see group5.server.EventHandlerImpl#onReleaseCall(int)
 	 */
-	protected void onReleaseCall(int callSessionID) {
+	public void onReleaseCall(int callSessionID) {
 
 	}
 
@@ -40,7 +41,7 @@ public class CallSimulator extends EventHandlerImpl {
 	 * @see group5.server.EventHandlerImpl#onRouteReq(int, org.csapi.TpAddress,
 	 *      org.csapi.TpAddress)
 	 */
-	protected void onRouteReq(int callSessionID, TpAddress targetAddr,
+	public void onRouteReq(int callSessionID, TpAddress targetAddr,
 			TpAddress origAddr) {
 		CallEvent evRouteRes = new CallEvent(callSessionID,
 				CallEvent.eventRouteRes);
@@ -72,6 +73,16 @@ public class CallSimulator extends EventHandlerImpl {
 		// TODO Add appropriated indicator here
 		evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_ANSWER;
 		CallEventQueue.getInstance().put(evRouteRes);
+	}
+
+	public void onEvent(int eventID, CallEvent eventData) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onRouteRes(int callSessionID, TpCallReport eventReport, int callLegSessionID) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
