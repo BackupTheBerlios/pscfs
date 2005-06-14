@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.5 2005/06/14 08:15:31 huuhoa Exp $
+//$Id: Subscriber.java,v 1.6 2005/06/14 18:24:55 huuhoa Exp $
 /**
  * 
  */
@@ -102,7 +102,7 @@ public class Subscriber {
 	 * @param partnerAddress
 	 *            The partnerAddress to set.
 	 */
-	public void makeCallTo(String partnerAddr) {
+	public void receiveCallFrom(String partnerAddr) {
 		this.partnerAddress = partnerAddr;
 		status |= Busy;
 	}
