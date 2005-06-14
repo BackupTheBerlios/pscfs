@@ -1,4 +1,4 @@
-//$Id: CallEvent.java,v 1.8 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: CallEvent.java,v 1.9 2005/06/14 08:15:31 huuhoa Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -34,6 +34,8 @@ public class CallEvent {
 	public static final int eventDeassignCall = 2;
 
 	public static final int eventReleaseCall = 3;
+	
+	public static final int eventRouteRes = 4;
 	/**
 	 * Specifies the result of the request to route the call to the destination 
 	 * party. It also includes the network event, date and 
@@ -53,6 +55,20 @@ public class CallEvent {
 	 */
 	public TpCallError errorIndication;
 	
+	CallEvent(int CallSession_ID, int eventType)
+	{
+		CallSessionID = CallSession_ID;
+		switch (eventType)
+		{
+		case eventRouteReq:
+		case eventDeassignCall:
+		case eventReleaseCall:
+			this.eventType = eventType;
+			break;
+		default:
+			throw new org.omg.CORBA.BAD_PARAM();
+		}
+	}
 	/**
 	 * 
 	 * @throws org.omg.CORBA.BAD_PARAM

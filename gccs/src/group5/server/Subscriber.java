@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.4 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: Subscriber.java,v 1.5 2005/06/14 08:15:31 huuhoa Exp $
 /**
  * 
  */
@@ -16,12 +16,20 @@ public class Subscriber {
 	 */
 	private int status;
 
-	public static final int Reachable = 0;
+	public static final int Reachable = 0x0001;
 
-	public static final int Unreachable = 1;
+	public static final int Unreachable = 0x0002;
 
-	public static final int Busy = 2;
+	/**
+	 * subscriber does not take part in any call.
+	 * Feel free to call it :)
+	 */
+	public static final int Idle = 0x0004;
 
+	/**
+	 * it is busying calling other
+	 */
+	public static final int Busy = 0x0008;
 	/**
 	 * Address of the subscriber in the network
 	 */
@@ -79,8 +87,8 @@ public class Subscriber {
 	 * @param subscribeAddress
 	 *            The subscribeAddress to set.
 	 */
-	public void setSubscribeAddress(String subscribeAddress) {
-		this.subscribeAddress = subscribeAddress;
+	public void setSubscribeAddress(String subscribeAddr) {
+		this.subscribeAddress = subscribeAddr;
 	}
 
 	/**
@@ -94,10 +102,15 @@ public class Subscriber {
 	 * @param partnerAddress
 	 *            The partnerAddress to set.
 	 */
-	public void setPartnerAddress(String partnerAddress) {
-		this.partnerAddress = partnerAddress;
+	public void makeCallTo(String partnerAddr) {
+		this.partnerAddress = partnerAddr;
+		status |= Busy;
 	}
 
+	public void endCall()
+	{
+		status &= ~Busy;
+	}
 	/**
 	 * @return Returns the partnerAddress.
 	 */

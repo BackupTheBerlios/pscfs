@@ -1,4 +1,4 @@
-//$Id: EventHandlerImpl.java,v 1.1 2005/06/13 12:31:26 huuhoa Exp $
+//$Id: EventHandlerImpl.java,v 1.2 2005/06/14 08:15:31 huuhoa Exp $
 /**
  * 
  */
@@ -22,13 +22,13 @@ public class EventHandlerImpl implements IpEventHandler {
 		switch (eventID) {
 		case CallEvent.eventRouteReq:
 			// Event route request
-			onRouteReq(ev.targetAddress, ev.originatingAddress);
+			onRouteReq(ev.CallSessionID, ev.targetAddress, ev.originatingAddress);
 			break;
 		case CallEvent.eventDeassignCall:
-			onDeassignCall();
+			onDeassignCall(ev.CallSessionID);
 			break;
 		case CallEvent.eventReleaseCall:
-			onReleaseCall();
+			onReleaseCall(ev.CallSessionID);
 			break;
 		default:
 			break;
@@ -36,15 +36,15 @@ public class EventHandlerImpl implements IpEventHandler {
 
 	}
 
-	protected void onRouteReq(TpAddress targetAddr, TpAddress origAddr) {
+	protected void onRouteReq(int callSessionID, TpAddress targetAddr, TpAddress origAddr) {
 
 	}
 
-	protected void onDeassignCall() {
+	protected void onDeassignCall(int callSessionID) {
 
 	}
 
-	protected void onReleaseCall() {
+	protected void onReleaseCall(int callSessionID) {
 
 	}
 }
