@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.4 2005/06/14 19:30:33 aachenner Exp $
+//$Id: EventObserver.java,v 1.5 2005/06/14 20:56:47 aachenner Exp $
 /**
  * 
  */
@@ -85,11 +85,12 @@ public class EventObserver {
 		return watcherID;
 	}
 
-	public synchronized void addWatcher(IpEventHandler eventHandler,
+	public synchronized int addWatcher(IpEventHandler eventHandler,
 			EventCriteria eventCriteria) {
 		Observer newObserver = new Observer(eventHandler, eventCriteria);
 		int nWatcherID = getWatcherID();
 		m_mapObservers.put(new Integer(nWatcherID), newObserver);
+		return nWatcherID;
 	}
 
 	public synchronized void removeWatcher(int nWatcherID) {

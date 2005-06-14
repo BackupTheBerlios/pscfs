@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.17 2005/06/14 19:30:33 aachenner Exp $
+//$Id: IpCallImpl.java,v 1.18 2005/06/14 20:56:47 aachenner Exp $
 /**
  * 
  */
@@ -20,10 +20,12 @@ import org.csapi.TpAddress;
 import org.csapi.TpAoCInfo;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallChargePlan;
+import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpCallPOA;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallReleaseCause;
+import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportRequest;
 
 /**
@@ -31,13 +33,18 @@ import org.csapi.cc.gccs.TpCallReportRequest;
  * @author Nguyen Duc Du Khuong 
  */
 
-public class IpCallImpl extends IpCallPOA {
+
+
+public class IpCallImpl extends IpCallPOA
+	implements IpEventHandler {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	private int nWatcherID;
+	private IpAppCall appCall;
 
 	static Logger m_logger;
 
@@ -47,6 +54,9 @@ public class IpCallImpl extends IpCallPOA {
 	
 	private EventObserver event_Observer = EventObserver.getInstance();
 	
+	public void setIpAppCall(IpAppCall appCall){
+		this.appCall = appCall;
+	}
 	
 	public IpCallImpl(TpCallIdentifier callid, String originatorAddress,
 			String originalDestinationAddress,
@@ -55,7 +65,6 @@ public class IpCallImpl extends IpCallPOA {
 			P_INVALID_INTERFACE_TYPE {
 
 	}
-
 	/**
 	 * 
 	 */
@@ -79,14 +88,32 @@ public class IpCallImpl extends IpCallPOA {
 			throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE,
 			TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID,
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
-		// TODO Auto-generated method stub
-
+		
+		if(m_logger.isInfoEnabled())
+			m_logger.info("Route Request");
+		if (targetAddress == null)
+			throw new P_INVALID_ADDRESS("Error in the target address");
+		if (originalDestinationAddress == null)
+			throw new P_INVALID_ADDRESS ("Error in orginal destination Address");
+		if (originatingAddress == null)
+			throw new P_INVALID_ADDRESS ("Error in orginanating Address");
+		if (redirectingAddress == null)
+			throw new P_INVALID_ADDRESS ("Error in redirecting Address");
+		
+		// register for event notifications
+		EventCriteria evCriteria = new EventCriteria();
+		evCriteria.addCriteria(CallEvent.eventRouteRes);
+		evCriteria.addCriteria(CallEvent.eventRouteErr);
+		nWatcherID = EventObserver.getInstance().addWatcher(this, evCriteria);
+		
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
 				originatingAddress, CallEvent.eventRouteReq, 0, 0);
 		queue.put(evtCall);
 		
-		event_Observer.listen();
+		//event_Observer.listen();
+		
+	
 		
 		/**
 		 *Returns callLegSessionID: Specifies the sessionID assigned by the gateway. 
@@ -154,11 +181,17 @@ public class IpCallImpl extends IpCallPOA {
 			throws P_INVALID_NETWORK_STATE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-		// Khuong added
+		
+		
+		if(m_logger.isInfoEnabled())
+			m_logger.info("release Call");
+		
+			
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
 				null, CallEvent.eventReleaseCall, 0, 0);
 		queue.put(evtCall);
+		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}
 
 	/*
@@ -169,10 +202,15 @@ public class IpCallImpl extends IpCallPOA {
 	public void deassignCall(int callSessionID) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
+		
+		if(m_logger.isInfoEnabled())
+			m_logger.info("deassign Call");
+		
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null,
 				null, CallEvent.eventDeassignCall, 0, 0);
 		queue.put(evtCall);
+		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}
 
 	/*
@@ -270,6 +308,31 @@ public class IpCallImpl extends IpCallPOA {
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void onEvent(int eventID, CallEvent eventData) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onRouteReq(int callSessionID, TpAddress targetAddr, TpAddress origAddr) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onDeassignCall(int callSessionID) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onReleaseCall(int callSessionID) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onRouteRes(int callSessionID, TpCallReport eventReport, int callLegSessionID) {
+		// TODO Auto-generated method stub
+		appCall.routeRes(callSessionID, eventReport, callLegSessionID);
 	}
 }
 
