@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.7 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.8 2005/06/15 18:15:00 huuhoa Exp $
 /**
  * 
  */
@@ -179,6 +179,10 @@ public class ServerFramework {
 		return m_ipInitial;
 	}
 
+	/**
+	 * @return reference to IpAPILevelAuthentication interface
+	 * @throws TpCommonExceptions
+	 */
 	protected IpAPILevelAuthentication getIpAuthentication()
 			throws TpCommonExceptions {
 		m_logger.debug("ServiceRegistration::getIpAuthentication");
@@ -188,6 +192,7 @@ public class ServerFramework {
 						getIpInitial(), m_applicationID, m_password);
 			} catch (P_INVALID_INTERFACE_TYPE ex) {
 				m_logger.fatal("Invalid interface type: " + ex.getMessage());
+				throw new TpCommonExceptions(4, "Invalid interface type: " + ex.getMessage());
 			} catch (P_INVALID_DOMAIN_ID ex) {
 				m_logger.fatal("Invalid domain id: " + ex.getMessage());
 			} catch (P_INVALID_AUTH_TYPE ex) {

@@ -1,4 +1,4 @@
-//$Id: CallEventQueue.java,v 1.6 2005/06/13 09:11:51 huuhoa Exp $
+//$Id: CallEventQueue.java,v 1.7 2005/06/15 18:15:00 huuhoa Exp $
 package group5.server;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  * 
  */
 
-public class CallEventQueue {
+public final class CallEventQueue {
 
 	List list;
 

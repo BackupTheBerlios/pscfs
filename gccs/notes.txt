@@ -69,3 +69,28 @@ The classpath should include:
 %GROUP_HOME%\bin\.
 
 
+ACCOUNT TO I4 SERVER
+Server: weed.informatik.rwth-aachen.de
+
+Connect to the server via SSH
+ssh -p 4711 disgroup5@weed.informatik.rwth-aachen.de
+password: TEST@123
+change password after firts login
+
+Connect to the MySQL
+mysql -u group5 -p
+> use group5
+//dev.mysql.com/
+
+CALL EVENTS DISPATCHING
+When a call related event appears on the network. The IpCallControlManager should be the first one to be notified
+about that event. IpCallControlManager will dispatch the event to appropriated IpAppCallControlManager via CallEventNotify.
+IpAppCallControlManager, in turn, handle the event, make some modifications (if needed) then send the result back
+to IpCallControlManager. Then, IpCallControlManager forward the result to the gateway.
+For example: When user dial a number, the gateway will notify IpCallControlManager about the event: routeReq.
+IpCallControlManager forward that event to IpApp.. , IpApp.. make modification of the destination routing number, then
+send back to IpCall..., the IpCallControlManager forward it to gateway. Gateway receives the final result, make appropriated
+routing to the right destination (not the original one) - that is how Number Translation was done.
+- First, the event should only be forwarded to IpCallControlManager
+- When the gateway receives the final result, (still the routeReq with modification of the destination address). It will
+dispatch the events to appropriated listeners (but not the IpCallControlManager)
