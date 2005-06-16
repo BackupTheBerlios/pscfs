@@ -1,4 +1,4 @@
-//$Id: Subscribers.java,v 1.4 2005/06/14 08:15:31 huuhoa Exp $
+//$Id: Subscribers.java,v 1.5 2005/06/16 10:30:05 huuhoa Exp $
 /**
  * 
  */
@@ -47,7 +47,7 @@ public class Subscribers {
 	/**
 	 * Return the subscriber associated with subscriber ID
 	 * 
-	 * @param subscrID
+	 * @param subscriberAddr
 	 *            ID of the subscriber
 	 */
 	public Subscriber getSubscriber(String subscriberAddr) {

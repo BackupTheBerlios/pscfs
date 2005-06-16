@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.6 2005/06/14 18:24:55 huuhoa Exp $
+//$Id: Subscriber.java,v 1.7 2005/06/16 10:30:05 huuhoa Exp $
 /**
  * 
  */
@@ -84,7 +84,7 @@ public class Subscriber {
 	}
 
 	/**
-	 * @param subscribeAddress
+	 * @param subscribeAddr
 	 *            The subscribeAddress to set.
 	 */
 	public void setSubscribeAddress(String subscribeAddr) {
@@ -99,7 +99,7 @@ public class Subscriber {
 	}
 
 	/**
-	 * @param partnerAddress
+	 * @param partnerAddr
 	 *            The partnerAddress to set.
 	 */
 	public void receiveCallFrom(String partnerAddr) {

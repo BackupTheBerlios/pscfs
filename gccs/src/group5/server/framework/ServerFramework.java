@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.8 2005/06/15 18:15:00 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.9 2005/06/16 10:30:05 huuhoa Exp $
 /**
  * 
  */
@@ -192,7 +192,8 @@ public class ServerFramework {
 						getIpInitial(), m_applicationID, m_password);
 			} catch (P_INVALID_INTERFACE_TYPE ex) {
 				m_logger.fatal("Invalid interface type: " + ex.getMessage());
-				throw new TpCommonExceptions(4, "Invalid interface type: " + ex.getMessage());
+				throw new TpCommonExceptions(4, "Invalid interface type: "
+						+ ex.getMessage());
 			} catch (P_INVALID_DOMAIN_ID ex) {
 				m_logger.fatal("Invalid domain id: " + ex.getMessage());
 			} catch (P_INVALID_AUTH_TYPE ex) {
@@ -711,12 +712,9 @@ public class ServerFramework {
 	 *         appropriate service type, one should call:
 	 * 
 	 * <pre>
-	 * IpService tempService = selectSCFs(&quot;P_USER_STATUS&quot;);IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
-	 *      
-	 *     
-	 *    
-	 *   
-	 *  
+	 * IpService tempService = selectSCFs(&quot;P_USER_STATUS&quot;);
+	 * 
+	 * IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
 	 * </pre>
 	 * 
 	 * Here is the list of services that can be query from OSA Framework
