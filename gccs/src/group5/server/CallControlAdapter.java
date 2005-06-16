@@ -1,3 +1,4 @@
+//$Id: CallControlAdapter.java,v 1.2 2005/06/16 09:32:31 huuhoa Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
