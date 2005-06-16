@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.6 2005/06/15 18:15:00 huuhoa Exp $
+//$Id: EventObserver.java,v 1.7 2005/06/16 09:31:48 huuhoa Exp $
 /**
  * 
  */
@@ -53,10 +53,17 @@ public final class EventObserver {
 
 	private EventObserver() {
 		m_logger.debug("ctor()");
+		m_ipCallManager = null;
 		evListener = new EventListener();
 	}
 
 	// begin actual observer implementation
+	private CallControlAdapter m_ipCallManager;
+
+	public void SetIpCallControlManager(CallControlAdapter ipCallManager) {
+		m_ipCallManager = ipCallManager;
+	}
+
 	Map m_mapObservers;
 
 	private class Observer {
@@ -115,13 +122,23 @@ public final class EventObserver {
 			CallEventQueue evQueue = CallEventQueue.getInstance();
 			while (true) {
 				CallEvent ev = evQueue.get();
-				// dispatch events
-				m_logger.debug("Got event with eventType: " + ev.eventType);
-				Iterator iterator = m_mapObservers.values().iterator();
-				while (iterator.hasNext()) {
-					Observer ob = (Observer) iterator.next();
-					if (ob.getCriteria().isWatched(ev.eventType)) {
-						dispatchEvent(ob.getHandler(), ev.eventType, ev);
+				// first examine the bProvision field of CallEvent
+				boolean bStop = false;
+				if (ev.isProvision()) {
+					if (m_ipCallManager != null) {
+						bStop = m_ipCallManager.onEvent(ev.eventType, ev);
+					}
+				}
+				if (bStop == false) {
+					ev.setProvision(false);
+					// dispatch events
+					m_logger.debug("Got event with eventType: " + ev.eventType);
+					Iterator iterator = m_mapObservers.values().iterator();
+					while (iterator.hasNext()) {
+						Observer ob = (Observer) iterator.next();
+						if (ob.getCriteria().isWatched(ev.eventType)) {
+							dispatchEvent(ob.getHandler(), ev.eventType, ev);
+						}
 					}
 				}
 			}
@@ -133,8 +150,8 @@ public final class EventObserver {
 			switch (eventType) {
 			case CallEvent.eventRouteReq:
 				// Event route request
-				handler.onRouteReq(eventData.CallSessionID,
-						eventData.targetAddress, eventData.originatingAddress);
+				handler.onRouteReq(eventData.CallSessionID, eventData
+						.getTargetAddress(), eventData.originatingAddress);
 				break;
 			case CallEvent.eventDeassignCall:
 				handler.onDeassignCall(eventData.CallSessionID);

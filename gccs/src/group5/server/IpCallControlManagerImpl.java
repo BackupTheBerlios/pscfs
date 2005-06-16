@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.14 2005/06/15 18:13:04 hoanghaiham Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.15 2005/06/16 09:31:48 huuhoa Exp $
 /**
  * 
  */
@@ -34,16 +34,13 @@ import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
-import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallTreatment;
-
 
 /**
  * @author Hoang Trung Hai
  * 
  */
-public class IpCallControlManagerImpl extends IpCallControlManagerPOA 
-implements IpEventHandler{
+public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements CallControlAdapter {
 
 	private IpAppCallControlManager ipACCM_delegate;
 
@@ -59,6 +56,7 @@ implements IpEventHandler{
 	}
 
 	private HashMap mapIpCallIdentify;
+
 	private HashMap mapIpCall;
 
 	/**
@@ -66,7 +64,8 @@ implements IpEventHandler{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger m_logger = Logger.getLogger(IpCallControlManagerImpl.class);
+	private static Logger m_logger = Logger
+			.getLogger(IpCallControlManagerImpl.class);
 
 	/**
 	 * 
@@ -121,7 +120,8 @@ implements IpEventHandler{
 		} else {
 			try {
 				callEventCriteria(eventCriteria);
-				return putNotificationObserver(appCallControlManager,eventCriteria);
+				return putNotificationObserver(appCallControlManager,
+						eventCriteria);
 			} catch (P_INVALID_CRITERIA e) {
 				String msgErr = "Invalid criteria:" + e.ExtraInformation;
 				if (m_logger.isInfoEnabled())
@@ -147,7 +147,7 @@ implements IpEventHandler{
 			throws P_INVALID_ASSIGNMENT_ID, TpCommonExceptions {
 		// TODO Auto-generated method stub
 		m_Observer.remove(new Integer(assignmentID));
-		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -297,61 +297,79 @@ implements IpEventHandler{
 		ipCallControlManager = null;
 	}
 
-	public void onEvent(int eventID, CallEvent eventData) {
+	/* (non-Javadoc)
+	 * @see group5.server.CallControlAdapter#onEvent(int, group5.server.CallEvent)
+	 */
+	public boolean onEvent(int eventID, CallEvent eventData) {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
-	public void onRouteReq(int callSessionID, TpAddress targetAddr, TpAddress origAddr) {
+	/**
+	 * @see group5.server.CallControlAdapter#onRouteReq(int, org.csapi.TpAddress, org.csapi.TpAddress)
+	 */
+	public boolean onRouteReq(int callSessionID, TpAddress targetAddr,
+			TpAddress origAddr) {
 		// TODO Auto-generated method stub
-		TpCallEventInfo callEventInfo= new  TpCallEventInfo();
-		callEventInfo.DestinationAddress= targetAddr;
-		callEventInfo.OriginatingAddress= origAddr;
-		
+		TpCallEventInfo callEventInfo = new TpCallEventInfo();
+		callEventInfo.DestinationAddress = targetAddr;
+		callEventInfo.OriginatingAddress = origAddr;
+
 		Iterator iterator = m_Observer.values().iterator();
-		while (iterator.hasNext())
-		{
+		while (iterator.hasNext()) {
 			Observer observer = (Observer) iterator.next();
 			// check event criteria
-			
+
 			// dispatch event notification
-			TpCallIdentifier ci = (TpCallIdentifier) mapIpCallIdentify.get(new Integer(callSessionID));
-			IpAppCall ipAppCall = observer.getIpAppCallControlManager().callEventNotify(ci, callEventInfo, observer.getAssignmentID());
+			TpCallIdentifier ci = (TpCallIdentifier) mapIpCallIdentify
+					.get(new Integer(callSessionID));
+			IpAppCall ipAppCall = observer.getIpAppCallControlManager()
+					.callEventNotify(ci, callEventInfo,
+							observer.getAssignmentID());
 			// set ipAppCall to IpCallImpl
-			IpCallImpl ipCallImpl= (IpCallImpl) mapIpCall.get(new Integer(callSessionID));
-		    ipCallImpl.setIpAppCall(ipAppCall);
+			IpCallImpl ipCallImpl = (IpCallImpl) mapIpCall.get(new Integer(
+					callSessionID));
+			ipCallImpl.setIpAppCall(ipAppCall);
 		}
+		return false;
 	}
 
-	public void onDeassignCall(int callSessionID) {
+	/**
+	 * @see group5.server.CallControlAdapter#onDeassignCall(int)
+	 */
+	public boolean onDeassignCall(int callSessionID) {
 		// TODO Auto-generated method stub
 		mapIpCall.remove(new Integer(callSessionID));
+		return false;
 	}
 
-	public void onReleaseCall(int callSessionID) {
+	/**
+	 * @see group5.server.CallControlAdapter#onReleaseCall(int)
+	 */
+	public boolean onReleaseCall(int callSessionID) {
 		// TODO Auto-generated method stub
 		mapIpCall.remove(new Integer(callSessionID));
+		return false;
 	}
 
-	public void onRouteRes(int callSessionID, TpCallReport eventReport, int callLegSessionID) {
-		// TODO Auto-generated method stub
-		
-	}
 	Map m_Observer;
-	private int getNotificationObserverID=0;
-	public synchronized int getObserver(){
-		getNotificationObserverID ++;
+
+	private int getNotificationObserverID = 0;
+
+	public synchronized int getObserver() {
+		getNotificationObserverID++;
 		return getNotificationObserverID;
 	}
+
 	private class Observer {
 		private IpAppCallControlManager ipAppCallControlManager;
 
 		private TpCallEventCriteria tpCallEventCriteria;
-		
+
 		private int assignmentID;
 
-		public Observer(IpAppCallControlManager ipAppCallControlManager, TpCallEventCriteria tpCallEventCriteria,
-				int assignID) {
+		public Observer(IpAppCallControlManager ipAppCallControlManager,
+				TpCallEventCriteria tpCallEventCriteria, int assignID) {
 			this.ipAppCallControlManager = ipAppCallControlManager;
 			this.tpCallEventCriteria = tpCallEventCriteria;
 			assignmentID = assignID;
@@ -364,17 +382,21 @@ implements IpEventHandler{
 		public TpCallEventCriteria getTpCallEventCriteria() {
 			return tpCallEventCriteria;
 		}
-		public synchronized int getAssignmentID()
-		{
-			assignmentID ++;
+
+		public synchronized int getAssignmentID() {
+			assignmentID++;
 			return assignmentID;
 		}
 	}
-	public synchronized int putNotificationObserver(IpAppCallControlManager ipAppCallControlManager, TpCallEventCriteria tpCallEventCriteria){
-		int notificationObserverId= getObserver();
-		Observer observer= new Observer(ipAppCallControlManager,tpCallEventCriteria, notificationObserverId);
+
+	public synchronized int putNotificationObserver(
+			IpAppCallControlManager ipAppCallControlManager,
+			TpCallEventCriteria tpCallEventCriteria) {
+		int notificationObserverId = getObserver();
+		Observer observer = new Observer(ipAppCallControlManager,
+				tpCallEventCriteria, notificationObserverId);
 		m_Observer.put(new Integer(notificationObserverId), observer);
 		return notificationObserverId;
 	}
-		
+
 }
