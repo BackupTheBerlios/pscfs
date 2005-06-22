@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.9 2005/06/16 10:30:05 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.10 2005/06/22 08:23:18 huuhoa Exp $
 /**
  * 
  */
@@ -188,8 +188,11 @@ public class ServerFramework {
 		m_logger.debug("ServiceRegistration::getIpAuthentication");
 		if (m_ipAPILevelAuthentication == null) {
 			try {
+				// obtain the authentication interface
 				m_ipAPILevelAuthentication = initializeAuthentication(
 						getIpInitial(), m_applicationID, m_password);
+				// perform authentication
+				authenticate(m_ipAPILevelAuthentication);
 			} catch (P_INVALID_INTERFACE_TYPE ex) {
 				m_logger.fatal("Invalid interface type: " + ex.getMessage());
 				throw new TpCommonExceptions(4, "Invalid interface type: "
@@ -393,88 +396,79 @@ public class ServerFramework {
 						class1))));
 	}
 
-	private synchronized String registerService(
-			String serviceTypeName,
-			SCSProperties scsproperties,
-			IpServiceInstanceLifecycleManagerPOA ipserviceinstancelifecyclemanagerpoa)
+	private synchronized String registerService(String serviceTypeName,
+			SCSProperties scProp, IpServiceInstanceLifecycleManagerPOA ipSILM)
 			throws TpCommonExceptions {
-		String serviceID = registerService(serviceTypeName, scsproperties);
-		String s2 = scsproperties.getServiceName();
+		String serviceID = registerService(serviceTypeName, scProp);
+		String s2 = scProp.getServiceName();
 		try {
 			if (m_logger.isDebugEnabled())
-				m_logger.debug("ServiceRegistrationUtil::scsId=" + serviceID);
+				m_logger.debug("serviceID=" + serviceID);
 			if (serviceID != null) {
-				IpFwServiceRegistration ipfwserviceregistration = obtainIpFwServiceRegistration();
-				ipfwserviceregistration.announceServiceAvailability(serviceID,
-						ipserviceinstancelifecyclemanagerpoa._this(orb));
+				IpFwServiceRegistration ipFSR = obtainIpFwServiceRegistration();
+				ipFSR.announceServiceAvailability(serviceID, ipSILM._this(orb));
 			} else {
 				throw new TpCommonExceptions("Error discovering service name="
 						+ s2, 15, s2);
 			}
-		} catch (P_INVALID_INTERFACE_TYPE p_invalid_interface_type) {
+		} catch (P_INVALID_INTERFACE_TYPE ex) {
 			throw new TpCommonExceptions("Invalid interface type", 14,
 					serviceID);
-		} catch (P_ILLEGAL_SERVICE_ID p_illegal_service_id) {
+		} catch (P_ILLEGAL_SERVICE_ID ex) {
 			throw new TpCommonExceptions("Illegal service ID", 14, serviceID);
-		} catch (P_UNKNOWN_SERVICE_ID p_unknown_service_id) {
+		} catch (P_UNKNOWN_SERVICE_ID ex) {
 			throw new TpCommonExceptions("Unknown service ID", 14, serviceID);
 		}
 		return serviceID;
 	}
 
 	protected String registerService(String serviceTypeName,
-			SCSProperties scsproperties) throws TpCommonExceptions {
+			SCSProperties scProp) throws TpCommonExceptions {
 		m_logger.info("Registering service type=" + serviceTypeName
-				+ " version=" + scsproperties.getServiceVersion());
+				+ " version=" + scProp.getServiceVersion());
 		try {
 			return obtainIpFwServiceRegistration().registerService(
-					serviceTypeName, scsproperties.getServicePropertyList());
-		} catch (P_MISSING_MANDATORY_PROPERTY p_missing_mandatory_property) {
+					serviceTypeName, scProp.getServicePropertyList());
+		} catch (P_MISSING_MANDATORY_PROPERTY ex) {
 			m_logger.error("Error registering " + serviceTypeName + ": "
-					+ p_missing_mandatory_property.ExtraInformation);
+					+ ex.ExtraInformation);
 			throw new TpCommonExceptions("Missing mandatory property for "
-					+ serviceTypeName, 14,
-					p_missing_mandatory_property.ExtraInformation);
-		} catch (P_ILLEGAL_SERVICE_TYPE p_illegal_service_type) {
+					+ serviceTypeName, 14, ex.ExtraInformation);
+		} catch (P_ILLEGAL_SERVICE_TYPE ex) {
 			m_logger.error("Error registering " + serviceTypeName + ": "
-					+ p_illegal_service_type.ExtraInformation);
+					+ ex.ExtraInformation);
 			throw new TpCommonExceptions("Illegal service type for "
-					+ serviceTypeName, 14,
-					p_illegal_service_type.ExtraInformation);
-		} catch (P_UNKNOWN_SERVICE_TYPE p_unknown_service_type) {
+					+ serviceTypeName, 14, ex.ExtraInformation);
+		} catch (P_UNKNOWN_SERVICE_TYPE ex) {
 			m_logger.error("Error registering " + serviceTypeName + ": "
-					+ p_unknown_service_type.ExtraInformation);
+					+ ex.ExtraInformation);
 			throw new TpCommonExceptions("Unknown service type for "
-					+ serviceTypeName, 14,
-					p_unknown_service_type.ExtraInformation);
-		} catch (P_PROPERTY_TYPE_MISMATCH p_property_type_mismatch) {
+					+ serviceTypeName, 14, ex.ExtraInformation);
+		} catch (P_PROPERTY_TYPE_MISMATCH ex) {
 			m_logger.error("Error registering " + serviceTypeName + ": "
-					+ p_property_type_mismatch.ExtraInformation);
+					+ ex.ExtraInformation);
 			throw new TpCommonExceptions("Property type mismatch for "
-					+ serviceTypeName, 14,
-					p_property_type_mismatch.ExtraInformation);
-		} catch (P_DUPLICATE_PROPERTY_NAME p_duplicate_property_name) {
+					+ serviceTypeName, 14, ex.ExtraInformation);
+		} catch (P_DUPLICATE_PROPERTY_NAME ex) {
 			m_logger.error("Error registering " + serviceTypeName + ": "
-					+ p_duplicate_property_name.ExtraInformation);
+					+ ex.ExtraInformation);
 			throw new TpCommonExceptions("Duplicate property name for "
-					+ serviceTypeName, 14,
-					p_duplicate_property_name.ExtraInformation);
-		} catch (P_SERVICE_TYPE_UNAVAILABLE p_service_type_unavailable) {
+					+ serviceTypeName, 14, ex.ExtraInformation);
+		} catch (P_SERVICE_TYPE_UNAVAILABLE ex) {
 			m_logger.error("Error registering " + serviceTypeName + ": "
-					+ p_service_type_unavailable.ExtraInformation);
+					+ ex.ExtraInformation);
 			throw new TpCommonExceptions("Service type unavailable for "
-					+ serviceTypeName, 14,
-					p_service_type_unavailable.ExtraInformation);
-		} catch (TpCommonExceptions tpcommonexceptions) {
+					+ serviceTypeName, 14, ex.ExtraInformation);
+		} catch (TpCommonExceptions ex) {
 			m_logger.error("Error registering " + serviceTypeName + ": "
-					+ tpcommonexceptions.ExtraInformation);
+					+ ex.ExtraInformation);
 			throw new TpCommonExceptions("Service registration failed", 14,
-					tpcommonexceptions.ExtraInformation);
-		} catch (Throwable throwable) {
+					ex.ExtraInformation);
+		} catch (Throwable ex) {
 			m_logger.error("Unknown error in registerService of "
-					+ serviceTypeName, throwable);
+					+ serviceTypeName, ex);
 			throw new TpCommonExceptions("Error in registerService:"
-					+ throwable.getClass(), 14, throwable.getMessage());
+					+ ex.getClass(), 14, ex.getMessage());
 		}
 	}
 
@@ -989,8 +983,7 @@ public class ServerFramework {
 				org.csapi.TpCommonExceptions {
 
 			if (m_logger.isInfoEnabled()) {
-				m_logger
-						.info("ServiceAgreementCallback: Signing service agreement ");
+				m_logger.info("Signing service agreement ");
 				m_logger.info("\tservicetoken     = " + serviceToken);
 				m_logger.info("\tagreementText    = " + agreementText);
 				m_logger.info("\tsigningAlgorithm = " + signingAlgorithm);

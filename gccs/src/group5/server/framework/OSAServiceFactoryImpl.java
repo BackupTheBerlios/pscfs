@@ -1,4 +1,4 @@
-//$Id: OSAServiceFactoryImpl.java,v 1.7 2005/06/13 11:18:22 huuhoa Exp $
+//$Id: OSAServiceFactoryImpl.java,v 1.8 2005/06/22 08:23:18 huuhoa Exp $
 package group5.server.framework;
 
 import java.lang.reflect.Constructor;
@@ -45,11 +45,11 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 			m_constructor = class1.getConstructor(new Class[] {
 					java.lang.String.class,
 					org.csapi.fw.TpServiceProperty[].class });
-		} catch (SecurityException securityexception) {
-			m_logger.error("Error in getting constructor", securityexception);
-		} catch (NoSuchMethodException nosuchmethodexception) {
+		} catch (SecurityException ex) {
+			m_logger.error("Error in getting constructor", ex);
+		} catch (NoSuchMethodException ex) {
 			m_logger.error("Error in getting constructor",
-					nosuchmethodexception);
+					ex);
 			throw new RuntimeException("Give up! manager=" + class1);
 		}
 	}

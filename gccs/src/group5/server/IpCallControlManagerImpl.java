@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.15 2005/06/16 09:31:48 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.16 2005/06/22 08:23:18 huuhoa Exp $
 /**
  * 
  */
@@ -35,12 +35,14 @@ import org.csapi.cc.gccs.TpCallEventCriteriaResult;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallTreatment;
+import org.csapi.fw.TpServiceProperty;
 
 /**
  * @author Hoang Trung Hai
  * 
  */
-public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements CallControlAdapter {
+public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
+		CallControlAdapter {
 
 	private IpAppCallControlManager ipACCM_delegate;
 
@@ -73,6 +75,14 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	public IpCallControlManagerImpl() {
 		super();
 		m_logger.info("ctor()");
+		ipACCM_delegate = null;
+	}
+	private String applicationID;
+	public IpCallControlManagerImpl(String s, TpServiceProperty atProp[])
+	{
+		applicationID = s;
+		m_logger.info("New IpCallControlManagerImpl created for application " + applicationID);
+		ipACCM_delegate = null;
 	}
 
 	/*
@@ -297,8 +307,11 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 		ipCallControlManager = null;
 	}
 
-	/* (non-Javadoc)
-	 * @see group5.server.CallControlAdapter#onEvent(int, group5.server.CallEvent)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see group5.server.CallControlAdapter#onEvent(int,
+	 *      group5.server.CallEvent)
 	 */
 	public boolean onEvent(int eventID, CallEvent eventData) {
 		// TODO Auto-generated method stub
@@ -306,7 +319,8 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	}
 
 	/**
-	 * @see group5.server.CallControlAdapter#onRouteReq(int, org.csapi.TpAddress, org.csapi.TpAddress)
+	 * @see group5.server.CallControlAdapter#onRouteReq(int,
+	 *      org.csapi.TpAddress, org.csapi.TpAddress)
 	 */
 	public boolean onRouteReq(int callSessionID, TpAddress targetAddr,
 			TpAddress origAddr) {

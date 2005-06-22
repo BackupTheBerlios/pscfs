@@ -1,10 +1,11 @@
-//$Id: CallControlSCS.java,v 1.8 2005/06/14 08:21:59 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.9 2005/06/22 08:23:18 huuhoa Exp $
 /**
  * 
  */
 package group5.server.framework;
 
 import group5.server.EventObserver;
+import group5.server.IpCallControlManagerImpl;
 
 import org.apache.log4j.Logger;
 import org.csapi.TpCommonExceptions;
@@ -21,22 +22,22 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 
 	private static Logger m_logger = Logger.getLogger(CallControlSCS.class);
 
-	private static CallControlSCS m_this;
-	static {
-		try {
-			m_this = new CallControlSCS("huuhoa", "123456");
-		} catch (UserException ex) {
-			m_logger.fatal("Can not create server framework. "
-					+ ex.getMessage());
-			m_this = null;
-		}
-	}
+	private static CallControlSCS m_this = null;
 
 	private String m_serviceID;
 
 	// private iSCSParserEventHandler m_parserEventHandler;
 
 	public static CallControlSCS getInstance() {
+		if (m_this == null) {
+			try {
+				m_this = new CallControlSCS("huuhoa", "123456");
+			} catch (UserException ex) {
+				m_logger.fatal("Can not create server framework. "
+						+ ex.getMessage());
+				m_this = null;
+			}
+		}
 		return m_this;
 	}
 
@@ -79,13 +80,13 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 				.toString(1) });
 		try {
 			m_serviceID = registerService("P_GENERIC_CALL_CONTROL",
-					scsproperties, this.getClass());
+					scsproperties, IpCallControlManagerImpl.class);
 			// after registering the service
 			// we have to start all the event observers
 			EventObserver evOb = EventObserver.getInstance();
 			// start a thread to listen to events
 			evOb.listen();
-			
+
 		} catch (TpCommonExceptions ex) {
 			m_logger.fatal("Error starting service CallControlSCS"
 					+ ex.getMessage(), ex);

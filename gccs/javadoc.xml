@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc destdir="doc" access="public" source="1.4" use="true" notree="false" nonavbar="false" noindex="false" splitindex="true" author="true" version="true" nodeprecatedlist="false" nodeprecated="false" sourcefiles="src/group5/server/CallControlAdapter.java" sourcepath="src" classpath="lib/log4j-1.2.9.jar;C:\Work\JacORB\lib\jacorb.jar;lib/parlay_interfaces-5.0.jar" doctitle="Generic Call Control Service"/>
+    </target>
+</project>
