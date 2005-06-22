@@ -1,12 +1,17 @@
-//$Id: ServerFramework.java,v 1.10 2005/06/22 08:23:18 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.11 2005/06/22 12:15:30 huuhoa Exp $
 /**
  * 
  */
 package group5.server.framework;
 
 import group5.P_INVALID_NAME_SERVICE;
+import group5.client.ApplicationFramework;
 import group5.utils.CommonFuntions;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
 import org.csapi.IpService;
@@ -73,7 +78,7 @@ public class ServerFramework {
 	private static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(ServerFramework.class);
+		m_logger = Logger.getLogger(group5.server.framework.ServerFramework.class);
 	}
 
 	/** The instance of the CORBA Object Request Broker */
@@ -192,6 +197,7 @@ public class ServerFramework {
 				m_ipAPILevelAuthentication = initializeAuthentication(
 						getIpInitial(), m_applicationID, m_password);
 				// perform authentication
+				m_logger.debug("perform authentication");
 				authenticate(m_ipAPILevelAuthentication);
 			} catch (P_INVALID_INTERFACE_TYPE ex) {
 				m_logger.fatal("Invalid interface type: " + ex.getMessage());
@@ -226,7 +232,7 @@ public class ServerFramework {
 			P_INVALID_INTERFACE_TYPE, P_INVALID_DOMAIN_ID, P_INVALID_AUTH_TYPE {
 
 		// Create the authentication callback object
-		AuthenticationCallback cb = new AuthenticationCallback(appId, password);
+		IpAppAuthenticationImpl cb = new IpAppAuthenticationImpl(this, password);
 
 		// Register the callback object with the ORB
 		IpClientAPILevelAuthentication callback = cb._this(orb);
@@ -234,7 +240,8 @@ public class ServerFramework {
 		// Create an OSA domain ID containing the application ID and a reference
 		// to the callback object
 		TpDomainID domainID = new TpDomainID();
-		domainID.ClientAppID(appId);
+		domainID.ServiceSupplierID("ServiceRegistration");
+		//domainID.ClientAppID(appId);
 		TpAuthDomain authDomain = new TpAuthDomain(domainID, callback);
 
 		/***********************************************************************
@@ -325,28 +332,99 @@ public class ServerFramework {
 		if (m_ipFwSrvReg == null) {
 			String regService = "P_REGISTRATION";
 			try {
-				org.csapi.IpInterface ipinterface = requestAccess(
-						getIpAuthentication()).obtainInterface(regService);
-				m_ipFwSrvReg = IpFwServiceRegistrationHelper
-						.narrow(ipinterface);
-			} catch (P_INVALID_INTERFACE_NAME p_invalid_interface_name) {
+				IpAccess ipAccess = requestAccess(getIpAuthentication());
+				m_logger.debug("Got the reference to IpAccess");
+
+//				/***********************************************************************
+//				 * Do the OSA invocation: obtainInterface();
+//				 **********************************************************************/
+//				IpInterface itf = ipAccess.obtainInterface("P_DISCOVERY");
+//
+//				IpServiceDiscovery ipSD = IpServiceDiscoveryHelper.narrow(itf);
+//				m_logger.debug("Got the reference to IpServiceDiscovery");
+//				
+//				// obtain service agreement
+//				IpServiceAgreementManagement ipSrvAM = obtainServiceAgreementInterface(ipAccess);
+//				m_logger.debug("Got the reference to IpServiceAgreementManagement");
+//
+//				// Discover service
+//				TpServiceProperty prop = new TpServiceProperty("Service Name", new String[] { regService });
+//				TpServiceProperty[] props = new TpServiceProperty[0];
+//
+//				// Obtain a service ID of the service
+//				/***********************************************************************
+//				 * Do the OSA invocation: discoverService()
+//				 **********************************************************************/
+//				TpService[] svcList = ipSD.discoverService(regService, props, 1);
+//
+//				String svcToken = ipSrvAM.selectService(svcList[0].ServiceID);
+//				signServiceAgreement(ipSrvAM, svcToken);
+//				
+				org.csapi.IpInterface ipIF = ipAccess.obtainInterface(regService);
+				m_logger.debug("Got the reference to IpFwServiceRegistration");
+				m_ipFwSrvReg = IpFwServiceRegistrationHelper.narrow(ipIF);
+			} catch (P_INVALID_INTERFACE_NAME ex) {
 				m_logger.fatal("Invalid interface name: " + regService);
 				throw new TpCommonExceptions(14,
-						p_invalid_interface_name.ExtraInformation);
-			} catch (P_INVALID_INTERFACE_TYPE p_invalid_interface_name) {
+						ex.ExtraInformation);
+			} catch (P_INVALID_INTERFACE_TYPE ex) {
 				m_logger.fatal("Invalid interface type: " + regService);
 				throw new TpCommonExceptions(14,
-						p_invalid_interface_name.ExtraInformation);
-			} catch (P_ACCESS_DENIED p_access_denied) {
+						ex.ExtraInformation);
+			} catch (P_ACCESS_DENIED ex) {
 				m_logger.fatal("access denied obtaining interface "
 						+ regService);
 				throw new TpCommonExceptions(14,
-						p_access_denied.ExtraInformation);
+						ex.ExtraInformation);
 			} catch (P_INVALID_ACCESS_TYPE ex) {
-				m_logger.fatal("access denied obtaining interface "
+				m_logger.fatal("invalid access type while obtaining interface "
 						+ regService);
 				throw new TpCommonExceptions(14, ex.ExtraInformation);
 			}
+//			// for discoverService
+//			catch (P_UNKNOWN_SERVICE_TYPE ex){
+//				m_logger.fatal("unknown service type while obtaining interface "
+//						+ regService);
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			catch (P_ILLEGAL_SERVICE_TYPE ex){
+//				m_logger.fatal("illegal service type while obtaining interface "
+//						+ regService);
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			catch (P_INVALID_PROPERTY ex){
+//				m_logger.fatal("invalid property while obtaining interface "
+//						+ regService);
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			// for select service
+//			catch (P_SERVICE_ACCESS_DENIED ex){
+//				m_logger.fatal("service access denied while obtaining interface "
+//						+ regService);
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			catch (P_INVALID_SERVICE_ID ex){
+//				m_logger.fatal("invalid service id while obtaining interface "
+//						+ regService);
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			// for signServiceAgreement
+//			catch (P_INVALID_SIGNATURE ex){
+//				m_logger.fatal("invalid signature while signing service agreement");
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			catch (P_INVALID_SERVICE_TOKEN ex){
+//				m_logger.fatal("invalid service token while signing service agreement");
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			catch (P_INVALID_AGREEMENT_TEXT ex){
+//				m_logger.fatal("invalid agreement text while signing service agreement");
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
+//			catch (P_INVALID_SIGNING_ALGORITHM ex){
+//				m_logger.fatal("invalid signing algorithm while signing service agreement");
+//				throw new TpCommonExceptions(14, ex.ExtraInformation);
+//			}
 		}
 		return m_ipFwSrvReg;
 	}
@@ -858,84 +936,71 @@ public class ServerFramework {
 	 * authentication. The OSA API calls the authenticate() method of this
 	 * class.
 	 */
-	class AuthenticationCallback extends IpClientAPILevelAuthenticationPOA {
+	final class IpAppAuthenticationImpl extends IpClientAPILevelAuthenticationPOA
+	{
+	    private Object obj;
+	    private byte password[];
 
-		/** The ID of the application */
-		String applicationID;
+	    public IpAppAuthenticationImpl(Object obj, String s)
+	    {
+	        this.obj = obj;
+	        password = s.getBytes();
+	    }
 
-		/** The password of the application */
-		byte[] password;
+	    public byte[] authenticate(byte abyte0[])
+	    {
+	        m_logger.debug("IpAppAuthentication::authenticate");
+	        m_logger.debug("Challenge = " + abyte0);
+	        int i = abyte0[2] * 256 + abyte0[3];
+	        byte byte0 = abyte0[4];
+	        int j = i - byte0 - 5;
+	        byte abyte1[] = new byte[1 + password.length + byte0];
+	        abyte1[0] = abyte0[1];
+	        System.arraycopy(password, 0, abyte1, 1, password.length);
+	        System.arraycopy(abyte0, 5, abyte1, 1 + password.length, byte0);
+	        byte abyte2[] = null;
+	        try
+	        {
+	            MessageDigest messagedigest = MessageDigest.getInstance("MD5");
+	            messagedigest.update(abyte1);
+	            abyte2 = messagedigest.digest();
+	        }
+	        catch(NoSuchAlgorithmException ex)
+	        {
+	        	m_logger.fatal("IpAppAuthentication::authenticate: " + ex);
+	            return new byte[0];
+	        }
+	        int k = 5 + abyte2.length + j;
+	        byte abyte3[] = new byte[k];
+	        abyte3[0] = 2;
+	        abyte3[1] = abyte0[1];
+	        abyte3[2] = (new Integer(k / 256)).byteValue();
+	        abyte3[3] = (new Integer(k % 256)).byteValue();
+	        abyte3[4] = (new Integer(abyte2.length)).byteValue();
+	        System.arraycopy(abyte2, 0, abyte3, 5, abyte2.length);
+	        System.arraycopy(abyte0, i - j, abyte3, 5 + abyte2.length, j);
+	        return abyte3;
+	    }
 
-		/**
-		 * Constructs the callback object for OSA authentication.
-		 * 
-		 * @param appId
-		 *            The application ID
-		 * @param password
-		 *            The password used to perform authentication
-		 */
-		AuthenticationCallback(String appId, String password) {
-			this.applicationID = appId;
-			this.password = password.getBytes();
-		}
-
-		/**
-		 * Performs authentication of the application on request of the OSA
-		 * framework.
-		 * 
-		 * @param challenge
-		 *            challenge string that is input for the CHAP authentication
-		 *            protocol
-		 * @return CHAP response
-		 */
-		public byte[] authenticate(byte[] challengeByte) {
-
-			/*
-			 * CHAP Challenge and Response packet format:
-			 * =========================================
-			 * 
-			 * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-			 * Code | Identifier | Length |
-			 * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-			 * Value-Size | Value ...
-			 * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |
-			 * Name ... +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-			 * 
-			 */
-
-			if (m_logger.isInfoEnabled())
-				m_logger.info("Callback to authenticate");
-
-			byte[] cipher = new byte[10];
-			return cipher;
-		}
-
-		/**
-		 * This method is invoked if the framework has validated and approved
-		 * the client's authentication credentials.
-		 */
-		public void authenticationSucceeded() {
-			// Wake up our main object that is waiting for the authentication.
-			synchronized (ServerFramework.this) {
+	    public void authenticationSucceeded()
+	    {
+	    	m_logger.debug("IpAppAuthentication::authenticationSucceeded");
+	        synchronized(ServerFramework.this) {
 				ServerFramework.this.authenticated = true;
 				ServerFramework.this.notify();
-				return;
-			}
-		}
+	        }
+	    }
 
-		/**
-		 * This method is invoked if the framework wishes to abort the
-		 * authentication process (e.g. if the client application responds
-		 * incorrectly to a challenge).
-		 */
-		public void abortAuthentication() {
-			if (m_logger.isInfoEnabled()) {
-				m_logger.info("AuthenticationCallback:");
-				m_logger.info("\tAuthentication aborted by the framework!");
-			}
-		}
+	    public void abortAuthentication()
+	    {
+	    	m_logger.debug("IpAppAuthentication::abortAuthentication");
+	        synchronized(obj)
+	        {
+	            obj.notify();
+	        }
+	    }
 
-		public byte[] challenge(byte[] arg0) {
+		public byte[] challenge(byte[] challenge) {
 			// TODO Auto-generated method stub
 			return null;
 		}
