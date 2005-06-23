@@ -1,4 +1,4 @@
-//$Id: GCCSServer.java,v 1.1 2005/06/22 08:23:18 huuhoa Exp $
+//$Id: GCCSServer.java,v 1.2 2005/06/23 22:53:41 huuhoa Exp $
 /**
  * Creation date: 21.06.2005 - 2005
  * Creator: Nguyen Huu Hoa
@@ -67,21 +67,17 @@ public class GCCSServer {
 		BasicConfigurator.configure();
 		try {
 			int nORB = 0;
-			if (args.length>1)
-			{
-				if (args[1].compareToIgnoreCase("-milife")==0)
-				{
+			if (args.length > 1) {
+				if (args[1].compareToIgnoreCase("-milife") == 0) {
 					nORB = 0; // milife
 				}
-				if (args[1].compareToIgnoreCase("-erricson")==0)
-				{
+				if (args[1].compareToIgnoreCase("-erricson") == 0) {
 					nORB = 1; // erricson
 				}
 			}
 			String ORB_NS = "";
-			switch(nORB)
-			{
-			case 0:	// milife
+			switch (nORB) {
+			case 0: // milife
 				ORB_NS = "corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root";
 				break;
 			case 1: // erricson
@@ -90,8 +86,20 @@ public class GCCSServer {
 			}
 			m_logger.debug("ORB_NS - " + ORB_NS);
 			System.setProperty("ORB.NameService", ORB_NS);
+			Thread th = new Thread(new Runnable() {
+				public void run() {
+					CallControlSCS serviceInstance = CallControlSCS
+							.getInstance();
+					serviceInstance.startService();
+				}
+			});
+			th.run();
+			do {
+				System.in.read();
+				break;
+			} while (true);
 			CallControlSCS serviceInstance = CallControlSCS.getInstance();
-			serviceInstance.startService();
+			serviceInstance.stopService();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);

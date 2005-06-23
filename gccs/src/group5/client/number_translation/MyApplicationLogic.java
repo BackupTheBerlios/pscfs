@@ -1,11 +1,14 @@
-//$Id: MyApplicationLogic.java,v 1.6 2005/06/13 08:12:18 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.7 2005/06/23 22:53:41 huuhoa Exp $
 /**
  * 
  */
 package group5.client.number_translation;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.csapi.P_INVALID_ADDRESS;
+import org.csapi.P_INVALID_ASSIGNMENT_ID;
 import org.csapi.P_INVALID_CRITERIA;
 import org.csapi.P_INVALID_EVENT_TYPE;
 import org.csapi.P_INVALID_INTERFACE_TYPE;
@@ -56,27 +59,42 @@ public class MyApplicationLogic {
 
 	public void run() {
 		m_logger.info("Start monitoring number: " + number);
-		monitorOrigNumbers(ipCCM, new AppCallControlManager(this), number);
+		int assignmentID = monitorOrigNumbers(ipCCM, new AppCallControlManager(
+				this), number);
 		m_logger.info("Entering loop");
-		do {
-			// wait for network events
-			MyAppEvent event = osaEventQueue.get();
-			// got event
-			m_logger.debug("Got event with eventID = "
-					+ event.eventInfo.CallEventName + ", from address "
-					+ event.eventInfo.OriginatingAddress.AddrString);
-			// check event
-			if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
-				// translate the address
-				String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
-				// route to new address
-				doRouteReq(event, addrString);
-				// deassign from call
-				doDeassignCall(event.callId);
-			} else {
-				m_logger.info("Unknown event");
+		Thread th = new Thread(new Runnable() {
+			public void run() {
+				// wait for network events
+				MyAppEvent event = osaEventQueue.get();
+				// got event
+				m_logger.debug("Got event with eventID = "
+						+ event.eventInfo.CallEventName + ", from address "
+						+ event.eventInfo.OriginatingAddress.AddrString);
+				// check event
+				if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
+					// translate the address
+					String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
+					// route to new address
+					doRouteReq(event, addrString);
+					// deassign from call
+					doDeassignCall(event.callId);
+				} else {
+					m_logger.info("Unknown event");
+				}
 			}
-		} while (true);
+		});
+		th.run();
+		try {
+			System.in.read();
+			ipCCM.disableCallNotification(assignmentID);
+			th.stop();
+		} catch (IOException ex) {
+
+		} catch (P_INVALID_ASSIGNMENT_ID ex) {
+
+		} catch (TpCommonExceptions ex) {
+
+		}
 	}
 
 	public void callEventNotify(TpCallIdentifier callReference,
@@ -93,8 +111,8 @@ public class MyApplicationLogic {
 
 	private void doRouteReq(MyAppEvent event, String newDestination) {
 		try {
-			event.callId.CallReference.routeReq(
-					event.callId.CallSessionID, new TpCallReportRequest[0],
+			event.callId.CallReference.routeReq(event.callId.CallSessionID,
+					new TpCallReportRequest[0],
 					myAppCreateE164Address(newDestination),
 					event.eventInfo.OriginatingAddress,
 					event.eventInfo.OriginalDestinationAddress,

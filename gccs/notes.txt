@@ -94,3 +94,8 @@ routing to the right destination (not the original one) - that is how Number Tra
 - First, the event should only be forwarded to IpCallControlManager
 - When the gateway receives the final result, (still the routeReq with modification of the destination address). It will
 dispatch the events to appropriated listeners (but not the IpCallControlManager)
+
+FRAMEWORK-TO-SERVICE API
+IpServiceInstanceLifeCycleManager
+- createServiceManager
+- destroyServiceManager

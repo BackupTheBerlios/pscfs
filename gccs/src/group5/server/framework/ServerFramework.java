@@ -1,17 +1,15 @@
-//$Id: ServerFramework.java,v 1.11 2005/06/22 12:15:30 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.12 2005/06/23 22:53:41 huuhoa Exp $
 /**
  * 
  */
 package group5.server.framework;
 
 import group5.P_INVALID_NAME_SERVICE;
-import group5.client.ApplicationFramework;
 import group5.utils.CommonFuntions;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
 import org.csapi.IpService;
@@ -334,32 +332,6 @@ public class ServerFramework {
 			try {
 				IpAccess ipAccess = requestAccess(getIpAuthentication());
 				m_logger.debug("Got the reference to IpAccess");
-
-//				/***********************************************************************
-//				 * Do the OSA invocation: obtainInterface();
-//				 **********************************************************************/
-//				IpInterface itf = ipAccess.obtainInterface("P_DISCOVERY");
-//
-//				IpServiceDiscovery ipSD = IpServiceDiscoveryHelper.narrow(itf);
-//				m_logger.debug("Got the reference to IpServiceDiscovery");
-//				
-//				// obtain service agreement
-//				IpServiceAgreementManagement ipSrvAM = obtainServiceAgreementInterface(ipAccess);
-//				m_logger.debug("Got the reference to IpServiceAgreementManagement");
-//
-//				// Discover service
-//				TpServiceProperty prop = new TpServiceProperty("Service Name", new String[] { regService });
-//				TpServiceProperty[] props = new TpServiceProperty[0];
-//
-//				// Obtain a service ID of the service
-//				/***********************************************************************
-//				 * Do the OSA invocation: discoverService()
-//				 **********************************************************************/
-//				TpService[] svcList = ipSD.discoverService(regService, props, 1);
-//
-//				String svcToken = ipSrvAM.selectService(svcList[0].ServiceID);
-//				signServiceAgreement(ipSrvAM, svcToken);
-//				
 				org.csapi.IpInterface ipIF = ipAccess.obtainInterface(regService);
 				m_logger.debug("Got the reference to IpFwServiceRegistration");
 				m_ipFwSrvReg = IpFwServiceRegistrationHelper.narrow(ipIF);
@@ -381,50 +353,6 @@ public class ServerFramework {
 						+ regService);
 				throw new TpCommonExceptions(14, ex.ExtraInformation);
 			}
-//			// for discoverService
-//			catch (P_UNKNOWN_SERVICE_TYPE ex){
-//				m_logger.fatal("unknown service type while obtaining interface "
-//						+ regService);
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			catch (P_ILLEGAL_SERVICE_TYPE ex){
-//				m_logger.fatal("illegal service type while obtaining interface "
-//						+ regService);
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			catch (P_INVALID_PROPERTY ex){
-//				m_logger.fatal("invalid property while obtaining interface "
-//						+ regService);
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			// for select service
-//			catch (P_SERVICE_ACCESS_DENIED ex){
-//				m_logger.fatal("service access denied while obtaining interface "
-//						+ regService);
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			catch (P_INVALID_SERVICE_ID ex){
-//				m_logger.fatal("invalid service id while obtaining interface "
-//						+ regService);
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			// for signServiceAgreement
-//			catch (P_INVALID_SIGNATURE ex){
-//				m_logger.fatal("invalid signature while signing service agreement");
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			catch (P_INVALID_SERVICE_TOKEN ex){
-//				m_logger.fatal("invalid service token while signing service agreement");
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			catch (P_INVALID_AGREEMENT_TEXT ex){
-//				m_logger.fatal("invalid agreement text while signing service agreement");
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
-//			catch (P_INVALID_SIGNING_ALGORITHM ex){
-//				m_logger.fatal("invalid signing algorithm while signing service agreement");
-//				throw new TpCommonExceptions(14, ex.ExtraInformation);
-//			}
 		}
 		return m_ipFwSrvReg;
 	}
