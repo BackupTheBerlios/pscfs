@@ -1,4 +1,4 @@
-//$Id: OSAServiceFactoryImpl.java,v 1.8 2005/06/22 08:23:18 huuhoa Exp $
+//$Id: OSAServiceFactoryImpl.java,v 1.9 2005/07/01 09:20:13 huuhoa Exp $
 package group5.server.framework;
 
 import java.lang.reflect.Constructor;
@@ -67,12 +67,16 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 			Servant servant = (Servant) m_constructor
 					.newInstance(new java.lang.Object[] { applicationID,
 							srvProp });
+			m_logger.debug("create new instance for " + applicationID);
 			Method method = servant.getClass().getMethod("_this",
 					new Class[] { org.omg.CORBA.ORB.class });
+			m_logger.debug("got _this method for " + servant.getClass());
 			obj = (org.omg.CORBA.Object) method.invoke(servant,
 					new java.lang.Object[] { ServerFramework.getORB() });
-			siTable.put(serviceInstanceID, (ServiceInstance) servant);
-			m_logger.info("Created new service manager instance");
+			m_logger.debug("got reference to CORBA interface: " + obj.toString());
+			m_logger.debug("serviceInstanceID: " + serviceInstanceID);
+			//siTable.put(serviceInstanceID, (ServiceInstance) servant);
+			m_logger.debug("Created new service manager instance");
 			return IpServiceHelper.narrow(obj);
 		} catch (IllegalArgumentException ex) {
 			m_logger.error("Error in creating instance", ex);
@@ -86,6 +90,7 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 			m_logger.error("Could not find _this method", ex);
 			throw new TpCommonExceptions(15, "");
 		}
+		m_logger.debug("return null object when creating service instance");
 		return null;
 	}
 

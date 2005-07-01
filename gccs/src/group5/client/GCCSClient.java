@@ -1,10 +1,10 @@
-//$Id: GCCSClient.java,v 1.5 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: GCCSClient.java,v 1.6 2005/07/01 09:20:13 huuhoa Exp $
 /**
  * 
  */
 package group5.client;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.csapi.mm.us.IpUserStatus;
 import org.csapi.mm.us.IpUserStatusHelper;
 
@@ -20,7 +20,7 @@ public class GCCSClient extends ApplicationFramework {
 	 * The main method, runs the sample.
 	 */
 	public static void main(String args[]) {
-		BasicConfigurator.configure();
+		PropertyConfigurator.configure(args[0]);
 		if (args.length < 1) {
 			System.out.println("Error: user's MSISDN not specified");
 			System.exit(1);

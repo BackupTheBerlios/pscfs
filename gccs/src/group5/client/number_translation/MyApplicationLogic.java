@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.7 2005/06/23 22:53:41 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.8 2005/07/01 09:20:13 huuhoa Exp $
 /**
  * 
  */
@@ -32,6 +32,7 @@ import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportRequest;
 
 /**
+ * 
  * @author Nguyen Huu Hoa
  * 
  */

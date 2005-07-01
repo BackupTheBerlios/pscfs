@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.16 2005/06/22 08:23:18 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.17 2005/07/01 09:20:13 huuhoa Exp $
 /**
  * 
  */
@@ -120,14 +120,14 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 			TpCallEventCriteria eventCriteria) throws P_INVALID_INTERFACE_TYPE,
 			P_INVALID_EVENT_TYPE, TpCommonExceptions, P_INVALID_CRITERIA {
 		// TODO Auto-generated method stub
-		if (m_logger.isInfoEnabled())
-			m_logger.info("Entering enableCallNotification");
+		m_logger.info("Entering enableCallNotification");
 		if (appCallControlManager == null) {
 			String msgErr = "Parameter appCallControlManager is null";
 			if (m_logger.isInfoEnabled())
 				m_logger.info(msgErr);
 			return 0;
 		} else {
+			m_logger.debug("appCallControlManager is not null");
 			try {
 				callEventCriteria(eventCriteria);
 				return putNotificationObserver(appCallControlManager,

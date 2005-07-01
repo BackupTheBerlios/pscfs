@@ -1,7 +1,11 @@
-//$Id: MyAppInit.java,v 1.6 2005/06/13 09:11:52 huuhoa Exp $
+//$Id: MyAppInit.java,v 1.7 2005/07/01 09:20:13 huuhoa Exp $
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -49,13 +53,25 @@ public class MyAppInit extends ApplicationFramework {
 		BasicConfigurator.configure();
 		System.setProperty("ORB.NameService",
 				"corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root");
+		Properties appProps = new Properties();
+		try
+		   {
+		   FileInputStream fis = new FileInputStream( "MyAppInit.properties" );
+		   appProps.load( fis );
+		   fis.close();
+		   }
+		catch ( IOException e )
+		   {
+		   m_logger.fatal("Cannot find properties file");
+		   }
+		System.setProperties(appProps);
 		try {
 			MyAppInit application = new MyAppInit();
 			application.initApplication("huuhoa", "123456");
 			application.run();
 			application.endApplication();
 		} catch (UserException ex) {
-			System.out.println(ex.getMessage());
+			m_logger.fatal(ex.getMessage());
 		}
 	}
 }

@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.8 2005/06/13 08:12:18 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.9 2005/07/01 09:20:13 huuhoa Exp $
 /**
  * 
  */
@@ -6,11 +6,6 @@ package group5.client;
 
 import group5.P_INVALID_NAME_SERVICE;
 import group5.utils.CommonFuntions;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
@@ -322,9 +317,14 @@ public class ApplicationFramework {
 		// Create a list of service properties that indicates what kind of
 		// service we are looking for. In our case the service is identified
 		// only by its name.
-//		TpServiceProperty prop = new TpServiceProperty("Service Name",
-//				new String[] { serviceName });
+		// TpServiceProperty prop = new TpServiceProperty("Service Name",
+		// new String[] { serviceName });
 		TpServiceProperty[] props = new TpServiceProperty[0];
+		// props[0] = new TpServiceProperty("Service Name",
+		// new String[] { serviceName });;
+		//		
+		// props[1] = new TpServiceProperty("Service Name",
+		// new String[] { serviceName });
 
 		// Obtain a service ID of the service
 
@@ -332,7 +332,7 @@ public class ApplicationFramework {
 		 * Do the OSA invocation: discoverService()
 		 **********************************************************************/
 		TpService[] svcList = discoveryIf
-				.discoverService(serviceName, props, 1);
+				.discoverService(serviceName, props, 2);
 
 		// Return the service ID of the service
 		return svcList[0].ServiceID;
@@ -350,7 +350,7 @@ public class ApplicationFramework {
 	String selectService(IpServiceAgreementManagement agmtIf, String serviceId)
 			throws TpCommonExceptions, P_INVALID_SERVICE_ID,
 			P_INVALID_SERVICE_TOKEN, P_SERVICE_ACCESS_DENIED, P_ACCESS_DENIED,
-			P_INVALID_SIGNATURE, IOException {
+			P_INVALID_SIGNATURE {
 
 		String serviceToken = null;
 		try {
@@ -365,24 +365,19 @@ public class ApplicationFramework {
 			m_logger.error("Service access denied for " + serviceId + ": "
 					+ e.ExtraInformation);
 
-			try {
-				// Retrieve the service token for the service from a file and
-				// terminate the agreement
-				serviceToken = fetchToken("servicetoken");
-				if (m_logger.isInfoEnabled())
-					m_logger.info("Fetched stored token: " + serviceToken
-							+ ", terminating agreement");
-				terminateServiceAgreement(agmtIf, serviceToken);
-			} catch (IOException ioe) {
-				// File does not seem to exist; throw original exception
-				throw e;
-			}
+			// Retrieve the service token for the service from a file and
+			// terminate the agreement
+			serviceToken = fetchToken();
+			if (m_logger.isInfoEnabled())
+				m_logger.info("Fetched stored token: " + serviceToken
+						+ ", terminating agreement");
+			terminateServiceAgreement(agmtIf, serviceToken);
 
 			serviceToken = agmtIf.selectService(serviceId); // try again
 		}
 
 		// Store the token in a file
-		storeToken("servicetoken", serviceToken);
+		storeToken(serviceToken);
 
 		return serviceToken;
 	}
@@ -400,7 +395,7 @@ public class ApplicationFramework {
 			String svcToken) throws TpCommonExceptions,
 			P_INVALID_SERVICE_TOKEN, P_INVALID_SIGNING_ALGORITHM,
 			P_INVALID_AGREEMENT_TEXT, P_SERVICE_ACCESS_DENIED, P_ACCESS_DENIED,
-			P_INVALID_SIGNATURE, IOException {
+			P_INVALID_SIGNATURE {
 		/***********************************************************************
 		 * Do the OSA invocation: initiateSignServiceAgreement()
 		 **********************************************************************/
@@ -477,14 +472,8 @@ public class ApplicationFramework {
 	 * @param token
 	 *            the service token
 	 */
-	private void storeToken(String filename, String serviceToken)
-			throws IOException {
-
-		Properties props = new Properties();
-		props.setProperty("token", serviceToken);
-		FileOutputStream file = new FileOutputStream(filename);
-		props.store(file, null);
-		file.close();
+	private void storeToken(String serviceToken) {
+		System.setProperty("token", serviceToken);
 	}
 
 	/**
@@ -494,13 +483,9 @@ public class ApplicationFramework {
 	 *            the file in which the token is stored
 	 * @return the stored service token
 	 */
-	private String fetchToken(String filename) throws IOException {
+	private String fetchToken() {
 
-		Properties props = new Properties();
-		FileInputStream file = new FileInputStream(filename);
-		props.load(file);
-		file.close();
-		return props.getProperty("token");
+		return System.getProperty("token");
 	}
 
 	/**
@@ -518,8 +503,7 @@ public class ApplicationFramework {
 		if (m_logger.isInfoEnabled())
 			m_logger.info("Terminating service agreement by the client....");
 
-		svcAgmtIf.terminateServiceAgreement(svcToken, agreeText,
-				fwSignature);
+		svcAgmtIf.terminateServiceAgreement(svcToken, agreeText, fwSignature);
 	}
 
 	/**
@@ -717,53 +701,51 @@ public class ApplicationFramework {
 	 *         appropriate service type, one should call:
 	 * 
 	 * <pre>
-	 * IpService tempService = selectSCFs(&quot;P_USER_STATUS&quot;);IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
-	 *  
+	 * IpService tempService = selectSCFs(&quot;P_USER_STATUS&quot;);
+	 * 
+	 * IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
+	 * 
 	 * </pre>
 	 * 
 	 * Here is the list of services that can be query from OSA Framework
-	 *         <ul>
-	 *         <li><b>NULL</b> An empty (NULL) string indicates no SCF name.</li>
-	 *         <li><b>P_GENERIC_CALL_CONTROL</b> The name of the Generic Call
-	 *         Control SCF.</li>
-	 *         <li><b>P_MULTI_PARTY_CALL_CONTROL</b> The name of the
-	 *         MultiParty Call Control SCF.</li>
-	 *         <li><b>P_MULTI_MEDIA_CALL_CONTROL</b> The name of the
-	 *         MultiMedia Call Control SCF.</li>
-	 *         <li><b>P_CONFERENCE_CALL_CONTROL</b> The name of the Conference
-	 *         Call Control SCF.</li>
-	 *         <li><b>P_USER_INTERACTION</b> The name of the User Interaction
-	 *         SCFs.</li>
-	 *         <li><b>P_USER_INTERACTION_ADMIN</b> The name of the User
-	 *         Interaction Administration SCF.</li>
-	 *         <li><b>P_TERMINAL_CAPABILITIES</b> The name of the Terminal
-	 *         Capabilities SCF.</li>
-	 *         <li><b>P_USER_BINDING</b> The name of the User Binding SCF.</li>
-	 *         <li><b>P_USER_LOCATION</b> The name of the User Location SCF.</li>
-	 *         <li><b>P_USER_LOCATION_CAMEL</b> The name of the Network User
-	 *         Location SCF.</li>
-	 *         <li><b>P_USER_LOCATION_EMERGENCY</b> The name of the User
-	 *         Location Emergency SCF.</li>
-	 *         <li><b>P_USER_STATUS</b> The name of the User Status SCF.</li>
-	 *         <li><b>P_EXTENDED_USER_STATUS</b> The name of Extended User
-	 *         Status SCF.</li>
-	 *         <li><b>P_DATA_SESSION_CONTROL</b> The name of the Data Session
-	 *         Control SCF.</li>
-	 *         <li><b>P_GENERIC_MESSAGING</b> The name of the Generic
-	 *         Messaging SCF.</li>
-	 *         <li><b>P_CONNECTIVITY_MANAGER</b> The name of the Connectivity
-	 *         Manager SCF.</li>
-	 *         <li><b>P_CHARGING</b> The name of the Charging SCF.</li>
-	 *         <li><b>P_ACCOUNT_MANAGEMENT</b> The name of the Account
-	 *         Management SCF.</li>
-	 *         <li><b>P_POLICY_PROVISIONING</b> The name of the Policy
-	 *         Management provisioning SCF.</li>
-	 *         <li><b>P_POLICY_EVALUATION</b> The name of the Policy
-	 *         Management policy evaluation SCF.</li>
-	 *         <li><b>P_PAM_ACCESS</b> The name of PAM presentity SCF.</li>
-	 *         <li><b>P_PAM_EVENT_MANAGEMENT</b> The name of PAM watcher SCF.</li>
-	 *         <li><b>P_PAM_PROVISIONING</b> The name of PAM provisioning SCF.</li>
-	 *         </ul>
+	 * <ul>
+	 * <li><b>NULL</b> An empty (NULL) string indicates no SCF name.</li>
+	 * <li><b>P_GENERIC_CALL_CONTROL</b> The name of the Generic Call Control
+	 * SCF.</li>
+	 * <li><b>P_MULTI_PARTY_CALL_CONTROL</b> The name of the MultiParty Call
+	 * Control SCF.</li>
+	 * <li><b>P_MULTI_MEDIA_CALL_CONTROL</b> The name of the MultiMedia Call
+	 * Control SCF.</li>
+	 * <li><b>P_CONFERENCE_CALL_CONTROL</b> The name of the Conference Call
+	 * Control SCF.</li>
+	 * <li><b>P_USER_INTERACTION</b> The name of the User Interaction SCFs.</li>
+	 * <li><b>P_USER_INTERACTION_ADMIN</b> The name of the User Interaction
+	 * Administration SCF.</li>
+	 * <li><b>P_TERMINAL_CAPABILITIES</b> The name of the Terminal
+	 * Capabilities SCF.</li>
+	 * <li><b>P_USER_BINDING</b> The name of the User Binding SCF.</li>
+	 * <li><b>P_USER_LOCATION</b> The name of the User Location SCF.</li>
+	 * <li><b>P_USER_LOCATION_CAMEL</b> The name of the Network User Location
+	 * SCF.</li>
+	 * <li><b>P_USER_LOCATION_EMERGENCY</b> The name of the User Location
+	 * Emergency SCF.</li>
+	 * <li><b>P_USER_STATUS</b> The name of the User Status SCF.</li>
+	 * <li><b>P_EXTENDED_USER_STATUS</b> The name of Extended User Status SCF.</li>
+	 * <li><b>P_DATA_SESSION_CONTROL</b> The name of the Data Session Control
+	 * SCF.</li>
+	 * <li><b>P_GENERIC_MESSAGING</b> The name of the Generic Messaging SCF.</li>
+	 * <li><b>P_CONNECTIVITY_MANAGER</b> The name of the Connectivity Manager
+	 * SCF.</li>
+	 * <li><b>P_CHARGING</b> The name of the Charging SCF.</li>
+	 * <li><b>P_ACCOUNT_MANAGEMENT</b> The name of the Account Management SCF.</li>
+	 * <li><b>P_POLICY_PROVISIONING</b> The name of the Policy Management
+	 * provisioning SCF.</li>
+	 * <li><b>P_POLICY_EVALUATION</b> The name of the Policy Management policy
+	 * evaluation SCF.</li>
+	 * <li><b>P_PAM_ACCESS</b> The name of PAM presentity SCF.</li>
+	 * <li><b>P_PAM_EVENT_MANAGEMENT</b> The name of PAM watcher SCF.</li>
+	 * <li><b>P_PAM_PROVISIONING</b> The name of PAM provisioning SCF.</li>
+	 * </ul>
 	 */
 	public IpService selectSCFs(String serviceName) {
 		try {
@@ -776,6 +758,10 @@ public class ApplicationFramework {
 			}
 
 			// Step 8: obtain a service token for the session
+			if (System.getProperty("Framework.customServiceID")
+					.compareToIgnoreCase("1") == 0) {
+				svcId = System.getProperty("Framework.serviceID");
+			}
 			String svcToken = selectService(m_ipSvcAgmt, svcId);
 
 			if (m_logger.isInfoEnabled()) {
@@ -802,10 +788,7 @@ public class ApplicationFramework {
 					+ ex.getMessage());
 		}
 		// catch exceptions from selectService
-		catch (IOException ex) {
-			m_logger.error("File IO exception. More information: "
-					+ ex.getMessage());
-		} catch (P_INVALID_SERVICE_ID ex) {
+		catch (P_INVALID_SERVICE_ID ex) {
 			m_logger.error("Invalid service ID. More information: "
 					+ ex.getMessage());
 		}
