@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.17 2005/07/01 09:20:13 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.18 2005/07/01 10:01:39 hoanghaiham Exp $
 /**
  * 
  */
@@ -60,6 +60,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	private HashMap mapIpCallIdentify;
 
 	private HashMap mapIpCall;
+	private HashMap m_Observer;
 
 	/**
 	 * 
@@ -76,13 +77,16 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 		super();
 		m_logger.info("ctor()");
 		ipACCM_delegate = null;
+		m_Observer= new HashMap();
 	}
 	private String applicationID;
 	public IpCallControlManagerImpl(String s, TpServiceProperty atProp[])
 	{
 		applicationID = s;
+		m_Observer= new HashMap();		
 		m_logger.info("New IpCallControlManagerImpl created for application " + applicationID);
 		ipACCM_delegate = null;
+		
 	}
 
 	/*
@@ -232,7 +236,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	 * (non-Javadoc)
 	 */
 
-	private void checkCriteria(CallCriteria crit) throws CallControlException {
+	/*private void checkCriteria(CallCriteria crit) throws CallControlException {
 		if (crit == null || crit.getCriteria() == 0) {
 			throw new CallControlException("No events specified", 2, 2);
 		}
@@ -246,14 +250,14 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 			return;
 		}
 	}
-
+*/
 	private void callEventCriteria(TpCallEventCriteria tpcalleventcriteria)
 			throws P_INVALID_CRITERIA, P_INVALID_EVENT_TYPE {
 		if (tpcalleventcriteria.MonitorMode == TpCallMonitorMode.P_CALL_MONITOR_MODE_DO_NOT_MONITOR)
 			throw new P_INVALID_CRITERIA("DO_NOT_MONITOR is invalid here");
 		byte byte0 = 6;
-		if ((tpcalleventcriteria.CallEventName | byte0) == byte0)
-			return;
+		if ((tpcalleventcriteria.CallEventName | byte0) == byte0){
+			return;}
 		if ((tpcalleventcriteria.CallEventName & 1) != 0)
 			throw new P_INVALID_EVENT_TYPE(
 					"P_EVENT_GCCS_OFFHOOK_EVENT not supported");
@@ -366,7 +370,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 		return false;
 	}
 
-	Map m_Observer;
+	
 
 	private int getNotificationObserverID = 0;
 
@@ -384,6 +388,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 
 		public Observer(IpAppCallControlManager ipAppCallControlManager,
 				TpCallEventCriteria tpCallEventCriteria, int assignID) {
+			m_logger.debug("Enterring Observer" + ipAppCallControlManager + " TpCallEventCriteria" + tpCallEventCriteria + " AssignId" + assignID);
 			this.ipAppCallControlManager = ipAppCallControlManager;
 			this.tpCallEventCriteria = tpCallEventCriteria;
 			assignmentID = assignID;
@@ -407,8 +412,10 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 			IpAppCallControlManager ipAppCallControlManager,
 			TpCallEventCriteria tpCallEventCriteria) {
 		int notificationObserverId = getObserver();
+		m_logger.info(" Enterring putNotificationObserver ");
 		Observer observer = new Observer(ipAppCallControlManager,
 				tpCallEventCriteria, notificationObserverId);
+		m_logger.info(" Enterring put into Observer " + m_Observer);
 		m_Observer.put(new Integer(notificationObserverId), observer);
 		return notificationObserverId;
 	}
