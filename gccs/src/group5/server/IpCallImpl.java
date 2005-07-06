@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.20 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.21 2005/07/06 20:46:25 huuhoa Exp $
 /**
  * 
  */
@@ -30,20 +30,19 @@ import org.csapi.cc.gccs.TpCallReportRequest;
 
 /**
  * Represent each call session by IpCallImpl object
- * @author Nguyen Duc Du Khuong 
+ * 
+ * @author Nguyen Duc Du Khuong
  */
 
-
-
-public class IpCallImpl extends IpCallPOA
-	implements IpEventHandler {
+public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private int nWatcherID;
+
 	private IpAppCall appCall;
 
 	static Logger m_logger;
@@ -51,11 +50,11 @@ public class IpCallImpl extends IpCallPOA
 	static {
 		m_logger = Logger.getLogger(IpCallImpl.class);
 	}
-	
-	public void setIpAppCall(IpAppCall appCall){
+
+	public void setIpAppCall(IpAppCall appCall) {
 		this.appCall = appCall;
 	}
-	
+
 	public IpCallImpl(TpCallIdentifier callid, String originatorAddress,
 			String originalDestinationAddress,
 			IpAppCallControlManagerImpl manager, IpAppCallImpl ipAppCallImpl)
@@ -63,6 +62,7 @@ public class IpCallImpl extends IpCallPOA
 			P_INVALID_INTERFACE_TYPE {
 
 	}
+
 	/**
 	 * 
 	 */
@@ -79,6 +79,7 @@ public class IpCallImpl extends IpCallPOA
 		nWatcherID = 0;
 		this.appCall = appCall;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -98,39 +99,40 @@ public class IpCallImpl extends IpCallPOA
 		if (targetAddress == null)
 			throw new P_INVALID_ADDRESS("Error in the target address");
 		if (originalDestinationAddress == null)
-			throw new P_INVALID_ADDRESS ("Error in orginal destination Address");
+			throw new P_INVALID_ADDRESS("Error in orginal destination Address");
 		if (originatingAddress == null)
-			throw new P_INVALID_ADDRESS ("Error in orginanating Address");
+			throw new P_INVALID_ADDRESS("Error in orginanating Address");
 		if (redirectingAddress == null)
-			throw new P_INVALID_ADDRESS ("Error in redirecting Address");
-		
-		// register for event notifications
-		m_logger.debug("About to register watcher");
-		EventCriteria evCriteria = new EventCriteria();
-		m_logger.debug("Event criteria is created");
-		evCriteria.addCriteria(CallEvent.eventRouteRes);
-		evCriteria.addCriteria(CallEvent.eventRouteErr);
-		m_logger.debug("Finished adding criteria");
-		nWatcherID = EventObserver.getInstance().addWatcher(this, evCriteria);
-		m_logger.debug("Finished registering watcher");
-		
+			throw new P_INVALID_ADDRESS("Error in redirecting Address");
+
+		if (nWatcherID == 0) {
+			// register for event notifications
+			m_logger.debug("About to register watcher");
+			EventCriteria evCriteria = new EventCriteria();
+			m_logger.debug("Event criteria is created");
+			evCriteria.addCriteria(CallEvent.eventRouteRes);
+			evCriteria.addCriteria(CallEvent.eventRouteErr);
+			m_logger.debug("Finished adding criteria");
+			nWatcherID = EventObserver.getInstance().addWatcher(this,
+					evCriteria);
+			m_logger.debug("Finished registering watcher");
+		}
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
 				originatingAddress, CallEvent.eventRouteReq, 0, 0);
 		queue.put(evtCall);
-		
-		//event_Observer.listen();
-		
-	
+
+		// event_Observer.listen();
+
 		m_logger.debug("Route request successful");
 		/**
-		 *Returns callLegSessionID: Specifies the sessionID assigned by the gateway. 
-		 *This is the sessionID of the implicitly created call leg. The same ID 
-		 *will be returned in the routeRes or Err. This allows the application 
-		 *to correlate the request and the result. 
+		 * Returns callLegSessionID: Specifies the sessionID assigned by the
+		 * gateway. This is the sessionID of the implicitly created call leg.
+		 * The same ID will be returned in the routeRes or Err. This allows the
+		 * application to correlate the request and the result.
 		 */
 		return 0;
-		
+
 		// 
 		// if(m_m_logger.isInfoEnabled())
 		// m_m_logger.info(("Route Request"));
@@ -189,15 +191,13 @@ public class IpCallImpl extends IpCallPOA
 			throws P_INVALID_NETWORK_STATE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-		
-		
-		if(m_logger.isInfoEnabled())
+
+		if (m_logger.isInfoEnabled())
 			m_logger.info("release Call");
-		
-			
+
 		CallEventQueue queue = CallEventQueue.getInstance();
-		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventReleaseCall, 0, 0);
+		CallEvent evtCall = new CallEvent(callSessionID, null, null,
+				CallEvent.eventReleaseCall, 0, 0);
 		queue.put(evtCall);
 		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}
@@ -210,13 +210,13 @@ public class IpCallImpl extends IpCallPOA
 	public void deassignCall(int callSessionID) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-		
-		if(m_logger.isInfoEnabled())
+
+		if (m_logger.isInfoEnabled())
 			m_logger.info("deassign Call");
-		
+
 		CallEventQueue queue = CallEventQueue.getInstance();
-		CallEvent evtCall = new CallEvent(callSessionID, null,
-				null, CallEvent.eventDeassignCall, 0, 0);
+		CallEvent evtCall = new CallEvent(callSessionID, null, null,
+				CallEvent.eventDeassignCall, 0, 0);
 		queue.put(evtCall);
 		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}
@@ -320,25 +320,27 @@ public class IpCallImpl extends IpCallPOA
 
 	public void onEvent(int eventID, CallEvent eventData) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	public void onRouteReq(int callSessionID, TpAddress targetAddr, TpAddress origAddr) {
+	public void onRouteReq(int callSessionID, TpAddress targetAddr,
+			TpAddress origAddr) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onDeassignCall(int callSessionID) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void onReleaseCall(int callSessionID) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	public void onRouteRes(int callSessionID, TpCallReport eventReport, int callLegSessionID) {
+	public void onRouteRes(int callSessionID, TpCallReport eventReport,
+			int callLegSessionID) {
 		m_logger.info("Get result of previous request routeReq");
 		m_logger.debug("IpAppCall: " + appCall);
 		m_logger.debug("callsessionID: " + callSessionID);
@@ -347,5 +349,3 @@ public class IpCallImpl extends IpCallPOA
 		m_logger.info("Finish forwarding that event to client");
 	}
 }
-
-

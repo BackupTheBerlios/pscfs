@@ -1,4 +1,4 @@
-//$Id: AppCall.java,v 1.1 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: AppCall.java,v 1.2 2005/07/06 20:46:25 huuhoa Exp $
 /**
  * 
  */
@@ -35,6 +35,9 @@ public class AppCall extends IpAppCallPOA {
 	public void routeRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
 		m_logger.info("Receive result from server about routeReq");
+		m_logger.debug("Current application logic: " + appLogic);
+		m_logger.debug("CallSessionID: " + callSessionID);
+		m_logger.debug("CallReport: " + eventReport);
 		appLogic.routeRes(callSessionID, eventReport, callLegSessionID);
 	}
 

@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.9 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.10 2005/07/06 20:46:25 huuhoa Exp $
 /**
  * 
  */
@@ -67,21 +67,23 @@ public class MyApplicationLogic {
 			public void run() {
 				// wait for network events
 				m_logger.debug("Inside run method");
-				MyAppEvent event = osaEventQueue.get();
-				// got event
-				m_logger.debug("Got event with eventID = "
-						+ event.eventInfo.CallEventName + ", from address "
-						+ event.eventInfo.OriginatingAddress.AddrString);
-				// check event
-				if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
-					// translate the address
-					String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
-					// route to new address
-					doRouteReq(event, addrString);
-					// deassign from call
-					doDeassignCall(event.callId);
-				} else {
-					m_logger.info("Unknown event");
+				while (true) {
+					MyAppEvent event = osaEventQueue.get();
+					// got event
+					m_logger.debug("Got event with eventID = "
+							+ event.eventInfo.CallEventName + ", from address "
+							+ event.eventInfo.OriginatingAddress.AddrString);
+					// check event
+					if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
+						// translate the address
+						String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
+						// route to new address
+						doRouteReq(event, addrString);
+						// deassign from call
+						doDeassignCall(event.callId);
+					} else {
+						m_logger.info("Unknown event");
+					}
 				}
 			}
 		});
