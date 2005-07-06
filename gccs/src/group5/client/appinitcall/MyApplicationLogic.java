@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.1 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.2 2005/07/06 18:58:17 huuhoa Exp $
 /**
  * 
  */
@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.csapi.P_INVALID_ADDRESS;
-import org.csapi.P_INVALID_ASSIGNMENT_ID;
 import org.csapi.P_INVALID_CRITERIA;
 import org.csapi.P_INVALID_EVENT_TYPE;
 import org.csapi.P_INVALID_INTERFACE_TYPE;
@@ -24,6 +23,10 @@ import org.csapi.TpAddressRange;
 import org.csapi.TpAddressScreening;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallMonitorMode;
+import org.csapi.cc.gccs.IpAppCall;
+import org.csapi.cc.gccs.IpAppCallControlManager;
+import org.csapi.cc.gccs.IpAppCallControlManagerHelper;
+import org.csapi.cc.gccs.IpAppCallHelper;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT;
 import org.csapi.cc.gccs.TpCallAppInfo;
@@ -33,6 +36,8 @@ import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallNotificationType;
 import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportRequest;
+import org.omg.PortableServer.POAPackage.ServantNotActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 /**
  * 
@@ -63,35 +68,57 @@ public class MyApplicationLogic {
 
 	public synchronized void run() {
 		m_logger.info("Start creating call between two parties");
-		try {
-			AppCallControlManager appCCM = new AppCallControlManager(this);
-			ipCCM.setCallback(appCCM._this(ApplicationFramework.getORB()));
-			AppCall appCall = new AppCall(this);
-			TpCallIdentifier callId = ipCCM.createCall(appCall._this(ApplicationFramework.getORB()));
-			if (callId==null)
-			{
-				m_logger.error("Cannot create call");
-				return;
+		Thread th = new Thread(new Runnable() {
+			public void run() {
+				try {
+					AppCallControlManager appCCM = new AppCallControlManager(
+							MyApplicationLogic.this);
+					// now get the reference so that it is registered with the
+					// ORB properly
+					IpAppCallControlManager ipAppCCM = IpAppCallControlManagerHelper
+							.narrow(ApplicationFramework.getPOA()
+									.servant_to_reference(appCCM));
+
+					ipCCM.setCallback(ipAppCCM);
+					AppCall appCall = new AppCall(MyApplicationLogic.this);
+					IpAppCall ipAppCall = IpAppCallHelper
+							.narrow(ApplicationFramework.getPOA()
+									.servant_to_reference(appCall));
+					TpCallIdentifier callId = ipCCM.createCall(ipAppCall);
+					if (callId == null) {
+						m_logger.error("Cannot create call");
+						return;
+					}
+					String origAddr = "1";
+					String destAddr = "2";
+					m_logger.debug("Got callSection: " + callId.CallSessionID
+							+ ", CallIdentifier: "
+							+ callId.CallReference.toString());
+					doRouteReq(callId, origAddr, destAddr);
+					// wait here until the result of routeReq come
+					osaEventQueue.get();
+					// then call routeReq again with swapping the position of
+					// source and destination
+					doRouteReq(callId, destAddr, origAddr);
+					// then wait again for the result of routeReq
+					osaEventQueue.get();
+					// then deassign the call
+					doDeassignCall(callId);
+				} catch (P_INVALID_INTERFACE_TYPE ex) {
+					m_logger
+							.fatal("Why invalid interface type??? Extra information: "
+									+ ex.ExtraInformation);
+				} catch (TpCommonExceptions ex) {
+					m_logger.fatal("Some error occurs with information: "
+							+ ex.ExtraInformation);
+				} catch (ServantNotActive ex) {
+					m_logger.fatal("Try to activate POA first");
+				} catch (WrongPolicy ex) {
+					m_logger.fatal("Wrong policy");
+				}
 			}
-			String origAddr = "1";
-			String destAddr = "2";
-			m_logger.debug("Got callSection: " + callId.CallSessionID + ", CallIdentifier: " + callId.CallReference.toString());
-			doRouteReq(callId, origAddr, destAddr);
-			// wait here until the result of routeReq come
-			osaEventQueue.get();
-			// then call routeReq again with swapping the position of source and destination
-			doRouteReq(callId, destAddr, origAddr);
-			// then wait again for the result of routeReq
-			osaEventQueue.get();
-			// then deassign the call
-			doDeassignCall(callId);
-		} catch (P_INVALID_INTERFACE_TYPE ex) {
-			m_logger.fatal("Why invalid interface type??? Extra information: "
-					+ ex.ExtraInformation);
-		} catch (TpCommonExceptions ex) {
-			m_logger.fatal("Some error occurs with information: "
-					+ ex.ExtraInformation);
-		}
+		});
+		th.start();
 		try {
 			m_logger.debug("Entering dead");
 			System.in.read();
@@ -99,7 +126,7 @@ public class MyApplicationLogic {
 		} catch (IOException ex) {
 
 		}
-		}
+	}
 
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
@@ -108,13 +135,14 @@ public class MyApplicationLogic {
 				.put(new MyAppEvent(callReference, eventInfo, assignmentID));
 	}
 
-	public synchronized void routeRes(int callSessionID, TpCallReport eventReport,
-			int callLegSessionID) {
+	public synchronized void routeRes(int callSessionID,
+			TpCallReport eventReport, int callLegSessionID) {
 		m_logger.info("Result of routeReq has come");
 		osaEventQueue.put(new MyAppEvent(null, null, 0));
 	}
 
-	private void doRouteReq(TpCallIdentifier callId, String originatingAddr, String newDestination) {
+	private void doRouteReq(TpCallIdentifier callId, String originatingAddr,
+			String newDestination) {
 		try {
 			callId.CallReference.routeReq(callId.CallSessionID,
 					new TpCallReportRequest[0],

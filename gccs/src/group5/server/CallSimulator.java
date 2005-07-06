@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.6 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.7 2005/07/06 18:58:17 huuhoa Exp $
 /**
  * 
  */
@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.csapi.TpAddress;
 import org.csapi.cc.TpCallMonitorMode;
 import org.csapi.cc.gccs.TpCallAdditionalReportInfo;
+import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportType;
 
@@ -79,6 +80,7 @@ public class CallSimulator implements IpEventHandler {
 				CallEvent.eventRouteRes);
 		evRouteRes.eventReport = new TpCallReport();
 		evRouteRes.eventReport.AdditionalReportInfo = new TpCallAdditionalReportInfo();
+		evRouteRes.eventReport.AdditionalReportInfo.Busy(new TpCallReleaseCause(0, 1));
 		evRouteRes.eventReport.CallEventTime = "10";
 		evRouteRes.eventReport.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
 		m_logger.debug("After creating CallEvent");
@@ -100,6 +102,7 @@ public class CallSimulator implements IpEventHandler {
 			// subscriber is not idle, can not make call
 			// evRouteRes.errorIndication.ErrorType = TpCallErrorType;
 			m_logger.error("Destination partner is busying");
+			evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_BUSY;
 			if ((subTarg.getStatus() & Subscriber.Busy) != 0)
 				evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_BUSY;
 			if ((subTarg.getStatus() & Subscriber.Unreachable) != 0)

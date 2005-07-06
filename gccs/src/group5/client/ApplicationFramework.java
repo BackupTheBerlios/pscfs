@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.9 2005/07/01 09:20:13 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.10 2005/07/06 18:58:17 huuhoa Exp $
 /**
  * 
  */
@@ -89,11 +89,15 @@ public class ApplicationFramework {
 
 	/** The instance of the CORBA Object Request Broker */
 	private static ORB orb;
+	private static POA poa;
 
 	public static ORB getORB() {
 		return orb;
 	}
 
+	public static POA getPOA() {
+		return poa;
+	}
 	/**
 	 * for synchronization
 	 */
@@ -159,7 +163,7 @@ public class ApplicationFramework {
 
 		// Get a reference to the ORB's Portable Object Adapter.
 		org.omg.CORBA.Object obj = orb.resolve_initial_references("RootPOA");
-		POA poa = POAHelper.narrow(obj);
+		poa = POAHelper.narrow(obj);
 
 		// Activate the Root POA Manager.
 		poa.the_POAManager().activate();
