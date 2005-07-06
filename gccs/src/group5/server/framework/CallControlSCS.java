@@ -1,4 +1,4 @@
-//$Id: CallControlSCS.java,v 1.9 2005/06/22 08:23:18 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.10 2005/07/06 18:19:53 huuhoa Exp $
 /**
  * 
  */
@@ -58,6 +58,7 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 		scsproperties.setProperty("P_SUPPORTED_INTERFACES", new String[] {
 				"IpService", "IpCallControlManager", "IpCall" });
 		scsproperties.setProperty("P_OPERATION_SET", new String[] {
+				"IpCallControlManager.createCall",
 				"IpCallControlManager.enableCallNotification",
 				"IpCallControlManager.disableCallNotification",
 				"IpCallControlManager.changeCallNotification",
@@ -105,7 +106,8 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 	}
 
 	public void destroy() {
-		// TODO Auto-generated method stub
-
+		EventObserver evOb = EventObserver.getInstance();
+		// start a thread to listen to events
+		evOb.stop();
 	}
 }

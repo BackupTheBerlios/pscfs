@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.19 2005/06/14 21:03:10 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.20 2005/07/06 18:19:53 huuhoa Exp $
 /**
  * 
  */
@@ -69,8 +69,16 @@ public class IpCallImpl extends IpCallPOA
 	public IpCallImpl() {
 		super();
 		m_logger.info("ctor()");
+		nWatcherID = 0;
+		appCall = null;
 	}
 
+	public IpCallImpl(IpAppCall appCall) {
+		super();
+		m_logger.info("ctor(appCall)");
+		nWatcherID = 0;
+		this.appCall = appCall;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -86,9 +94,7 @@ public class IpCallImpl extends IpCallPOA
 			throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE,
 			TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID,
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
-		
-		if(m_logger.isInfoEnabled())
-			m_logger.info("Route Request");
+		m_logger.info("Route Request");
 		if (targetAddress == null)
 			throw new P_INVALID_ADDRESS("Error in the target address");
 		if (originalDestinationAddress == null)
@@ -99,10 +105,14 @@ public class IpCallImpl extends IpCallPOA
 			throw new P_INVALID_ADDRESS ("Error in redirecting Address");
 		
 		// register for event notifications
+		m_logger.debug("About to register watcher");
 		EventCriteria evCriteria = new EventCriteria();
+		m_logger.debug("Event criteria is created");
 		evCriteria.addCriteria(CallEvent.eventRouteRes);
 		evCriteria.addCriteria(CallEvent.eventRouteErr);
+		m_logger.debug("Finished adding criteria");
 		nWatcherID = EventObserver.getInstance().addWatcher(this, evCriteria);
+		m_logger.debug("Finished registering watcher");
 		
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
@@ -112,7 +122,7 @@ public class IpCallImpl extends IpCallPOA
 		//event_Observer.listen();
 		
 	
-		
+		m_logger.debug("Route request successful");
 		/**
 		 *Returns callLegSessionID: Specifies the sessionID assigned by the gateway. 
 		 *This is the sessionID of the implicitly created call leg. The same ID 
@@ -329,8 +339,12 @@ public class IpCallImpl extends IpCallPOA
 	}
 
 	public void onRouteRes(int callSessionID, TpCallReport eventReport, int callLegSessionID) {
-		// TODO Auto-generated method stub
+		m_logger.info("Get result of previous request routeReq");
+		m_logger.debug("IpAppCall: " + appCall);
+		m_logger.debug("callsessionID: " + callSessionID);
+		m_logger.debug("eventReport: " + eventReport);
 		appCall.routeRes(callSessionID, eventReport, callLegSessionID);
+		m_logger.info("Finish forwarding that event to client");
 	}
 }
 

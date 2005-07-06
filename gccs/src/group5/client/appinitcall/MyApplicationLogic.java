@@ -1,8 +1,10 @@
-//$Id: MyApplicationLogic.java,v 1.9 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.1 2005/07/06 18:19:53 huuhoa Exp $
 /**
  * 
  */
-package group5.client.number_translation;
+package group5.client.appinitcall;
+
+import group5.client.ApplicationFramework;
 
 import java.io.IOException;
 
@@ -24,6 +26,7 @@ import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallMonitorMode;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT;
+import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
@@ -58,49 +61,45 @@ public class MyApplicationLogic {
 		number = "1234567890??";
 	}
 
-	public void run() {
-		m_logger.info("Start monitoring number: " + number);
-		int assignmentID = monitorOrigNumbers(ipCCM, new AppCallControlManager(
-				this), number);
-		m_logger.info("Entering loop with assignmentID: " + assignmentID);
-		Thread th = new Thread(new Runnable() {
-			public void run() {
-				// wait for network events
-				m_logger.debug("Inside run method");
-				MyAppEvent event = osaEventQueue.get();
-				// got event
-				m_logger.debug("Got event with eventID = "
-						+ event.eventInfo.CallEventName + ", from address "
-						+ event.eventInfo.OriginatingAddress.AddrString);
-				// check event
-				if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
-					// translate the address
-					String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
-					// route to new address
-					doRouteReq(event, addrString);
-					// deassign from call
-					doDeassignCall(event.callId);
-				} else {
-					m_logger.info("Unknown event");
-				}
+	public synchronized void run() {
+		m_logger.info("Start creating call between two parties");
+		try {
+			AppCallControlManager appCCM = new AppCallControlManager(this);
+			ipCCM.setCallback(appCCM._this(ApplicationFramework.getORB()));
+			AppCall appCall = new AppCall(this);
+			TpCallIdentifier callId = ipCCM.createCall(appCall._this(ApplicationFramework.getORB()));
+			if (callId==null)
+			{
+				m_logger.error("Cannot create call");
+				return;
 			}
-		});
-		th.start();
+			String origAddr = "1";
+			String destAddr = "2";
+			m_logger.debug("Got callSection: " + callId.CallSessionID + ", CallIdentifier: " + callId.CallReference.toString());
+			doRouteReq(callId, origAddr, destAddr);
+			// wait here until the result of routeReq come
+			osaEventQueue.get();
+			// then call routeReq again with swapping the position of source and destination
+			doRouteReq(callId, destAddr, origAddr);
+			// then wait again for the result of routeReq
+			osaEventQueue.get();
+			// then deassign the call
+			doDeassignCall(callId);
+		} catch (P_INVALID_INTERFACE_TYPE ex) {
+			m_logger.fatal("Why invalid interface type??? Extra information: "
+					+ ex.ExtraInformation);
+		} catch (TpCommonExceptions ex) {
+			m_logger.fatal("Some error occurs with information: "
+					+ ex.ExtraInformation);
+		}
 		try {
 			m_logger.debug("Entering dead");
 			System.in.read();
-			m_logger.debug("disabling CallNofitication");
-			ipCCM.disableCallNotification(assignmentID);
-			th.stop();
 			m_logger.debug("Application exit");
 		} catch (IOException ex) {
 
-		} catch (P_INVALID_ASSIGNMENT_ID ex) {
-
-		} catch (TpCommonExceptions ex) {
-
 		}
-	}
+		}
 
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
@@ -109,9 +108,36 @@ public class MyApplicationLogic {
 				.put(new MyAppEvent(callReference, eventInfo, assignmentID));
 	}
 
-	public void routeRes(int callSessionID, TpCallReport eventReport,
+	public synchronized void routeRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
-		m_logger.error("Not implemented");
+		m_logger.info("Result of routeReq has come");
+		osaEventQueue.put(new MyAppEvent(null, null, 0));
+	}
+
+	private void doRouteReq(TpCallIdentifier callId, String originatingAddr, String newDestination) {
+		try {
+			callId.CallReference.routeReq(callId.CallSessionID,
+					new TpCallReportRequest[0],
+					myAppCreateE164Address(newDestination),
+					myAppCreateE164Address(originatingAddr),
+					myAppCreateE164Address(newDestination),
+					myAppCreateE164Address(newDestination),
+					new TpCallAppInfo[0]);
+		} catch (P_INVALID_SESSION_ID ex) {
+			m_logger.error("Invalid session id, more " + ex.getMessage());
+		} catch (P_UNSUPPORTED_ADDRESS_PLAN ex) {
+			m_logger.error("Unsupported address plan, more " + ex.getMessage());
+		} catch (P_INVALID_CRITERIA ex) {
+			m_logger.error("Invalid criteria, more " + ex.getMessage());
+		} catch (P_INVALID_ADDRESS ex) {
+			m_logger.error("Invalid address, more " + ex.getMessage());
+		} catch (P_INVALID_NETWORK_STATE ex) {
+			m_logger.error("Invalid network state, more " + ex.getMessage());
+		} catch (P_INVALID_EVENT_TYPE ex) {
+			m_logger.error("Invalid event type, more " + ex.getMessage());
+		} catch (TpCommonExceptions ex) {
+			m_logger.error("Catch OSA exception, number: " + ex.ExceptionType);
+		}
 	}
 
 	private void doRouteReq(MyAppEvent event, String newDestination) {

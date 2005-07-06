@@ -1,9 +1,11 @@
-//$Id: Subscribers.java,v 1.5 2005/06/16 10:30:05 huuhoa Exp $
+//$Id: Subscribers.java,v 1.6 2005/07/06 18:19:53 huuhoa Exp $
 /**
  * 
  */
 package group5.server;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -26,11 +28,15 @@ public class Subscribers {
 	private static Subscribers m_subscribers = new Subscribers();
 
 	public static Subscribers getInstance() {
+		if (m_subscribers==null)
+		{
+			m_subscribers = new Subscribers();
+		}
 		return m_subscribers;
 	}
 
 	private Subscribers() {
-
+		m_listSubscribers = new HashMap();
 	}
 
 	/**
@@ -53,5 +59,19 @@ public class Subscribers {
 	public Subscriber getSubscriber(String subscriberAddr) {
 		Subscriber sub = (Subscriber) m_listSubscribers.get(subscriberAddr);
 		return sub;
+	}
+	/**
+	 * Dumping the subscribers database
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString()
+	{
+		String strDumping = "Subscribers Database\n";
+		Iterator iterator = m_listSubscribers.values().iterator();
+		while (iterator.hasNext()) {
+			Subscriber sub = (Subscriber) iterator.next();
+			strDumping = strDumping + "subscriber address: " + sub.getSubscribeAddress() + "\n";
+		}
+		return strDumping;
 	}
 }

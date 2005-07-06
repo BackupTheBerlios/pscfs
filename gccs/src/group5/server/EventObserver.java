@@ -1,9 +1,10 @@
-//$Id: EventObserver.java,v 1.7 2005/06/16 09:31:48 huuhoa Exp $
+//$Id: EventObserver.java,v 1.8 2005/07/06 18:19:53 huuhoa Exp $
 /**
  * 
  */
 package group5.server;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -54,6 +55,7 @@ public final class EventObserver {
 	private EventObserver() {
 		m_logger.debug("ctor()");
 		m_ipCallManager = null;
+		m_mapObservers = new HashMap();
 		evListener = new EventListener();
 	}
 
@@ -133,9 +135,11 @@ public final class EventObserver {
 					ev.setProvision(false);
 					// dispatch events
 					m_logger.debug("Got event with eventType: " + ev.eventType);
+					m_logger.debug("Number of Observers: " + m_mapObservers.size());
 					Iterator iterator = m_mapObservers.values().iterator();
 					while (iterator.hasNext()) {
 						Observer ob = (Observer) iterator.next();
+						m_logger.debug("The watched criteria: " + ob.getCriteria().toString());
 						if (ob.getCriteria().isWatched(ev.eventType)) {
 							dispatchEvent(ob.getHandler(), ev.eventType, ev);
 						}
@@ -146,6 +150,7 @@ public final class EventObserver {
 
 		private void dispatchEvent(IpEventHandler handler, int eventType,
 				CallEvent eventData) {
+			m_logger.debug("Dispatching event to hander: " + handler + ", eventType: " + eventType);
 			// get data
 			switch (eventType) {
 			case CallEvent.eventRouteReq:

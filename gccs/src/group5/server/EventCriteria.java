@@ -1,9 +1,10 @@
-//$Id: EventCriteria.java,v 1.1 2005/06/13 11:17:51 huuhoa Exp $
+//$Id: EventCriteria.java,v 1.2 2005/07/06 18:19:53 huuhoa Exp $
 /**
  * 
  */
 package group5.server;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -16,7 +17,7 @@ public class EventCriteria {
 	private List m_eventList;
 	public EventCriteria()
 	{
-		
+		m_eventList = new ArrayList();
 	}
 	/**
 	 * Add new criteria for watching
@@ -49,5 +50,17 @@ public class EventCriteria {
 				return true;
 		}
 		return false;
+	}
+	public String toString()
+	{
+		String strObject = "Event Criteria: ";
+		ListIterator iterator = m_eventList.listIterator();
+		while (iterator.hasNext())
+		{
+			Integer tempEventID = (Integer) iterator.next();
+			strObject += tempEventID.intValue();
+			strObject += ", ";
+		}
+		return strObject;
 	}
 }

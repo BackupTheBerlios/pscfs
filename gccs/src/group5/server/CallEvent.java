@@ -1,4 +1,4 @@
-//$Id: CallEvent.java,v 1.11 2005/06/16 09:31:48 huuhoa Exp $
+//$Id: CallEvent.java,v 1.12 2005/07/06 18:19:53 huuhoa Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -79,18 +79,27 @@ public class CallEvent {
 	 * Specifies the error which led to the original request failing.
 	 */
 	// public TpCallError errorIndication;
-	CallEvent(int CallSession_ID, int eventType) {
+	public CallEvent(int CallSession_ID, int eventType) 
+	throws org.omg.CORBA.BAD_PARAM {
+		System.out.println("Entering constructor of CallEvent");
 		bProvision = true;
 		CallSessionID = CallSession_ID;
+		setTargetAddress(null);
+		originatingAddress = null;
+		eventType_Result = 0;
+		callLegSessionID = 0;
 		switch (eventType) {
 		case eventRouteReq:
 		case eventDeassignCall:
 		case eventReleaseCall:
+		case eventRouteRes:
+		case eventRouteErr:
 			this.eventType = eventType;
 			break;
 		default:
 			throw new org.omg.CORBA.BAD_PARAM();
 		}
+		System.out.println("Getting out of constructor");
 	}
 
 	/**
@@ -112,6 +121,8 @@ public class CallEvent {
 		case eventRouteReq:
 		case eventDeassignCall:
 		case eventReleaseCall:
+		case eventRouteRes:
+		case eventRouteErr:
 			this.eventType = event_Type;
 			break;
 		default:

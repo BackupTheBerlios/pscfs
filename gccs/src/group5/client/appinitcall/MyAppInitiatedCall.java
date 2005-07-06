@@ -1,5 +1,5 @@
-//$Id: MyAppInit.java,v 1.8 2005/07/06 18:19:53 huuhoa Exp $
-package group5.client.number_translation;
+//$Id: MyAppInitiatedCall.java,v 1.1 2005/07/06 18:19:53 huuhoa Exp $
+package group5.client.appinitcall;
 
 import group5.client.ApplicationFramework;
 
@@ -14,8 +14,8 @@ import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerHelper;
 import org.omg.CORBA.UserException;
 
-public class MyAppInit extends ApplicationFramework {
-	MyAppInit() throws UserException {
+public class MyAppInitiatedCall extends ApplicationFramework {
+	MyAppInitiatedCall() throws UserException {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -26,7 +26,7 @@ public class MyAppInit extends ApplicationFramework {
 	static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(MyAppInit.class);
+		m_logger = Logger.getLogger(MyAppInitiatedCall.class);
 	}
 
 	public void run() {
@@ -52,7 +52,7 @@ public class MyAppInit extends ApplicationFramework {
 		// run the application
 		Properties appProps = new Properties();
 		try {
-			FileInputStream fis = new FileInputStream("MyAppInit.properties");
+			FileInputStream fis = new FileInputStream("MyAppInitiatedCall.properties");
 			appProps.load(fis);
 			fis.close();
 		} catch (IOException e) {
@@ -61,7 +61,7 @@ public class MyAppInit extends ApplicationFramework {
 		System.setProperties(appProps);
 		BasicConfigurator.configure();
 		try {
-			MyAppInit application = new MyAppInit();
+			MyAppInitiatedCall application = new MyAppInitiatedCall();
 			application.initApplication("huuhoa", "123456");
 			application.run();
 			application.endApplication();
