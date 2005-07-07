@@ -1,8 +1,12 @@
-//$Id: MyApplicationLogic.java,v 1.10 2005/07/06 20:46:25 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.11 2005/07/07 23:03:26 aachenner Exp $
 /**
  * 
  */
 package group5.client.number_translation;
+
+import group5.client.ApplicationFramework;
+
+
 
 import java.io.IOException;
 
@@ -22,6 +26,8 @@ import org.csapi.TpAddressRange;
 import org.csapi.TpAddressScreening;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallMonitorMode;
+import org.csapi.cc.gccs.IpAppCall;
+import org.csapi.cc.gccs.IpAppCallHelper;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT;
 import org.csapi.cc.gccs.TpCallEventCriteria;
@@ -65,6 +71,24 @@ public class MyApplicationLogic {
 		m_logger.info("Entering loop with assignmentID: " + assignmentID);
 		Thread th = new Thread(new Runnable() {
 			public void run() {
+				
+				//createCall in number_translation
+				AppCall appCall = new AppCall(this);
+				IpAppCall ipAppCall = IpAppCallHelper
+				.narrow(ApplicationFramework.getPOA()
+						.servant_to_reference(appCall));
+				TpCallIdentifier callId = ipCCM.createCall(ipAppCall);
+				if (callId == null) {
+					m_logger.error("Cannot create call");
+					return;
+				}
+				String origAddr = "1";
+				String destAddr = "2";
+				m_logger.debug("Got callSection: " + callId.CallSessionID
+						+ ", CallIdentifier: "
+						+ callId.CallReference.toString());
+						
+		
 				// wait for network events
 				m_logger.debug("Inside run method");
 				while (true) {
