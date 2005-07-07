@@ -1,12 +1,10 @@
-//$Id: MyApplicationLogic.java,v 1.11 2005/07/07 23:03:26 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.12 2005/07/07 23:09:31 huuhoa Exp $
 /**
  * 
  */
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
-
-
 
 import java.io.IOException;
 
@@ -36,6 +34,8 @@ import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallNotificationType;
 import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportRequest;
+import org.omg.PortableServer.POAPackage.ServantNotActive;
+import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 /**
  * 
@@ -71,9 +71,9 @@ public class MyApplicationLogic {
 		m_logger.info("Entering loop with assignmentID: " + assignmentID);
 		Thread th = new Thread(new Runnable() {
 			public void run() {
-				
+				try {
 				//createCall in number_translation
-				AppCall appCall = new AppCall(this);
+				AppCall appCall = new AppCall(MyApplicationLogic.this);
 				IpAppCall ipAppCall = IpAppCallHelper
 				.narrow(ApplicationFramework.getPOA()
 						.servant_to_reference(appCall));
@@ -109,6 +109,24 @@ public class MyApplicationLogic {
 						m_logger.info("Unknown event");
 					}
 				}
+				}
+				catch (ServantNotActive ex)
+				{
+					m_logger.fatal("Servant not active. Try activate servant first");
+				}
+				catch (WrongPolicy ex)
+				{
+					m_logger.fatal("Wrong policy");
+				}
+				catch (TpCommonExceptions ex)
+				{
+					m_logger.fatal("Common exception with extra information: " + ex.ExtraInformation);
+				}
+				catch (P_INVALID_INTERFACE_TYPE ex)
+				{
+					m_logger.fatal("Invalid interface type with extra information: " + ex.ExtraInformation);
+				}
+				
 			}
 		});
 		th.start();
