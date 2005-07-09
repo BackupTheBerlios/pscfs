@@ -1,4 +1,4 @@
-//$Id: BarringApplicationLogic.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: BarringApplicationLogic.java,v 1.2 2005/07/09 13:20:33 aachenner Exp $
 /**
  * 
  */
@@ -105,7 +105,7 @@ public class BarringApplicationLogic {
 					doRouteReq(callId, origAddr, destAddr);
 					// wait here until the result of routeReq come
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get();
+					osaEventQueue.get(new int[0]);
 					// then deassign the call
 					m_logger.debug("Entering deassignCall");					
 					doDeassignCall(callId);

@@ -1,4 +1,4 @@
-//$Id: ApplicationEventQueue.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: ApplicationEventQueue.java,v 1.2 2005/07/09 13:20:33 aachenner Exp $
 /**
  * 
  */
@@ -34,8 +34,8 @@ public class ApplicationEventQueue {
 		notifyAll();
 	}
 
-	public synchronized ApplicationEvent get() {
-		if (size() == 0)
+	public synchronized ApplicationEvent[] get(int[] eventType) {
+		if (size() == 0) {
 			do {
 				try {
 					wait();
@@ -43,7 +43,9 @@ public class ApplicationEventQueue {
 					m_logger.error(e);
 				}
 			} while (size() == 0);
-		return (ApplicationEvent) list.remove(0);
+		}
+		// check for event criteria here
+		return new ApplicationEvent[] {(ApplicationEvent)list.remove(0)};
 	}
 
 	public synchronized int size() {

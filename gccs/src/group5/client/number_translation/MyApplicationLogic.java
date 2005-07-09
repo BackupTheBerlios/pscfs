@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.14 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: MyApplicationLogic.java,v 1.15 2005/07/09 13:20:33 aachenner Exp $
 /**
  * 
  */
@@ -74,7 +74,9 @@ public class MyApplicationLogic {
 		int assignmentID = monitorOrigNumbers(ipCCM, new AppCallControlManager(
 				this), number);
 		m_logger.info("Entering loop with assignmentID: " + assignmentID);
-		Thread th = new Thread(new Runnable() {
+
+		// Thread to to createCall
+		Thread th1 = new Thread(new Runnable() {
 			public void run() {
 				try {
 					// setCallback
@@ -104,18 +106,46 @@ public class MyApplicationLogic {
 							+ ", CallIdentifier: "
 							+ callId.CallReference.toString());
 					m_logger.debug("About to call routeReq ...");
-					doRouteReq(callId, origAddr, destAddr);					
+
+					doRouteReq(callId, origAddr, destAddr);
+					// wait here until the result of routeReq come
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get();
+					osaEventQueue.get(new int[0]);
 					m_logger.debug("Got response for routeRes ...");
-					//then deassign the call
-					doDeassignCall(callId);			
-					
-					
-					// wait for network events
-					m_logger.debug("Inside run method");
-					while (true) {
-						ApplicationEvent event = osaEventQueue.get();
+					m_logger.debug("About to call routeReq ...");
+					// then call routeReq again with swapping the position of
+					// source and destination
+					doRouteReq(callId, destAddr, origAddr);
+					// then wait again for the result of routeReq
+					m_logger.debug("Waiting for routeRes ...");
+					osaEventQueue.get(new int[0]);
+					// then deassign the call
+					doDeassignCall(callId);
+				} catch (ServantNotActive ex) {
+					m_logger
+							.fatal("Servant not active. Try activate servant first");
+				} catch (WrongPolicy ex) {
+					m_logger.fatal("Wrong policy");
+				} catch (TpCommonExceptions ex) {
+					m_logger.fatal("Common exception with extra information: "
+							+ ex.ExtraInformation);
+				} catch (P_INVALID_INTERFACE_TYPE ex) {
+					m_logger
+							.fatal("Invalid interface type with extra information: "
+									+ ex.ExtraInformation);
+				}
+			}
+		});
+		// Thread to wait for network events
+		Thread th2 = new Thread(new Runnable() {
+			public void run() {
+				// wait for network events
+				m_logger.debug("Inside run method");
+				while (true) {
+					ApplicationEvent[] evList = osaEventQueue.get(new int[0]);
+					for (int nIndex = 0; nIndex < evList.length; nIndex++) {
+						ApplicationEvent event = evList[nIndex];
+
 						// got event
 						m_logger
 								.debug("Got event with eventID = "
@@ -134,29 +164,19 @@ public class MyApplicationLogic {
 							m_logger.info("Unknown event");
 						}
 					}
-				} catch (ServantNotActive ex) {
-					m_logger
-							.fatal("Servant not active. Try activate servant first");
-				} catch (WrongPolicy ex) {
-					m_logger.fatal("Wrong policy");
-				} catch (TpCommonExceptions ex) {
-					m_logger.fatal("Common exception with extra information: "
-							+ ex.ExtraInformation);
-				} catch (P_INVALID_INTERFACE_TYPE ex) {
-					m_logger
-							.fatal("Invalid interface type with extra information: "
-									+ ex.ExtraInformation);
-				}
 
+				}
 			}
 		});
-		th.start();
+		th1.start();
+		th2.start();
 		try {
 			m_logger.debug("Entering dead");
 			System.in.read();
 			m_logger.debug("disabling CallNofitication");
 			ipCCM.disableCallNotification(assignmentID);
-			th.stop();
+			th1.stop();
+			th2.stop();
 			m_logger.debug("Application exit");
 		} catch (IOException ex) {
 
@@ -166,6 +186,7 @@ public class MyApplicationLogic {
 
 		}
 	}
+
 	private void doRouteReq(TpCallIdentifier callId, String originatingAddr,
 			String newDestination) {
 		try {
@@ -192,12 +213,12 @@ public class MyApplicationLogic {
 			m_logger.error("Catch OSA exception, number: " + ex.ExceptionType);
 		}
 	}
-	
+
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.debug("Entering callEventNotify");
-		osaEventQueue
-				.put(new ApplicationEvent(callReference, eventInfo, assignmentID));
+		osaEventQueue.put(new ApplicationEvent(callReference, eventInfo,
+				assignmentID));
 		m_logger.debug("Exiting callEventNotify");
 	}
 
@@ -206,7 +227,7 @@ public class MyApplicationLogic {
 		m_logger.debug("Result of routeReq has come");
 		osaEventQueue.put(new ApplicationEvent(null, null, 0));
 		m_logger.debug("exiting routeRes ...");
-		//m_logger.error("Not implemented");
+		// m_logger.error("Not implemented");
 	}
 
 	private void doRouteReq(ApplicationEvent event, String newDestination) {

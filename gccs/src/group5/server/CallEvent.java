@@ -1,4 +1,4 @@
-//$Id: CallEvent.java,v 1.12 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: CallEvent.java,v 1.13 2005/07/09 13:20:33 aachenner Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -53,7 +53,7 @@ public class CallEvent {
 	/**
 	 * Set if the event need to be parsed by CallControlManager. bProvision is
 	 * set by default. CallControlManager will be the only one who examines the
-	 * content of events, then forwards events to AppCallControlManager to have
+	 * content of events, then forwards events to AIC_AppCallControlManager to have
 	 * it make changes if needed. If there is any changes, CallControlManager
 	 * will put the event back to queue with bProvision unset. Event with
 	 * bProvision unset will be dispatched to other observers not the

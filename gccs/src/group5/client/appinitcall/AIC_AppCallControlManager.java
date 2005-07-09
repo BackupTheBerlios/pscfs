@@ -1,4 +1,4 @@
-//$Id: AppCallControlManager.java,v 1.1 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: AIC_AppCallControlManager.java,v 1.1 2005/07/09 13:20:33 aachenner Exp $
 package group5.client.appinitcall;
 
 import group5.client.ApplicationFramework;
@@ -10,21 +10,21 @@ import org.csapi.cc.gccs.IpAppCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 
-public class AppCallControlManager extends IpAppCallControlManagerPOA {
+public class AIC_AppCallControlManager extends IpAppCallControlManagerPOA {
 	/**
 	 * m_logger for the system
 	 */
 	static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(AppCall.class);
+		m_logger = Logger.getLogger(AIC_AppCall.class);
 	}
 
 	private IpAppCallControlManager ipAppCallControlManager;
 
 	MyApplicationLogic appLogic;
 
-	public AppCallControlManager(MyApplicationLogic logic) {
+	public AIC_AppCallControlManager(MyApplicationLogic logic) {
 		appLogic = logic;
 		ipAppCallControlManager = _this(ApplicationFramework.getORB());
 	}
@@ -40,7 +40,7 @@ public class AppCallControlManager extends IpAppCallControlManagerPOA {
 
 	public IpAppCall callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
-		AppCall ipAppCall = new AppCall(appLogic);
+		AIC_AppCall ipAppCall = new AIC_AppCall(appLogic);
 		appLogic.callEventNotify(callReference, eventInfo, assignmentID);
 		return ipAppCall._this();
 	}

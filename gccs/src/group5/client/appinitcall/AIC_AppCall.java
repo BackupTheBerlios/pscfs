@@ -1,4 +1,4 @@
-//$Id: AppCall.java,v 1.3 2005/07/09 09:17:14 hoanghaiham Exp $
+//$Id: AIC_AppCall.java,v 1.1 2005/07/09 13:20:33 aachenner Exp $
 /**
  * 
  */
@@ -16,19 +16,19 @@ import org.csapi.cc.gccs.TpCallReport;
  * @author Nguyen Huu Hoa
  * 
  */
-public class AppCall extends IpAppCallPOA {
+public class AIC_AppCall extends IpAppCallPOA {
 	/**
 	 * m_logger for the system
 	 */
 	static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(AppCall.class);
+		m_logger = Logger.getLogger(AIC_AppCall.class);
 	}
 
 	MyApplicationLogic appLogic;
 
-	public AppCall(MyApplicationLogic logic) {
+	public AIC_AppCall(MyApplicationLogic logic) {
 		appLogic = logic;
 	}
 

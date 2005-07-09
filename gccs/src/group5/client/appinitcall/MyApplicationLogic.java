@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.6 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: MyApplicationLogic.java,v 1.7 2005/07/09 13:20:33 aachenner Exp $
 /**
  * 
  */
@@ -72,7 +72,7 @@ public class MyApplicationLogic {
 		Thread th = new Thread(new Runnable() {
 			public void run() {
 				try {
-					AppCallControlManager appCCM = new AppCallControlManager(
+					AIC_AppCallControlManager appCCM = new AIC_AppCallControlManager(
 							MyApplicationLogic.this);
 					// now get the reference so that it is registered with the
 					// ORB properly
@@ -81,7 +81,7 @@ public class MyApplicationLogic {
 									.servant_to_reference(appCCM));
 
 					ipCCM.setCallback(ipAppCCM);
-					AppCall appCall = new AppCall(MyApplicationLogic.this);
+					AIC_AppCall appCall = new AIC_AppCall(MyApplicationLogic.this);
 					IpAppCall ipAppCall = IpAppCallHelper
 							.narrow(ApplicationFramework.getPOA()
 									.servant_to_reference(appCall));
@@ -99,7 +99,7 @@ public class MyApplicationLogic {
 					doRouteReq(callId, origAddr, destAddr);
 					// wait here until the result of routeReq come
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get();
+					osaEventQueue.get(new int[0]);
 					m_logger.debug("Got response for routeRes ...");
 					m_logger.debug("About to call routeReq ...");
 					// then call routeReq again with swapping the position of
@@ -107,7 +107,7 @@ public class MyApplicationLogic {
 					doRouteReq(callId, destAddr, origAddr);
 					// then wait again for the result of routeReq
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get();
+					osaEventQueue.get(new int[0]);
 					// then deassign the call
 					doDeassignCall(callId);
 					m_logger.debug("The end of initCall");
