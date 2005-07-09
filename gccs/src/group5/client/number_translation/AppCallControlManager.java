@@ -1,4 +1,4 @@
-//$Id: AppCallControlManager.java,v 1.3 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: AppCallControlManager.java,v 1.4 2005/07/09 10:03:27 aachenner Exp $
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
@@ -40,9 +40,11 @@ public class AppCallControlManager extends IpAppCallControlManagerPOA {
 
 	public IpAppCall callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
+		m_logger.debug("Receive callEventNotify from server");
 		AppCall ipAppCall = new AppCall(appLogic);
 		appLogic.callEventNotify(callReference, eventInfo, assignmentID);
-		return ipAppCall._this();
+		m_logger.debug("Returning a refence to IpAppCall");
+		return ipAppCall._this(ApplicationFramework.getORB());
 	}
 
 	public void callNotificationInterrupted() {

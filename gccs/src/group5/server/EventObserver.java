@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.9 2005/07/09 09:23:22 huuhoa Exp $
+//$Id: EventObserver.java,v 1.10 2005/07/09 10:03:27 aachenner Exp $
 /**
  * 
  */
@@ -153,6 +153,7 @@ public final class EventObserver {
 				boolean bStop = false;
 				if (ev.isProvision()) {
 					if (m_ipCallManager != null) {
+						m_logger.debug("dispatching event to ip call manager");
 						bStop = m_ipCallManager.onEvent(ev.eventType, ev);
 					}
 				}
