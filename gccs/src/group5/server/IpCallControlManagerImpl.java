@@ -1,11 +1,11 @@
-//$Id: IpCallControlManagerImpl.java,v 1.19 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.20 2005/07/09 09:17:14 hoanghaiham Exp $
 /**
  * 
  */
 package group5.server;
 
 import group5.CallControlException;
-import group5.client.IpAppCallControlManagerImpl;
+//import group5.client.IpAppCallControlManagerImpl;
 import group5.server.framework.ServerFramework;
 
 import java.util.HashMap;
@@ -277,7 +277,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	/*
 	 * (non-Javadoc)
 	 */
-	private IpAppCallControlManagerImpl findRegistration(int id)
+	/*	private IpAppCallControlManagerImpl findRegistration(int id)
 			throws CallControlException {
 		if (m_logger.isInfoEnabled())
 			m_logger.info("Entering findRegistration!");
@@ -289,7 +289,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 			m_logger.info(msgErr);
 		throw new CallControlException(msgErr, 3, 2);
 	}
-
+	*/
 	/*
 	 * (non-Javadoc)
 	 */

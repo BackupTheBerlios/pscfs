@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.3 2005/07/06 20:46:25 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.4 2005/07/09 09:17:14 hoanghaiham Exp $
 /**
  * 
  */
@@ -108,6 +108,7 @@ public class MyApplicationLogic {
 					osaEventQueue.get();
 					// then deassign the call
 					doDeassignCall(callId);
+					m_logger.debug("The end of initCall");
 				} catch (P_INVALID_INTERFACE_TYPE ex) {
 					m_logger
 							.fatal("Why invalid interface type??? Extra information: "
@@ -135,8 +136,7 @@ public class MyApplicationLogic {
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.info("Call event notify");
-		osaEventQueue
-				.put(new MyAppEvent(callReference, eventInfo, assignmentID));
+		osaEventQueue.put(new MyAppEvent(callReference, eventInfo, assignmentID));
 	}
 
 	public void routeRes(int callSessionID,

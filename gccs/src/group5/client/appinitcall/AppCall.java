@@ -1,4 +1,4 @@
-//$Id: AppCall.java,v 1.2 2005/07/06 20:46:25 huuhoa Exp $
+//$Id: AppCall.java,v 1.3 2005/07/09 09:17:14 hoanghaiham Exp $
 /**
  * 
  */
@@ -39,6 +39,7 @@ public class AppCall extends IpAppCallPOA {
 		m_logger.debug("CallSessionID: " + callSessionID);
 		m_logger.debug("CallReport: " + eventReport);
 		appLogic.routeRes(callSessionID, eventReport, callLegSessionID);
+		
 	}
 
 	public void routeErr(int callSessionID, TpCallError errorIndication,
