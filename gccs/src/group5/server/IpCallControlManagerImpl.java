@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.21 2005/07/09 10:03:27 aachenner Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.22 2005/07/09 10:28:46 hoanghaiham Exp $
 /**
  * 
  */
@@ -91,7 +91,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	}
 
 	private String applicationID;
-	private int nWatcherID;
+	//private int nWatcherID;
 
 	public IpCallControlManagerImpl(String appID, TpServiceProperty atProp[]) {
 		applicationID = appID;
@@ -183,6 +183,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 			throws P_INVALID_ASSIGNMENT_ID, TpCommonExceptions {
 		m_logger.debug("Disable Call Notification: m_Observer = " + m_Observer);
 		m_Observer.remove(new Integer(assignmentID));
+
 	}
 
 	/*

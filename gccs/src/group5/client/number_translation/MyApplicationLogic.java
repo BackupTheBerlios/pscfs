@@ -1,10 +1,12 @@
-//$Id: MyApplicationLogic.java,v 1.13 2005/07/09 10:03:27 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.14 2005/07/09 10:28:46 hoanghaiham Exp $
 /**
  * 
  */
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
+import group5.client.ApplicationEvent;
+import group5.client.ApplicationEventQueue;
 
 import java.io.IOException;
 
@@ -46,7 +48,7 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
  * 
  */
 public class MyApplicationLogic {
-	MyAppEventQueue osaEventQueue;
+	ApplicationEventQueue osaEventQueue;
 
 	IpCallControlManager ipCCM;
 
@@ -62,7 +64,7 @@ public class MyApplicationLogic {
 	}
 
 	MyApplicationLogic(IpCallControlManager ipCCM_param) {
-		osaEventQueue = new MyAppEventQueue();
+		osaEventQueue = new ApplicationEventQueue();
 		ipCCM = ipCCM_param;
 		number = "?";
 	}
@@ -113,7 +115,7 @@ public class MyApplicationLogic {
 					// wait for network events
 					m_logger.debug("Inside run method");
 					while (true) {
-						MyAppEvent event = osaEventQueue.get();
+						ApplicationEvent event = osaEventQueue.get();
 						// got event
 						m_logger
 								.debug("Got event with eventID = "
@@ -195,19 +197,19 @@ public class MyApplicationLogic {
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.debug("Entering callEventNotify");
 		osaEventQueue
-				.put(new MyAppEvent(callReference, eventInfo, assignmentID));
+				.put(new ApplicationEvent(callReference, eventInfo, assignmentID));
 		m_logger.debug("Exiting callEventNotify");
 	}
 
 	public void routeRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
 		m_logger.debug("Result of routeReq has come");
-		osaEventQueue.put(new MyAppEvent(null, null, 0));
+		osaEventQueue.put(new ApplicationEvent(null, null, 0));
 		m_logger.debug("exiting routeRes ...");
 		//m_logger.error("Not implemented");
 	}
 
-	private void doRouteReq(MyAppEvent event, String newDestination) {
+	private void doRouteReq(ApplicationEvent event, String newDestination) {
 		try {
 			event.callId.CallReference.routeReq(event.callId.CallSessionID,
 					new TpCallReportRequest[0],

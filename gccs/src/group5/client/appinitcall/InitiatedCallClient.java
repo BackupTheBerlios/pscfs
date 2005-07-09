@@ -1,4 +1,4 @@
-//$Id: MyAppInitiatedCall.java,v 1.2 2005/07/09 08:24:08 huuhoa Exp $
+//$Id: InitiatedCallClient.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
 package group5.client.appinitcall;
 
 import group5.client.ApplicationFramework;
@@ -14,8 +14,8 @@ import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerHelper;
 import org.omg.CORBA.UserException;
 
-public class MyAppInitiatedCall extends ApplicationFramework {
-	MyAppInitiatedCall() throws UserException {
+public class InitiatedCallClient extends ApplicationFramework {
+	InitiatedCallClient() throws UserException {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -26,7 +26,7 @@ public class MyAppInitiatedCall extends ApplicationFramework {
 	static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(MyAppInitiatedCall.class);
+		m_logger = Logger.getLogger(InitiatedCallClient.class);
 	}
 
 	public void run() {
@@ -61,7 +61,7 @@ public class MyAppInitiatedCall extends ApplicationFramework {
 		System.setProperties(appProps);
 		BasicConfigurator.configure();
 		try {
-			MyAppInitiatedCall application = new MyAppInitiatedCall();
+			InitiatedCallClient application = new InitiatedCallClient();
 			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));
 			application.run();
 			application.endApplication();

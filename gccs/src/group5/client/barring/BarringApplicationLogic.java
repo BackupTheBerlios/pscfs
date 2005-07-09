@@ -1,17 +1,16 @@
-//$Id: MyApplicationLogic.java,v 1.6 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: BarringApplicationLogic.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
 /**
  * 
  */
-package group5.client.appinitcall;
+package group5.client.barring;
 
 import group5.client.ApplicationFramework;
 import group5.client.ApplicationEvent;
 import group5.client.ApplicationEventQueue;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 import org.csapi.P_INVALID_ADDRESS;
+import org.csapi.P_INVALID_ASSIGNMENT_ID;
 import org.csapi.P_INVALID_CRITERIA;
 import org.csapi.P_INVALID_EVENT_TYPE;
 import org.csapi.P_INVALID_INTERFACE_TYPE;
@@ -30,6 +29,7 @@ import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpAppCallControlManagerHelper;
 import org.csapi.cc.gccs.IpAppCallHelper;
 import org.csapi.cc.gccs.IpCallControlManager;
+import org.csapi.cc.gccs.P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventInfo;
@@ -42,10 +42,10 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 /**
  * 
- * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
  * 
  */
-public class MyApplicationLogic {
+public class BarringApplicationLogic {
 	ApplicationEventQueue osaEventQueue;
 
 	IpCallControlManager ipCCM;
@@ -58,40 +58,46 @@ public class MyApplicationLogic {
 	static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(MyApplicationLogic.class);
+		m_logger = Logger.getLogger(BarringApplicationLogic.class);
 	}
 
-	MyApplicationLogic(IpCallControlManager ipCCM_param) {
+	BarringApplicationLogic(IpCallControlManager ipCCM_param) {
 		osaEventQueue = new ApplicationEventQueue();
 		ipCCM = ipCCM_param;
 		number = "1234567890??";
 	}
 
 	public synchronized void run() {
-		m_logger.info("Start creating call between two parties");
+		m_logger.info("Start monitoring number: " + number);
+		int assignmentID = monitorOrigNumbers(ipCCM, new BarringAppCallControlManager(this), number);
+		m_logger.info("Entering loop with assignmentID: " + assignmentID);
+		
 		Thread th = new Thread(new Runnable() {
 			public void run() {
 				try {
-					AppCallControlManager appCCM = new AppCallControlManager(
-							MyApplicationLogic.this);
+					BarringAppCallControlManager appCCM = new BarringAppCallControlManager(
+							BarringApplicationLogic.this);
 					// now get the reference so that it is registered with the
-					// ORB properly
+					// ORB properly					
 					IpAppCallControlManager ipAppCCM = IpAppCallControlManagerHelper
-							.narrow(ApplicationFramework.getPOA()
-									.servant_to_reference(appCCM));
-
-					ipCCM.setCallback(ipAppCCM);
-					AppCall appCall = new AppCall(MyApplicationLogic.this);
+					.narrow(ApplicationFramework.getPOA()
+							.servant_to_reference(appCCM));
+					
+					ipCCM.setCallback(ipAppCCM);		
+					
+//					createCall in call Berring					
+					BarringAppCall appCall = new BarringAppCall(BarringApplicationLogic.this);
 					IpAppCall ipAppCall = IpAppCallHelper
-							.narrow(ApplicationFramework.getPOA()
-									.servant_to_reference(appCall));
+					.narrow(ApplicationFramework.getPOA()
+							.servant_to_reference(appCall));
 					TpCallIdentifier callId = ipCCM.createCall(ipAppCall);
 					if (callId == null) {
 						m_logger.error("Cannot create call");
 						return;
-					}
+					}					
 					String origAddr = "1";
 					String destAddr = "2";
+					
 					m_logger.debug("Got callSection: " + callId.CallSessionID
 							+ ", CallIdentifier: "
 							+ callId.CallReference.toString());
@@ -100,15 +106,8 @@ public class MyApplicationLogic {
 					// wait here until the result of routeReq come
 					m_logger.debug("Waiting for routeRes ...");
 					osaEventQueue.get();
-					m_logger.debug("Got response for routeRes ...");
-					m_logger.debug("About to call routeReq ...");
-					// then call routeReq again with swapping the position of
-					// source and destination
-					doRouteReq(callId, destAddr, origAddr);
-					// then wait again for the result of routeReq
-					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get();
 					// then deassign the call
+					m_logger.debug("Entering deassignCall");					
 					doDeassignCall(callId);
 					m_logger.debug("The end of initCall");
 				} catch (P_INVALID_INTERFACE_TYPE ex) {
@@ -124,16 +123,38 @@ public class MyApplicationLogic {
 					m_logger.fatal("Wrong policy");
 				}
 			}
+	
 		});
 		th.start();
 		try {
 			m_logger.debug("Entering dead");
-			System.in.read();
+			m_logger.debug("Disable Call Notification");
+			ipCCM.disableCallNotification(assignmentID);
 			m_logger.debug("Application exit");
-			th.stop();
-		} catch (IOException ex) {
+		} catch (TpCommonExceptions ex) {
+		} 
+		catch (P_INVALID_ASSIGNMENT_ID ex) {
+		} 
+	}
 
+	private int monitorOrigNumbers(IpCallControlManager ipCCM2, BarringAppCallControlManager manager, String number2) {
+		TpCallEventCriteria ec = createOrigEventCriteria(number2,
+				new String("*"), P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value);
+		int assignment = 0;
+		m_logger.info("Calling enableCallNofitication()");
+		try {
+			assignment = ipCCM2.enableCallNotification(manager.getServant(), ec);
+		} catch (P_INVALID_INTERFACE_TYPE ex) {
+			m_logger.error("Invalid interface type: " + ex.getMessage());
+		} catch (P_INVALID_EVENT_TYPE ex) {
+			m_logger.error("Invalid event type: " + ex.getMessage());
+		} catch (P_INVALID_CRITERIA ex) {
+			m_logger.error("Invalid criteria: " + ex.getMessage());
+		} catch (TpCommonExceptions ex) {
+			m_logger.error("Error in calling enableCallNofitication: "
+					+ ex.getMessage());
 		}
+		return assignment;
 	}
 
 	public void callEventNotify(TpCallIdentifier callReference,
@@ -189,13 +210,13 @@ public class MyApplicationLogic {
 
 	TpCallEventCriteria createOrigEventCriteria(String originating,
 			String destination, int event_num) {
-		TpCallEventCriteria ec = new TpCallEventCriteria();
-		ec.DestinationAddress = myAppCreateE164AddressRange(destination);
-		ec.OriginatingAddress = myAppCreateE164AddressRange(originating);
-		ec.CallEventName = event_num;
-		ec.CallNotificationType = TpCallNotificationType.P_ORIGINATING;
-		ec.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
-		return ec;
+		TpCallEventCriteria evenCriteria = new TpCallEventCriteria();
+		evenCriteria.DestinationAddress = myAppCreateE164AddressRange(destination);
+		evenCriteria.OriginatingAddress = myAppCreateE164AddressRange(originating);
+		evenCriteria.CallEventName = event_num;
+		evenCriteria.CallNotificationType = TpCallNotificationType.P_ORIGINATING;
+		evenCriteria.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
+		return evenCriteria;
 	}
 
 	TpAddress myAppCreateE164Address(String address) {

@@ -1,8 +1,8 @@
-//$Id: MyAppEvent.java,v 1.1 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: ApplicationEvent.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
 /**
  * 
  */
-package group5.client.appinitcall;
+package group5.client;
 
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
@@ -15,14 +15,14 @@ import org.csapi.cc.gccs.TpCallIdentifier;
  * @author Nguyen Huu Hoa
  * 
  */
-public class MyAppEvent {
+public class ApplicationEvent {
 	public TpCallIdentifier callId;
 
 	public TpCallEventInfo eventInfo;
 
 	public int assignmentID;
 
-	MyAppEvent(TpCallIdentifier cid, TpCallEventInfo ei, int a) {
+	public ApplicationEvent(TpCallIdentifier cid, TpCallEventInfo ei, int a) {
 		callId = cid;
 		eventInfo = ei;
 		assignmentID = a;

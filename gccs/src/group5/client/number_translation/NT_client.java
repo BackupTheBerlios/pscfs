@@ -1,4 +1,4 @@
-//$Id: MyAppInit.java,v 1.9 2005/07/09 08:24:08 huuhoa Exp $
+//$Id: NT_client.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
@@ -14,8 +14,8 @@ import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerHelper;
 import org.omg.CORBA.UserException;
 
-public class MyAppInit extends ApplicationFramework {
-	MyAppInit() throws UserException {
+public class NT_client extends ApplicationFramework {
+	NT_client() throws UserException {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -26,7 +26,7 @@ public class MyAppInit extends ApplicationFramework {
 	static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(MyAppInit.class);
+		m_logger = Logger.getLogger(NT_client.class);
 	}
 
 	public void run() {
@@ -61,7 +61,7 @@ public class MyAppInit extends ApplicationFramework {
 		System.setProperties(appProps);
 		BasicConfigurator.configure();
 		try {
-			MyAppInit application = new MyAppInit();
+			NT_client application = new NT_client();
 			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));
 			application.run();
 			application.endApplication();
