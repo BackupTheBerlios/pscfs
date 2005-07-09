@@ -1,4 +1,4 @@
-//$Id: MyAppInitiatedCall.java,v 1.1 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: MyAppInitiatedCall.java,v 1.2 2005/07/09 08:24:08 huuhoa Exp $
 package group5.client.appinitcall;
 
 import group5.client.ApplicationFramework;
@@ -62,7 +62,7 @@ public class MyAppInitiatedCall extends ApplicationFramework {
 		BasicConfigurator.configure();
 		try {
 			MyAppInitiatedCall application = new MyAppInitiatedCall();
-			application.initApplication("huuhoa", "123456");
+			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));
 			application.run();
 			application.endApplication();
 		} catch (UserException ex) {

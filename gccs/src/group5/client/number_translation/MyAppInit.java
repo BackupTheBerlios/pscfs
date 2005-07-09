@@ -1,4 +1,4 @@
-//$Id: MyAppInit.java,v 1.8 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: MyAppInit.java,v 1.9 2005/07/09 08:24:08 huuhoa Exp $
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
@@ -62,7 +62,7 @@ public class MyAppInit extends ApplicationFramework {
 		BasicConfigurator.configure();
 		try {
 			MyAppInit application = new MyAppInit();
-			application.initApplication("huuhoa", "123456");
+			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));
 			application.run();
 			application.endApplication();
 		} catch (UserException ex) {
