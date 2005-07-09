@@ -1,4 +1,4 @@
-//$Id: ApplicationEvent.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: ApplicationEvent.java,v 1.2 2005/07/09 15:14:28 aachenner Exp $
 /**
  * 
  */
@@ -21,10 +21,15 @@ public class ApplicationEvent {
 	public TpCallEventInfo eventInfo;
 
 	public int assignmentID;
+	
+	public int eventType;
+	public static int evCallEventNotify=1;
+	public static int evRouteRes=2;
 
-	public ApplicationEvent(TpCallIdentifier cid, TpCallEventInfo ei, int a) {
+	public ApplicationEvent(int evType, TpCallIdentifier cid, TpCallEventInfo ei, int a) {
 		callId = cid;
 		eventInfo = ei;
 		assignmentID = a;
+		eventType = evType;
 	}
 }

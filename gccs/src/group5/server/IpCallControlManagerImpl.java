@@ -1,11 +1,10 @@
-//$Id: IpCallControlManagerImpl.java,v 1.22 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.23 2005/07/09 15:14:28 aachenner Exp $
 /**
  * 
  */
 package group5.server;
 
 import group5.CallControlException;
-//import group5.client.IpAppCallControlManagerImpl;
 import group5.server.framework.ServerFramework;
 
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpAppCallControlManagerHelper;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerPOA;
+import org.csapi.cc.gccs.P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
@@ -368,7 +368,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 		callEventInfo.OriginalDestinationAddress = targetAddr;
 		callEventInfo.RedirectingAddress = targetAddr;
 		callEventInfo.CallAppInfo = new TpCallAppInfo[0];
-		callEventInfo.CallEventName = 0;
+		callEventInfo.CallEventName = P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value;
 		callEventInfo.CallNotificationType = TpCallNotificationType.P_ORIGINATING;
 		callEventInfo.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
 		m_logger.debug("Target Address: " + targetAddr.AddrString);

@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.7 2005/07/09 13:20:33 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.8 2005/07/09 15:14:28 aachenner Exp $
 /**
  * 
  */
@@ -99,7 +99,7 @@ public class MyApplicationLogic {
 					doRouteReq(callId, origAddr, destAddr);
 					// wait here until the result of routeReq come
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get(new int[0]);
+					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					m_logger.debug("Got response for routeRes ...");
 					m_logger.debug("About to call routeReq ...");
 					// then call routeReq again with swapping the position of
@@ -107,7 +107,7 @@ public class MyApplicationLogic {
 					doRouteReq(callId, destAddr, origAddr);
 					// then wait again for the result of routeReq
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get(new int[0]);
+					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					// then deassign the call
 					doDeassignCall(callId);
 					m_logger.debug("The end of initCall");
@@ -139,13 +139,13 @@ public class MyApplicationLogic {
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.info("Call event notify");
-		osaEventQueue.put(new ApplicationEvent(callReference, eventInfo, assignmentID));
+		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evCallEventNotify, callReference, eventInfo, assignmentID));
 	}
 
 	public void routeRes(int callSessionID,
 			TpCallReport eventReport, int callLegSessionID) {
 		m_logger.debug("Result of routeReq has come");
-		osaEventQueue.put(new ApplicationEvent(null, null, 0));
+		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes, null, null, 0));
 		m_logger.debug("exiting routeRes ...");
 	}
 

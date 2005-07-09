@@ -1,4 +1,4 @@
-//$Id: BarringApplicationLogic.java,v 1.2 2005/07/09 13:20:33 aachenner Exp $
+//$Id: BarringApplicationLogic.java,v 1.3 2005/07/09 15:14:28 aachenner Exp $
 /**
  * 
  */
@@ -105,7 +105,7 @@ public class BarringApplicationLogic {
 					doRouteReq(callId, origAddr, destAddr);
 					// wait here until the result of routeReq come
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get(new int[0]);
+					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					// then deassign the call
 					m_logger.debug("Entering deassignCall");					
 					doDeassignCall(callId);
@@ -160,13 +160,13 @@ public class BarringApplicationLogic {
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.info("Call event notify");
-		osaEventQueue.put(new ApplicationEvent(callReference, eventInfo, assignmentID));
+		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evCallEventNotify, callReference, eventInfo, assignmentID));
 	}
 
 	public void routeRes(int callSessionID,
 			TpCallReport eventReport, int callLegSessionID) {
 		m_logger.debug("Result of routeReq has come");
-		osaEventQueue.put(new ApplicationEvent(null, null, 0));
+		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes, null, null, 0));
 		m_logger.debug("exiting routeRes ...");
 	}
 

@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.15 2005/07/09 13:20:33 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.16 2005/07/09 15:14:28 aachenner Exp $
 /**
  * 
  */
@@ -110,7 +110,7 @@ public class MyApplicationLogic {
 					doRouteReq(callId, origAddr, destAddr);
 					// wait here until the result of routeReq come
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get(new int[0]);
+					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					m_logger.debug("Got response for routeRes ...");
 					m_logger.debug("About to call routeReq ...");
 					// then call routeReq again with swapping the position of
@@ -118,7 +118,7 @@ public class MyApplicationLogic {
 					doRouteReq(callId, destAddr, origAddr);
 					// then wait again for the result of routeReq
 					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get(new int[0]);
+					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					// then deassign the call
 					doDeassignCall(callId);
 				} catch (ServantNotActive ex) {
@@ -142,27 +142,22 @@ public class MyApplicationLogic {
 				// wait for network events
 				m_logger.debug("Inside run method");
 				while (true) {
-					ApplicationEvent[] evList = osaEventQueue.get(new int[0]);
-					for (int nIndex = 0; nIndex < evList.length; nIndex++) {
-						ApplicationEvent event = evList[nIndex];
-
-						// got event
-						m_logger
-								.debug("Got event with eventID = "
-										+ event.eventInfo.CallEventName
-										+ ", from address "
-										+ event.eventInfo.OriginatingAddress.AddrString);
-						// check event
-						if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
-							// translate the address
-							String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
-							// route to new address
-							doRouteReq(event, addrString);
-							// deassign from call
-							doDeassignCall(event.callId);
-						} else {
-							m_logger.info("Unknown event");
-						}
+					ApplicationEvent event = osaEventQueue
+							.get(ApplicationEvent.evCallEventNotify);
+					// got event
+					m_logger.debug("Got event with eventID = "
+							+ event.eventInfo.CallEventName + ", from address "
+							+ event.eventInfo.OriginatingAddress.AddrString);
+					// check event
+					if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
+						// translate the address
+						String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
+						// route to new address
+						doRouteReq(event, addrString);
+						// deassign from call
+						doDeassignCall(event.callId);
+					} else {
+						m_logger.info("Unknown event");
 					}
 
 				}
@@ -217,7 +212,8 @@ public class MyApplicationLogic {
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.debug("Entering callEventNotify");
-		osaEventQueue.put(new ApplicationEvent(callReference, eventInfo,
+		osaEventQueue.put(new ApplicationEvent(
+				ApplicationEvent.evCallEventNotify, callReference, eventInfo,
 				assignmentID));
 		m_logger.debug("Exiting callEventNotify");
 	}
@@ -225,7 +221,8 @@ public class MyApplicationLogic {
 	public void routeRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
 		m_logger.debug("Result of routeReq has come");
-		osaEventQueue.put(new ApplicationEvent(null, null, 0));
+		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes,
+				null, null, 0));
 		m_logger.debug("exiting routeRes ...");
 		// m_logger.error("Not implemented");
 	}
