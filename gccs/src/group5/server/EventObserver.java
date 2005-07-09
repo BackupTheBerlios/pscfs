@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.8 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: EventObserver.java,v 1.9 2005/07/09 09:23:22 huuhoa Exp $
 /**
  * 
  */
@@ -89,6 +89,17 @@ public final class EventObserver {
 
 	private static int watcherID = 0;
 
+	private boolean bWatcherSafe = true;
+
+	private synchronized boolean isWatcherSafe() {
+		return this.bWatcherSafe;
+	}
+
+	private synchronized void setWatcherFlag(boolean bFlag) {
+		bWatcherSafe = bFlag;
+		notifyAll();
+	}
+
 	public synchronized int getWatcherID() {
 		watcherID++;
 		return watcherID;
@@ -98,11 +109,25 @@ public final class EventObserver {
 			EventCriteria eventCriteria) {
 		Observer newObserver = new Observer(eventHandler, eventCriteria);
 		int nWatcherID = getWatcherID();
+		while (isWatcherSafe() == false) {
+			try {
+				wait();
+			} catch (Exception ex) {
+				m_logger.error(ex);
+			}
+		}
 		m_mapObservers.put(new Integer(nWatcherID), newObserver);
 		return nWatcherID;
 	}
 
 	public synchronized void removeWatcher(int nWatcherID) {
+		while (isWatcherSafe() == false) {
+			try {
+				wait();
+			} catch (Exception ex) {
+				m_logger.error(ex);
+			}
+		}
 		m_mapObservers.remove(new Integer(nWatcherID));
 	}
 
@@ -133,24 +158,29 @@ public final class EventObserver {
 				}
 				if (bStop == false) {
 					ev.setProvision(false);
+					setWatcherFlag(false);
 					// dispatch events
 					m_logger.debug("Got event with eventType: " + ev.eventType);
-					m_logger.debug("Number of Observers: " + m_mapObservers.size());
+					m_logger.debug("Number of Observers: "
+							+ m_mapObservers.size());
 					Iterator iterator = m_mapObservers.values().iterator();
 					while (iterator.hasNext()) {
 						Observer ob = (Observer) iterator.next();
-						m_logger.debug("The watched criteria: " + ob.getCriteria().toString());
+						m_logger.debug("The watched criteria: "
+								+ ob.getCriteria().toString());
 						if (ob.getCriteria().isWatched(ev.eventType)) {
 							dispatchEvent(ob.getHandler(), ev.eventType, ev);
 						}
 					}
+					setWatcherFlag(true);
 				}
 			}
 		}
 
 		private void dispatchEvent(IpEventHandler handler, int eventType,
 				CallEvent eventData) {
-			m_logger.debug("Dispatching event to hander: " + handler + ", eventType: " + eventType);
+			m_logger.debug("Dispatching event to hander: " + handler
+					+ ", eventType: " + eventType);
 			// get data
 			switch (eventType) {
 			case CallEvent.eventRouteReq:

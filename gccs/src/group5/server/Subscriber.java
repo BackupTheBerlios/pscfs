@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.7 2005/06/16 10:30:05 huuhoa Exp $
+//$Id: Subscriber.java,v 1.8 2005/07/09 09:23:22 huuhoa Exp $
 /**
  * 
  */
@@ -43,13 +43,13 @@ public class Subscriber {
 	public Subscriber() {
 		subscribeAddress = "";
 		partnerAddress = "";
-		status = Reachable;
+		status = Reachable | Idle;
 	}
 
 	public Subscriber(String subscrAddr) {
 		subscribeAddress = subscrAddr;
 		partnerAddress = "";
-		status = Reachable;
+		status = Reachable | Idle;
 	}
 
 	/**

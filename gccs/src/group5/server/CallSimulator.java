@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.7 2005/07/06 18:58:17 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.8 2005/07/09 09:23:22 huuhoa Exp $
 /**
  * 
  */
@@ -83,7 +83,6 @@ public class CallSimulator implements IpEventHandler {
 		evRouteRes.eventReport.AdditionalReportInfo.Busy(new TpCallReleaseCause(0, 1));
 		evRouteRes.eventReport.CallEventTime = "10";
 		evRouteRes.eventReport.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
-		m_logger.debug("After creating CallEvent");
 		// get an instance of subscribers
 		Subscribers subColl = Subscribers.getInstance();
 		m_logger.debug(subColl);
@@ -98,6 +97,8 @@ public class CallSimulator implements IpEventHandler {
 		}
 
 		m_logger.debug("destination partner is: " + subTarg.getSubscribeAddress());
+		m_logger.debug("Status of subscriber: " + subTarg.getStatus());
+		
 		if ((subTarg.getStatus() & Subscriber.Idle) == 0) {
 			// subscriber is not idle, can not make call
 			// evRouteRes.errorIndication.ErrorType = TpCallErrorType;

@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.4 2005/07/09 09:17:14 hoanghaiham Exp $
+//$Id: MyApplicationLogic.java,v 1.5 2005/07/09 09:23:22 huuhoa Exp $
 /**
  * 
  */
@@ -128,6 +128,7 @@ public class MyApplicationLogic {
 			m_logger.debug("Entering dead");
 			System.in.read();
 			m_logger.debug("Application exit");
+			th.stop();
 		} catch (IOException ex) {
 
 		}
