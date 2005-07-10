@@ -1,4 +1,4 @@
-//$Id: BarringClient.java,v 1.2 2005/07/10 08:13:40 hoanghaiham Exp $
+//$Id: BarringClient.java,v 1.3 2005/07/10 10:32:41 huuhoa Exp $
 package group5.client.barring;
 
 import group5.client.ApplicationFramework;
@@ -7,8 +7,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.csapi.IpService;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerHelper;
@@ -52,14 +52,14 @@ public class BarringClient extends ApplicationFramework {
 		// run the application
 		Properties appProps = new Properties();
 		try {
-			FileInputStream fis = new FileInputStream("Barring.properties");
+			FileInputStream fis = new FileInputStream("etc/Barring.properties");
 			appProps.load(fis);
 			fis.close();
 		} catch (IOException e) {
 			m_logger.fatal("Cannot find properties file");
 		}
 		System.setProperties(appProps);
-		BasicConfigurator.configure();
+		PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
 		try {
 			BarringClient application = new BarringClient();
 			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));

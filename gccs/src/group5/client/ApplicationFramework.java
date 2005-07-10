@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.10 2005/07/06 18:58:17 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.11 2005/07/10 10:32:41 huuhoa Exp $
 /**
  * 
  */
@@ -830,16 +830,12 @@ public class ApplicationFramework {
 			// requestStatus(ipUS, user);
 
 			// Step 11: clean up
-			if (m_logger.isInfoEnabled()) {
-				m_logger.info("Cleaning up");
-			}
+			m_logger.info("Cleaning up");
 
 			// sample.terminateServiceAgreement(ipSvcAgmt, svcToken);
 			endAccessSession(m_ipAccess);
 
-			if (m_logger.isInfoEnabled()) {
-				m_logger.info("Done");
-			}
+			m_logger.info("Done");
 
 		} catch (Exception e) {
 			m_logger.error("Some errors occur: " + e.getMessage());

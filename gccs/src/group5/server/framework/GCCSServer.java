@@ -1,4 +1,4 @@
-//$Id: GCCSServer.java,v 1.3 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: GCCSServer.java,v 1.4 2005/07/10 10:32:41 huuhoa Exp $
 /**
  * Creation date: 21.06.2005 - 2005
  * Creator: Nguyen Huu Hoa
@@ -15,8 +15,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * @author Nguyen Huu Hoa
@@ -71,7 +71,7 @@ public class GCCSServer {
 	public static void main(String[] args) {
 		Properties appProps = new Properties();
 		try {
-			FileInputStream fis = new FileInputStream("GCCSServer.properties");
+			FileInputStream fis = new FileInputStream("etc/GCCSServer.properties");
 			appProps.load(fis);
 			fis.close();
 		} catch (IOException e) {
@@ -79,7 +79,7 @@ public class GCCSServer {
 		}
 		System.setProperties(appProps);
 		try {
-			BasicConfigurator.configure();
+			PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
 		} catch (ExceptionInInitializerError ex) {
 			ex.printStackTrace();
 			return;
