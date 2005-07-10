@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.24 2005/07/10 13:49:36 aachenner Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.25 2005/07/10 15:12:46 aachenner Exp $
 /**
  * 
  */
@@ -385,7 +385,11 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 			IpAppCall ipAppCall = observer.getIpAppCallControlManager()
 					.callEventNotify(ci, callEventInfo,
 							observer.getAssignmentID());
+			
+			m_logger.debug(mapIpCall);
 			// set ipAppCall to IpCallImpl
+			
+			//m_logger.debug("Hallo");
 			IpCallImpl ipCallImpl = (IpCallImpl) mapIpCall.get(new Integer(
 					callSessionID));
 			ipCallImpl.setIpAppCall(ipAppCall);
