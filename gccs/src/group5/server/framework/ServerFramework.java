@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.12 2005/06/23 22:53:41 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.13 2005/07/10 10:35:42 huuhoa Exp $
 /**
  * 
  */
@@ -408,8 +408,7 @@ public class ServerFramework {
 		String serviceID = registerService(serviceTypeName, scProp);
 		String s2 = scProp.getServiceName();
 		try {
-			if (m_logger.isDebugEnabled())
-				m_logger.debug("serviceID=" + serviceID);
+			m_logger.debug("serviceID=" + serviceID);
 			if (serviceID != null) {
 				IpFwServiceRegistration ipFSR = obtainIpFwServiceRegistration();
 				ipFSR.announceServiceAvailability(serviceID, ipSILM._this(orb));
