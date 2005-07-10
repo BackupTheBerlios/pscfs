@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.21 2005/07/06 20:46:25 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.22 2005/07/10 13:49:36 aachenner Exp $
 /**
  * 
  */
@@ -21,6 +21,8 @@ import org.csapi.TpAoCInfo;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallChargePlan;
 import org.csapi.cc.gccs.IpAppCall;
+import org.csapi.cc.gccs.IpAppCallControlManagerHelper;
+import org.csapi.cc.gccs.IpAppCallHelper;
 import org.csapi.cc.gccs.IpCallPOA;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
@@ -311,13 +313,16 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	 * @see org.csapi.IpServiceOperations#setCallbackWithSessionID(org.csapi.IpInterface,
 	 *      int)
 	 */
+	
 	public void setCallbackWithSessionID(IpInterface appInterface, int sessionID)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-
+		m_logger.debug("A new call back interface is set for call " + sessionID);
+		appCall = IpAppCallHelper.narrow(appInterface);
+		m_logger.info("  Succesfully changed call back interface"); 
 	}
-
+	
 	public void onEvent(int eventID, CallEvent eventData) {
 		// TODO Auto-generated method stub
 

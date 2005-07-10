@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.8 2005/07/09 15:14:28 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.9 2005/07/10 13:49:36 aachenner Exp $
 /**
  * 
  */

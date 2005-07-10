@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.23 2005/07/09 15:14:28 aachenner Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.24 2005/07/10 13:49:36 aachenner Exp $
 /**
  * 
  */
@@ -234,7 +234,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 		ipACCM_delegate = IpAppCallControlManagerHelper.narrow(appInterface);
 		
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
