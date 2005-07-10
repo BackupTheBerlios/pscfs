@@ -1,4 +1,4 @@
-//$Id: NTC_client.java,v 1.1 2005/07/10 12:04:20 aachenner Exp $
+//$Id: NTC_client.java,v 1.2 2005/07/10 14:14:06 huuhoa Exp $
 package group5.client.number_translation_callback;
 
 import group5.client.ApplicationFramework;
@@ -7,8 +7,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.csapi.IpService;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerHelper;
@@ -52,14 +52,14 @@ public class NTC_client extends ApplicationFramework {
 		// run the application
 		Properties appProps = new Properties();
 		try {
-			FileInputStream fis = new FileInputStream("MyAppInit.properties");
+			FileInputStream fis = new FileInputStream("etc/NTC_Client.properties");
 			appProps.load(fis);
 			fis.close();
 		} catch (IOException e) {
 			m_logger.fatal("Cannot find properties file");
 		}
 		System.setProperties(appProps);
-		BasicConfigurator.configure();
+		PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
 		try {
 			NTC_client application = new NTC_client();
 			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));
