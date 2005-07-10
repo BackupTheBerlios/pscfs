@@ -1,4 +1,4 @@
-//$Id: BarringClient.java,v 1.1 2005/07/09 10:28:46 hoanghaiham Exp $
+//$Id: BarringClient.java,v 1.2 2005/07/10 08:13:40 hoanghaiham Exp $
 package group5.client.barring;
 
 import group5.client.ApplicationFramework;
@@ -52,7 +52,7 @@ public class BarringClient extends ApplicationFramework {
 		// run the application
 		Properties appProps = new Properties();
 		try {
-			FileInputStream fis = new FileInputStream("MyAppInitiatedCall.properties");
+			FileInputStream fis = new FileInputStream("Barring.properties");
 			appProps.load(fis);
 			fis.close();
 		} catch (IOException e) {

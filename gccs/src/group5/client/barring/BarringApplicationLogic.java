@@ -1,12 +1,14 @@
-//$Id: BarringApplicationLogic.java,v 1.3 2005/07/09 15:14:28 aachenner Exp $
+//$Id: BarringApplicationLogic.java,v 1.4 2005/07/10 08:13:39 hoanghaiham Exp $
 /**
  * 
  */
 package group5.client.barring;
 
-import group5.client.ApplicationFramework;
+import java.io.IOException;
+
 import group5.client.ApplicationEvent;
 import group5.client.ApplicationEventQueue;
+import group5.client.ApplicationFramework;
 
 import org.apache.log4j.Logger;
 import org.csapi.P_INVALID_ADDRESS;
@@ -128,6 +130,7 @@ public class BarringApplicationLogic {
 		th.start();
 		try {
 			m_logger.debug("Entering dead");
+			System.in.read();
 			m_logger.debug("Disable Call Notification");
 			ipCCM.disableCallNotification(assignmentID);
 			m_logger.debug("Application exit");
@@ -135,6 +138,9 @@ public class BarringApplicationLogic {
 		} 
 		catch (P_INVALID_ASSIGNMENT_ID ex) {
 		} 
+		catch ( IOException ex){
+			
+		}
 	}
 
 	private int monitorOrigNumbers(IpCallControlManager ipCCM2, BarringAppCallControlManager manager, String number2) {
