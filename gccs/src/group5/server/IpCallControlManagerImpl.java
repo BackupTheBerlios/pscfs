@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.25 2005/07/10 15:12:46 aachenner Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.26 2005/07/10 16:31:44 hoanghaiham Exp $
 /**
  * 
  */
@@ -29,13 +29,9 @@ import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpAppCallControlManagerHelper;
 import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerPOA;
-import org.csapi.cc.gccs.P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT;
-import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
-import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
-import org.csapi.cc.gccs.TpCallNotificationType;
 import org.csapi.cc.gccs.TpCallTreatment;
 import org.csapi.fw.TpServiceProperty;
 
@@ -342,7 +338,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 		case CallEvent.eventRouteReq:
 			// Event route request
 			return onRouteReq(eventData.CallSessionID, eventData
-					.getTargetAddress(), eventData.originatingAddress);
+					.getTargetAddress(), eventData.originatingAddress, eventData);
 		case CallEvent.eventDeassignCall:
 			return onDeassignCall(eventData.CallSessionID);
 		case CallEvent.eventReleaseCall:
@@ -359,8 +355,9 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	 *      org.csapi.TpAddress, org.csapi.TpAddress)
 	 */
 	public boolean onRouteReq(int callSessionID, TpAddress targetAddr,
-			TpAddress origAddr) {
+			TpAddress origAddr,CallEvent eventData) {
 		m_logger.debug("Got routeReq event with callSessionID: " + callSessionID);
+		/*
 		TpCallEventInfo callEventInfo = new TpCallEventInfo();
 		callEventInfo.DestinationAddress = targetAddr;
 		callEventInfo.OriginatingAddress = origAddr;
@@ -369,7 +366,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 		callEventInfo.CallAppInfo = new TpCallAppInfo[0];
 		callEventInfo.CallEventName = P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value;
 		callEventInfo.CallNotificationType = TpCallNotificationType.P_ORIGINATING;
-		callEventInfo.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
+		callEventInfo.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;*/
 		m_logger.debug("Target Address: " + targetAddr.AddrString);
 		m_logger.debug("Originating Address: " + origAddr.AddrString);
 		Iterator iterator = m_Observer.values().iterator();
@@ -382,8 +379,22 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 					.get(new Integer(callSessionID));
 			m_logger.debug("call identifier: " + ci);
 			m_logger.debug("call session id: " + ci.CallSessionID);
+		
+			if ((observer.getTpCallEventCriteria().CallNotificationType == eventData.callEventInfo.CallNotificationType) &
+				(observer.getTpCallEventCriteria().OriginatingAddress.AddrString == eventData.callEventInfo.OriginatingAddress.AddrString) &
+				(observer.getTpCallEventCriteria().DestinationAddress.AddrString ==eventData.callEventInfo.DestinationAddress.AddrString) &
+				(observer.getTpCallEventCriteria().MonitorMode ==eventData.callEventInfo.MonitorMode)){
+				m_logger.debug("Check eventCriteria");
+				IpAppCall ipAppCall = observer.getIpAppCallControlManager()
+						.callEventNotify(ci, eventData.callEventInfo,
+								observer.getAssignmentID());
+				// set ipAppCall to IpCallImpl
+				IpCallImpl ipCallImpl = (IpCallImpl) mapIpCall.get(new Integer(
+						callSessionID));
+				ipCallImpl.setIpAppCall(ipAppCall);
+			}
 			IpAppCall ipAppCall = observer.getIpAppCallControlManager()
-					.callEventNotify(ci, callEventInfo,
+					.callEventNotify(ci, eventData.callEventInfo,
 							observer.getAssignmentID());
 			
 			m_logger.debug(mapIpCall);

@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.22 2005/07/10 13:49:36 aachenner Exp $
+//$Id: IpCallImpl.java,v 1.23 2005/07/10 16:31:45 hoanghaiham Exp $
 /**
  * 
  */
@@ -121,7 +121,8 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 		}
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
-				originatingAddress, CallEvent.eventRouteReq, 0, 0);
+				originatingAddress, CallEvent.eventRouteReq, 0, 0,originatingAddress,
+			 originalDestinationAddress, redirectingAddress ,appInfo);
 		queue.put(evtCall);
 
 		// event_Observer.listen();
@@ -199,7 +200,7 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null, null,
-				CallEvent.eventReleaseCall, 0, 0);
+				CallEvent.eventReleaseCall, 0, 0,null,null,null,null);
 		queue.put(evtCall);
 		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}
@@ -218,7 +219,7 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, null, null,
-				CallEvent.eventDeassignCall, 0, 0);
+				CallEvent.eventDeassignCall, 0, 0,null,null,null,null);
 		queue.put(evtCall);
 		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}

@@ -1,7 +1,9 @@
-//$Id: CallEvent.java,v 1.13 2005/07/09 13:20:33 aachenner Exp $
+//$Id: CallEvent.java,v 1.14 2005/07/10 16:31:45 hoanghaiham Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
+import org.csapi.cc.gccs.TpCallAppInfo;
+import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallReport;
 
 /**
@@ -14,10 +16,13 @@ public class CallEvent {
 	 */
 	public int CallSessionID;
 
+	public TpCallEventInfo callEventInfo;
+	
 	private TpAddress targetAddress;
 
 	public TpAddress originatingAddress;
 
+	
 	/**
 	 * There are 3 types of events:
 	 * <ol>
@@ -33,7 +38,8 @@ public class CallEvent {
 	public static final int eventDeassignCall = 2;
 
 	public static final int eventReleaseCall = 3;
-
+	
+	
 	/**
 	 * There are 2 types of events of Routerequest's results: routeRes and
 	 * <ol>
@@ -88,6 +94,14 @@ public class CallEvent {
 		originatingAddress = null;
 		eventType_Result = 0;
 		callLegSessionID = 0;
+		//add more information to callEvent 
+		callEventInfo= new TpCallEventInfo();
+		callEventInfo.DestinationAddress=null;
+		callEventInfo.OriginalDestinationAddress=null;
+		callEventInfo.RedirectingAddress=null;
+		callEventInfo.CallAppInfo=null;
+		callEventInfo.CallEventName=0;
+		callEventInfo.MonitorMode= null;
 		switch (eventType) {
 		case eventRouteReq:
 		case eventDeassignCall:
@@ -108,7 +122,9 @@ public class CallEvent {
 	 *             throw when eventType is not valid
 	 */
 	CallEvent(int CallSession_ID, TpAddress targetAddr, TpAddress origAddr,
-			int event_Type, int event_Type_Result, int callLegsssion_ID)
+			int event_Type, int event_Type_Result, int callLegsssion_ID,
+			TpAddress originatingAddress, TpAddress originalDestinationAddress,
+			TpAddress redirectingAddress, TpCallAppInfo[] appInfo)
 			throws org.omg.CORBA.BAD_PARAM {
 		bProvision = true;
 		CallSessionID = CallSession_ID;
@@ -116,7 +132,13 @@ public class CallEvent {
 		originatingAddress = origAddr;
 		eventType_Result = event_Type_Result;
 		callLegSessionID = callLegsssion_ID;
-
+//		add more information to callEvent 
+		callEventInfo.DestinationAddress=targetAddr;
+		callEventInfo.OriginalDestinationAddress = originalDestinationAddress;
+		callEventInfo.RedirectingAddress = redirectingAddress;
+		callEventInfo.CallEventName=0;
+		callEventInfo.CallAppInfo=appInfo;
+		callEventInfo.MonitorMode=null;
 		switch (event_Type) {
 		case eventRouteReq:
 		case eventDeassignCall:

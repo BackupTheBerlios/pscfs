@@ -1,4 +1,4 @@
-//$Id: CallControlAdapter.java,v 1.2 2005/06/16 09:32:31 huuhoa Exp $
+//$Id: CallControlAdapter.java,v 1.3 2005/07/10 16:31:44 hoanghaiham Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -17,7 +17,7 @@ public interface CallControlAdapter {
 	public abstract boolean onEvent(int eventID, CallEvent eventData);
 
 	public abstract boolean onRouteReq(int callSessionID, TpAddress targetAddr,
-			TpAddress origAddr);
+			TpAddress origAddr,CallEvent eventData);
 
 	public abstract boolean onDeassignCall(int callSessionID);
 
