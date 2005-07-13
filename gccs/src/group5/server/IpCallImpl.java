@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.23 2005/07/10 16:31:45 hoanghaiham Exp $
+//$Id: IpCallImpl.java,v 1.24 2005/07/13 19:55:33 hoanghaiham Exp $
 /**
  * 
  */
@@ -120,6 +120,7 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 			m_logger.debug("Finished registering watcher");
 		}
 		CallEventQueue queue = CallEventQueue.getInstance();
+		m_logger.debug("After calleventqueue");
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
 				originatingAddress, CallEvent.eventRouteReq, 0, 0,originatingAddress,
 			 originalDestinationAddress, redirectingAddress ,appInfo);

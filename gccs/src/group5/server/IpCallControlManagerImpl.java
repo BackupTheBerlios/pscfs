@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.26 2005/07/10 16:31:44 hoanghaiham Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.27 2005/07/13 19:55:33 hoanghaiham Exp $
 /**
  * 
  */
@@ -357,16 +357,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 	public boolean onRouteReq(int callSessionID, TpAddress targetAddr,
 			TpAddress origAddr,CallEvent eventData) {
 		m_logger.debug("Got routeReq event with callSessionID: " + callSessionID);
-		/*
-		TpCallEventInfo callEventInfo = new TpCallEventInfo();
-		callEventInfo.DestinationAddress = targetAddr;
-		callEventInfo.OriginatingAddress = origAddr;
-		callEventInfo.OriginalDestinationAddress = targetAddr;
-		callEventInfo.RedirectingAddress = targetAddr;
-		callEventInfo.CallAppInfo = new TpCallAppInfo[0];
-		callEventInfo.CallEventName = P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value;
-		callEventInfo.CallNotificationType = TpCallNotificationType.P_ORIGINATING;
-		callEventInfo.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;*/
 		m_logger.debug("Target Address: " + targetAddr.AddrString);
 		m_logger.debug("Originating Address: " + origAddr.AddrString);
 		Iterator iterator = m_Observer.values().iterator();
@@ -379,7 +369,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA implements
 					.get(new Integer(callSessionID));
 			m_logger.debug("call identifier: " + ci);
 			m_logger.debug("call session id: " + ci.CallSessionID);
-		
+			m_logger.debug("Entering check eventCriteria type");
 			if ((observer.getTpCallEventCriteria().CallNotificationType == eventData.callEventInfo.CallNotificationType) &
 				(observer.getTpCallEventCriteria().OriginatingAddress.AddrString == eventData.callEventInfo.OriginatingAddress.AddrString) &
 				(observer.getTpCallEventCriteria().DestinationAddress.AddrString ==eventData.callEventInfo.DestinationAddress.AddrString) &

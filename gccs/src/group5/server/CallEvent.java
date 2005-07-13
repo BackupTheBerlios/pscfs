@@ -1,7 +1,8 @@
-//$Id: CallEvent.java,v 1.14 2005/07/10 16:31:45 hoanghaiham Exp $
+//$Id: CallEvent.java,v 1.15 2005/07/13 19:55:33 hoanghaiham Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
+import org.csapi.cc.TpCallMonitorMode;
 import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallReport;
@@ -95,13 +96,13 @@ public class CallEvent {
 		eventType_Result = 0;
 		callLegSessionID = 0;
 		//add more information to callEvent 
-		callEventInfo= new TpCallEventInfo();
+		/*callEventInfo= new TpCallEventInfo();
 		callEventInfo.DestinationAddress=null;
 		callEventInfo.OriginalDestinationAddress=null;
 		callEventInfo.RedirectingAddress=null;
 		callEventInfo.CallAppInfo=null;
 		callEventInfo.CallEventName=0;
-		callEventInfo.MonitorMode= null;
+		callEventInfo.MonitorMode= TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;*/
 		switch (eventType) {
 		case eventRouteReq:
 		case eventDeassignCall:
@@ -133,12 +134,14 @@ public class CallEvent {
 		eventType_Result = event_Type_Result;
 		callLegSessionID = callLegsssion_ID;
 //		add more information to callEvent 
+		callEventInfo= new TpCallEventInfo();
 		callEventInfo.DestinationAddress=targetAddr;
 		callEventInfo.OriginalDestinationAddress = originalDestinationAddress;
+		callEventInfo.OriginatingAddress=origAddr;
 		callEventInfo.RedirectingAddress = redirectingAddress;
 		callEventInfo.CallEventName=0;
 		callEventInfo.CallAppInfo=appInfo;
-		callEventInfo.MonitorMode=null;
+		callEventInfo.MonitorMode=TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
 		switch (event_Type) {
 		case eventRouteReq:
 		case eventDeassignCall:
