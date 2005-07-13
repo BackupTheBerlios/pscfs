@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.24 2005/07/13 19:55:33 hoanghaiham Exp $
+//$Id: IpCallImpl.java,v 1.25 2005/07/13 20:45:10 huuhoa Exp $
 /**
  * 
  */
@@ -21,7 +21,6 @@ import org.csapi.TpAoCInfo;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallChargePlan;
 import org.csapi.cc.gccs.IpAppCall;
-import org.csapi.cc.gccs.IpAppCallControlManagerHelper;
 import org.csapi.cc.gccs.IpAppCallHelper;
 import org.csapi.cc.gccs.IpCallPOA;
 import org.csapi.cc.gccs.TpCallAppInfo;
@@ -119,13 +118,10 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 					evCriteria);
 			m_logger.debug("Finished registering watcher");
 		}
-		CallEventQueue queue = CallEventQueue.getInstance();
-		m_logger.debug("After calleventqueue");
-		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
-				originatingAddress, CallEvent.eventRouteReq, 0, 0,originatingAddress,
-			 originalDestinationAddress, redirectingAddress ,appInfo);
-		queue.put(evtCall);
-
+		CallSimulator.getInstance().routeReq(callSessionID,
+				responseRequested, targetAddress,
+				originatingAddress, originalDestinationAddress,
+				redirectingAddress, appInfo);
 		// event_Observer.listen();
 
 		m_logger.debug("Route request successful");
@@ -137,56 +133,10 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 		 */
 		return 0;
 
-		// 
-		// if(m_m_logger.isInfoEnabled())
-		// m_m_logger.info(("Route Request"));
-		// checkEnd();
-		// routeError = null;
-		// //TpCallReportRequest tpCallReportReq[] =
-		// try {
-		// IpCallImpl.routReq(callSessionID, responseRequested,
-		// targetAddress, originalDestinationAddress, originatingAddress,
-		// redirectingAddress, appInfo);
-		// if (m_m_logger.isInfoEnabled())
-		// m_m_logger.info("ipCall.routeReq successfully return!");
-		// //targetAddress =
-		// }
-		// catch (P_INVALID_EVENT_TYPE ex1)
-		// {
-		// m_m_logger.error("Catch exception of P_INVALID_EVENT_TYPE with more
-		// information: " + ex1.getMessage());
-		// }
-		// catch (P_INVALID_NETWORK_STATE ex2)
-		// {
-		// m_m_logger.error("Catch exception of P_INVALID_NETWORK_STATE with
-		// more
-		// information: " + ex2.getMessage());
-		// }
-		// catch (TpCommonExceptions ex3)
-		// {
-		// m_m_logger.error("Error occurs: "+ex3.getMessage());
-		// }
-		// catch (P_INVALID_ADDRESS ex4)
-		// {
-		// m_m_logger.error("Error occurs:" + ex4.getMessage());
-		// }
-		// catch (P_INVALID_SESSION_ID ex5)
-		// {
-		// m_m_logger.error("Error occurs:" + ex5.getMessage());
-		// }
-		// catch (P_UNSUPPORTED_ADDRESS_PLAN ex6)
-		// {
-		// m_m_logger.error("Error occurs:" + ex6.getMessage());
-		// }
-		// catch (P_INVALID_CRITERIA ex7)
-		// {
-		// m_m_logger.error("Error occurs:" + ex7.getMessage());
-		// }
-		// return 0;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#release(int,
 	 *      org.csapi.cc.gccs.TpCallReleaseCause)
@@ -194,50 +144,35 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	public void release(int callSessionID, TpCallReleaseCause cause)
 			throws P_INVALID_NETWORK_STATE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
-
-		if (m_logger.isInfoEnabled())
-			m_logger.info("release Call");
-
-		CallEventQueue queue = CallEventQueue.getInstance();
-		CallEvent evtCall = new CallEvent(callSessionID, null, null,
-				CallEvent.eventReleaseCall, 0, 0,null,null,null,null);
-		queue.put(evtCall);
+		m_logger.info("receive request to releaseCall");
+		CallSimulator.getInstance().releaseCall(callSessionID);
 		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 *
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#deassignCall(int)
 	 */
 	public void deassignCall(int callSessionID) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
-
-		if (m_logger.isInfoEnabled())
-			m_logger.info("deassign Call");
-
-		CallEventQueue queue = CallEventQueue.getInstance();
-		CallEvent evtCall = new CallEvent(callSessionID, null, null,
-				CallEvent.eventDeassignCall, 0, 0,null,null,null,null);
-		queue.put(evtCall);
+		m_logger.info("receive request to deassignCall");
+		CallSimulator.getInstance().deassignCall(callSessionID);
 		EventObserver.getInstance().removeWatcher(nWatcherID);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#getCallInfoReq(int, int)
 	 */
 	public void getCallInfoReq(int callSessionID, int callInfoRequested)
 			throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		m_logger.info("getCallInfoReq");
 		m_logger.debug("getCallInfoReq - Unimplemented");
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#setCallChargePlan(int,
 	 *      org.csapi.cc.TpCallChargePlan)
@@ -245,66 +180,55 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	public void setCallChargePlan(int callSessionID,
 			TpCallChargePlan callChargePlan) throws TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		m_logger.info("setCallChargePlan");
 		m_logger.debug("setCallChargePlan - Unimplemented");
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#setAdviceOfCharge(int,
 	 *      org.csapi.TpAoCInfo, int)
 	 */
 	public void setAdviceOfCharge(int callSessionID, TpAoCInfo aOCInfo,
 			int tariffSwitch) throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		m_logger.info("setAdviceOfCharge");
 		m_logger.debug("setAdviceOfCharge - Unimplemented");
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#getMoreDialledDigitsReq(int, int)
 	 */
 	public void getMoreDialledDigitsReq(int callSessionID, int length)
 			throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		m_logger.info("getMoreDialledDigietsReq");
 		m_logger.debug("getMoreDialledDigitsReq - Unimplemented");
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#superviseCallReq(int, int, int)
 	 */
 	public void superviseCallReq(int callSessionID, int time, int treatment)
 			throws TpCommonExceptions, P_INVALID_SESSION_ID {
-		m_logger.info("superviseCallReq");
 		m_logger.debug("superviseCallReq - Unimplemented");
 
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#continueProcessing(int)
 	 */
 	public void continueProcessing(int callSessionID)
 			throws P_INVALID_NETWORK_STATE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		m_logger.info("continueProcessing");
 		m_logger.debug("continueProcessing - Unimplemented");
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**	 * 
 	 * @see org.csapi.IpServiceOperations#setCallback(org.csapi.IpInterface)
 	 */
 	public void setCallback(IpInterface appInterface)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions {
-		m_logger.info("setCallback");
 		m_logger.debug("setCallback - Unimplemented");
 
 	}
@@ -352,7 +276,8 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 		m_logger.debug("IpAppCall: " + appCall);
 		m_logger.debug("callsessionID: " + callSessionID);
 		m_logger.debug("eventReport: " + eventReport);
-		appCall.routeRes(callSessionID, eventReport, callLegSessionID);
+		if (appCall!=null)
+			appCall.routeRes(callSessionID, eventReport, callLegSessionID);
 		m_logger.info("Finish forwarding that event to client");
 	}
 }

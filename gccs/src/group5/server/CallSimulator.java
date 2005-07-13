@@ -1,15 +1,27 @@
-//$Id: CallSimulator.java,v 1.8 2005/07/09 09:23:22 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.9 2005/07/13 20:45:10 huuhoa Exp $
 /**
  * 
  */
 package group5.server;
 
 import org.apache.log4j.Logger;
+import org.csapi.P_INVALID_ADDRESS;
+import org.csapi.P_INVALID_CRITERIA;
+import org.csapi.P_INVALID_EVENT_TYPE;
+import org.csapi.P_INVALID_NETWORK_STATE;
+import org.csapi.P_INVALID_SESSION_ID;
+import org.csapi.P_UNSUPPORTED_ADDRESS_PLAN;
 import org.csapi.TpAddress;
+import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallMonitorMode;
+import org.csapi.cc.gccs.P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT;
 import org.csapi.cc.gccs.TpCallAdditionalReportInfo;
+import org.csapi.cc.gccs.TpCallAppInfo;
+import org.csapi.cc.gccs.TpCallEventInfo;
+import org.csapi.cc.gccs.TpCallNotificationType;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReport;
+import org.csapi.cc.gccs.TpCallReportRequest;
 import org.csapi.cc.gccs.TpCallReportType;
 
 /**
@@ -23,41 +35,65 @@ import org.csapi.cc.gccs.TpCallReportType;
  * @author Nguyen Huu Hoa
  * 
  */
-public class CallSimulator implements IpEventHandler {
+public class CallSimulator {
 	private static Logger m_logger = Logger.getLogger(CallSimulator.class);
 
-	private int nWatcherID;
-	public CallSimulator()
-	{
-		nWatcherID = 0;
+	private static CallSimulator m_instance = null;
+
+	public static CallSimulator getInstance() {
+		if (m_instance == null) {
+			m_instance = new CallSimulator();
+		}
+		return m_instance;
 	}
-	public boolean startSimulator()
-	{
+
+	private IpCallControlManagerImpl ipCCManager;
+
+	public CallSimulator() {
+		ipCCManager = null;
+	}
+
+	public void registerCallControlManager(IpCallControlManagerImpl ipManager) {
+		ipCCManager = ipManager;
+	}
+
+	public boolean startSimulator() {
 		m_logger.info("starting the call simulator");
 		// register for event notifications
-		m_logger.debug("About to register watcher for call simulator");
-		EventCriteria evCriteria = new EventCriteria();
-		m_logger.debug("Event criteria is created");
-		evCriteria.addCriteria(CallEvent.eventRouteReq);
-		evCriteria.addCriteria(CallEvent.eventDeassignCall);
-		evCriteria.addCriteria(CallEvent.eventReleaseCall);
-		m_logger.debug("Finished adding criteria");
-		nWatcherID = EventObserver.getInstance().addWatcher(this, evCriteria);
-		m_logger.debug("Finished registering watcher for call simulator");
-		
+		// m_logger.debug("About to register watcher for call simulator");
+		// EventCriteria evCriteria = new EventCriteria();
+		// m_logger.debug("Event criteria is created");
+		// evCriteria.addCriteria(CallEvent.eventRouteReq);
+		// evCriteria.addCriteria(CallEvent.eventDeassignCall);
+		// evCriteria.addCriteria(CallEvent.eventReleaseCall);
+		// m_logger.debug("Finished adding criteria");
+		// nWatcherID = EventObserver.getInstance().addWatcher(this,
+		// evCriteria);
+		// m_logger.debug("Finished registering watcher for call simulator");
+
 		return true;
 	}
-	public boolean stopSimulator()
-	{
+
+	public boolean stopSimulator() {
 		m_logger.info("stopping the call simulator");
-		EventObserver.getInstance().removeWatcher(nWatcherID);
+		// EventObserver.getInstance().removeWatcher(nWatcherID);
 		return true;
 	}
+
 	/**
 	 * @see group5.server.EventHandlerImpl#onDeassignCall(int)
 	 */
-	public void onDeassignCall(int callSessionID) {
-
+	public void deassignCall(int callSessionID) throws P_INVALID_SESSION_ID {
+		if (ipCCManager == null) {
+			m_logger.fatal("Register call control manager first");
+		}
+		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
+		// put deassign event to event pool
+		CallEventQueue queue = CallEventQueue.getInstance();
+		CallEvent evtCall = new CallEvent(ci.getSessionID(),
+				CallEvent.eventDeassignCall);
+		queue.put(evtCall);
+		ipCCManager.onDeassignCall(callSessionID);
 	}
 
 	/**
@@ -65,40 +101,89 @@ public class CallSimulator implements IpEventHandler {
 	 * 
 	 * @see group5.server.EventHandlerImpl#onReleaseCall(int)
 	 */
-	public void onReleaseCall(int callSessionID) {
-
+	public void releaseCall(int callSessionID) throws P_INVALID_SESSION_ID {
+		if (ipCCManager == null) {
+			m_logger.fatal("Register call control manager first");
+		}
+		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
+		Subscribers subDB = Subscribers.getInstance();
+		Subscriber subOrig = subDB
+				.getSubscriber(ci.getCallEventInfo().OriginatingAddress.AddrString);
+		subOrig.endCall();
+		Subscriber subTarg = subDB
+				.getSubscriber(ci.getCallEventInfo().DestinationAddress.AddrString);
+		subTarg.endCall();
+		// put end call event to event pool
+		CallEventQueue queue = CallEventQueue.getInstance();
+		CallEvent evtCall = new CallEvent(callSessionID,
+				CallEvent.eventReleaseCall);
+		queue.put(evtCall);
+		ipCCManager.onReleaseCall(callSessionID);
 	}
 
 	/**
 	 * @see group5.server.EventHandlerImpl#onRouteReq(int, org.csapi.TpAddress,
 	 *      org.csapi.TpAddress)
 	 */
-	public void onRouteReq(int callSessionID, TpAddress targetAddr,
-			TpAddress origAddr) {
-		m_logger.info("receive routeReq event with callSessionID: " + callSessionID);
+	public void routeReq(int callSessionID,
+			TpCallReportRequest[] responseRequested, TpAddress targetAddress,
+			TpAddress originatingAddress, TpAddress originalDestinationAddress,
+			TpAddress redirectingAddress, TpCallAppInfo[] appInfo)
+			throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE,
+			TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID,
+			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
+		m_logger.info("receive routeReq event with callSessionID: "
+				+ callSessionID);
+		// perform requesting for routing
+		CallEventQueue queue = CallEventQueue.getInstance();
+		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
+				originatingAddress, CallEvent.eventRouteReq, 0, 0,originatingAddress,
+			 originalDestinationAddress, redirectingAddress ,appInfo);
+		queue.put(evtCall);
+		if (ipCCManager==null)
+			throw new P_INVALID_NETWORK_STATE();
+		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
+		TpCallEventInfo cei = ci.getCallEventInfo();
+		cei.CallAppInfo = appInfo;
+		cei.CallEventName = P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value;
+		cei.CallNotificationType = TpCallNotificationType.P_ORIGINATING;
+		cei.DestinationAddress = targetAddress;
+		cei.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
+		cei.OriginalDestinationAddress = originalDestinationAddress;
+		cei.OriginatingAddress = originatingAddress;
+		cei.RedirectingAddress = redirectingAddress;
+		ci.setCallEventInfo(cei);
+		ipCCManager.updateCallInfo(callSessionID, ci);
+		ipCCManager.onRouteReq(callSessionID);
+		// just wait here
+
+		// returning the result
 		CallEvent evRouteRes = new CallEvent(callSessionID,
 				CallEvent.eventRouteRes);
 		evRouteRes.eventReport = new TpCallReport();
 		evRouteRes.eventReport.AdditionalReportInfo = new TpCallAdditionalReportInfo();
-		evRouteRes.eventReport.AdditionalReportInfo.Busy(new TpCallReleaseCause(0, 1));
+		evRouteRes.eventReport.AdditionalReportInfo
+				.Busy(new TpCallReleaseCause(0, 1));
 		evRouteRes.eventReport.CallEventTime = "10";
 		evRouteRes.eventReport.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
 		// get an instance of subscribers
 		Subscribers subColl = Subscribers.getInstance();
 		m_logger.debug(subColl);
 		// get subscriber pair
-		Subscriber subTarg = subColl.getSubscriber(targetAddr.AddrString);
+		Subscriber subTarg = subColl.getSubscriber(targetAddress.AddrString);
 		if (subTarg == null) {
 			// no subscriber
-			m_logger.error("Cannot find any subscriber with address: " + targetAddr.AddrString);
-			evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_NOT_REACHABLE;
+			m_logger.error("Cannot find any subscriber with address: "
+					+ targetAddress.AddrString);
+			evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_ROUTING_FAILURE;
 			CallEventQueue.getInstance().put(evRouteRes);
 			return;
 		}
 
-		m_logger.debug("destination partner is: " + subTarg.getSubscribeAddress());
+		m_logger.debug("destination partner is: "
+				+ subTarg.getSubscribeAddress());
 		m_logger.debug("Status of subscriber: " + subTarg.getStatus());
-		
+
 		if ((subTarg.getStatus() & Subscriber.Idle) == 0) {
 			// subscriber is not idle, can not make call
 			// evRouteRes.errorIndication.ErrorType = TpCallErrorType;
@@ -113,22 +198,11 @@ public class CallSimulator implements IpEventHandler {
 		}
 
 		// making call
-		subTarg.receiveCallFrom(origAddr.AddrString);
+		subTarg.receiveCallFrom(originatingAddress.AddrString);
 		// making call succeeded
 		m_logger.info("successfully routing call");
 		evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_ANSWER;
 		CallEventQueue.getInstance().put(evRouteRes);
 		m_logger.debug("going out of onRouteReq of CallSimulator");
 	}
-
-	public void onEvent(int eventID, CallEvent eventData) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onRouteRes(int callSessionID, TpCallReport eventReport, int callLegSessionID) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

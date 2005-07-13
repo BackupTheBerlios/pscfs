@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.10 2005/07/09 10:03:27 aachenner Exp $
+//$Id: EventObserver.java,v 1.11 2005/07/13 20:45:10 huuhoa Exp $
 /**
  * 
  */
@@ -54,17 +54,17 @@ public final class EventObserver {
 
 	private EventObserver() {
 		m_logger.debug("ctor()");
-		m_ipCallManager = null;
+//		m_ipCallManager = null;
 		m_mapObservers = new HashMap();
 		evListener = new EventListener();
 	}
 
-	// begin actual observer implementation
-	private CallControlAdapter m_ipCallManager;
-
-	public void SetIpCallControlManager(CallControlAdapter ipCallManager) {
-		m_ipCallManager = ipCallManager;
-	}
+//	// begin actual observer implementation
+//	private CallControlAdapter m_ipCallManager;
+//
+//	public void SetIpCallControlManager(CallControlAdapter ipCallManager) {
+//		m_ipCallManager = ipCallManager;
+//	}
 
 	Map m_mapObservers;
 
@@ -151,12 +151,12 @@ public final class EventObserver {
 				CallEvent ev = evQueue.get();
 				// first examine the bProvision field of CallEvent
 				boolean bStop = false;
-				if (ev.isProvision()) {
-					if (m_ipCallManager != null) {
-						m_logger.debug("dispatching event to ip call manager");
-						bStop = m_ipCallManager.onEvent(ev.eventType, ev);
-					}
-				}
+//				if (ev.isProvision()) {
+//					if (m_ipCallManager != null) {
+//						m_logger.debug("dispatching event to ip call manager");
+//						bStop = m_ipCallManager.onEvent(ev.eventType, ev);
+//					}
+//				}
 				if (bStop == false) {
 					ev.setProvision(false);
 					setWatcherFlag(false);
