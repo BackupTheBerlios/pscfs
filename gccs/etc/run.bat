@@ -1,8 +1,8 @@
 @echo off
-set PROJ_HOME=D:\workspace\gccs
-set MYCLASSPATH=%JACORB_HOME%\lib\avalon-framework-4.1.5.jar;%JACORB_HOME%\lib\jacorb.jar;%JACORB_HOME%\lib\logkit-1.2.jar;%PROJ_HOME%\lib\parlay_interfaces-5.0.jar;%PROJ_HOME%\lib\log4j-1.2.9.jar;%PROJ_HOME%\bin
+set PROJ_HOME=E:\RWTH Aachen\Lab\source\gccs
+set MYCLASSPATH=%JACORB_HOME%\lib\avalon-framework-4.1.5.jar;%JACORB_HOME%\lib\jacorb.jar;%JACORB_HOME%\lib\logkit-1.2.jar;"%PROJ_HOME%\lib\parlay_interfaces-5.0.jar";"%PROJ_HOME%\lib\log4j-1.2.9.jar";"%PROJ_HOME%\bin"
 set MYPROP=-Djacorb.home=C:/work/jacorb
-cd %PROJ_HOME%
+cd "%PROJ_HOME%"
 IF "%1"=="ns" (
 REM ORBInitRef.NameService=corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root %*
 	start ns -Djacorb.naming.ior_filename=corbaloc::localhost:2050/StandardNS/NameServer%2DPOA/_root %*
@@ -13,7 +13,7 @@ IF "%1"=="server" (
 	goto quit
 )
 IF "%1"=="client" (
-	start java -classpath %MYCLASSPATH% group5.client.GCCSClient %MYPROP% %*
+	start java -classpath %MYCLASSPATH% group5.client.GCCSClient %MYPROP%" %*
 	goto quit
 )	
 IF "%1"=="AIC" (
@@ -47,4 +47,4 @@ goto :eof
 :quit
 set MYCLASSPATH=""
 set MYPROP=""
-cd %PROJ_HOME%\etc
+cd "%PROJ_HOME%\etc"
