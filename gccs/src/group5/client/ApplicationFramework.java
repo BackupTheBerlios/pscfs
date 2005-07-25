@@ -1,8 +1,12 @@
-//$Id: ApplicationFramework.java,v 1.11 2005/07/10 10:32:41 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.12 2005/07/25 20:00:49 huuhoa Exp $
 /**
  * 
  */
 package group5.client;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import group5.P_INVALID_NAME_SERVICE;
 import group5.utils.CommonFuntions;
@@ -765,6 +769,19 @@ public class ApplicationFramework {
 			if (System.getProperty("Framework.customServiceID")
 					.compareToIgnoreCase("1") == 0) {
 				svcId = System.getProperty("Framework.serviceID");
+			}
+			if (System.getProperty("Framework.customServiceID")
+					.compareToIgnoreCase("2") == 0) {
+				// get service id from a properties file
+				Properties appProps = new Properties();
+				try {
+					FileInputStream fis = new FileInputStream(System.getProperty("Framework.ServiceNameFile"));
+					appProps.load(fis);
+					fis.close();
+				} catch (IOException e) {
+					m_logger.fatal("Cannot find properties file");
+				}
+				svcId = appProps.getProperty("Framework.serviceID");
 			}
 			String svcToken = selectService(m_ipSvcAgmt, svcId);
 

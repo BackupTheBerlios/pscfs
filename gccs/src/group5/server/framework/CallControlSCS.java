@@ -1,4 +1,4 @@
-//$Id: CallControlSCS.java,v 1.10 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.11 2005/07/25 20:00:49 huuhoa Exp $
 /**
  * 
  */
@@ -6,6 +6,10 @@ package group5.server.framework;
 
 import group5.server.EventObserver;
 import group5.server.IpCallControlManagerImpl;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.csapi.TpCommonExceptions;
@@ -83,6 +87,19 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 			m_serviceID = registerService("P_GENERIC_CALL_CONTROL",
 					scsproperties, IpCallControlManagerImpl.class);
 			// after registering the service
+			if (System.getProperty("Framework.writeServiceName").compareToIgnoreCase("1")==0)
+			{
+				// write the service name to a properties file
+				Properties appProps = new Properties();
+				try {
+					appProps.put("Framework.serviceID", m_serviceID);
+					FileOutputStream fos = new FileOutputStream(System.getProperty("Framework.ServiceNameFile"));
+					appProps.store(fos, "so?");
+					fos.close();
+				} catch (IOException e) {
+					System.out.println("Cannot find properties file");
+				}
+			}
 			// we have to start all the event observers
 			EventObserver evOb = EventObserver.getInstance();
 			// start a thread to listen to events
