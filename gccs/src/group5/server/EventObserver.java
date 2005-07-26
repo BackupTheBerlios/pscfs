@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.11 2005/07/13 20:45:10 huuhoa Exp $
+//$Id: EventObserver.java,v 1.12 2005/07/26 20:31:54 huuhoa Exp $
 /**
  * 
  */
@@ -53,7 +53,7 @@ public final class EventObserver {
 	private EventListener evListener;
 
 	private EventObserver() {
-		m_logger.debug("ctor()");
+		m_logger.debug("EventObserver has been created");
 //		m_ipCallManager = null;
 		m_mapObservers = new HashMap();
 		evListener = new EventListener();
@@ -161,14 +161,14 @@ public final class EventObserver {
 					ev.setProvision(false);
 					setWatcherFlag(false);
 					// dispatch events
-					m_logger.debug("Got event with eventType: " + ev.eventType);
-					m_logger.debug("Number of Observers: "
-							+ m_mapObservers.size());
+//					m_logger.debug("Got event with eventType: " + ev.eventType);
+//					m_logger.debug("Number of Observers: "
+//							+ m_mapObservers.size());
 					Iterator iterator = m_mapObservers.values().iterator();
 					while (iterator.hasNext()) {
 						Observer ob = (Observer) iterator.next();
-						m_logger.debug("The watched criteria: "
-								+ ob.getCriteria().toString());
+//						m_logger.debug("The watched criteria: "
+//								+ ob.getCriteria().toString());
 						if (ob.getCriteria().isWatched(ev.eventType)) {
 							dispatchEvent(ob.getHandler(), ev.eventType, ev);
 						}

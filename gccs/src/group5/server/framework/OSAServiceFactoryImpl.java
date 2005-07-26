@@ -1,4 +1,4 @@
-//$Id: OSAServiceFactoryImpl.java,v 1.9 2005/07/01 09:20:13 huuhoa Exp $
+//$Id: OSAServiceFactoryImpl.java,v 1.10 2005/07/26 20:31:54 huuhoa Exp $
 package group5.server.framework;
 
 import java.lang.reflect.Constructor;
@@ -73,7 +73,7 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 			m_logger.debug("got _this method for " + servant.getClass());
 			obj = (org.omg.CORBA.Object) method.invoke(servant,
 					new java.lang.Object[] { ServerFramework.getORB() });
-			m_logger.debug("got reference to CORBA interface: " + obj.toString());
+			//m_logger.debug("got reference to CORBA interface: " + obj.toString());
 			m_logger.debug("serviceInstanceID: " + serviceInstanceID);
 			//siTable.put(serviceInstanceID, (ServiceInstance) servant);
 			m_logger.debug("Created new service manager instance");

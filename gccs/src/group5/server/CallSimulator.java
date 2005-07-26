@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.9 2005/07/13 20:45:10 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.10 2005/07/26 20:31:54 huuhoa Exp $
 /**
  * 
  */
@@ -59,24 +59,11 @@ public class CallSimulator {
 
 	public boolean startSimulator() {
 		m_logger.info("starting the call simulator");
-		// register for event notifications
-		// m_logger.debug("About to register watcher for call simulator");
-		// EventCriteria evCriteria = new EventCriteria();
-		// m_logger.debug("Event criteria is created");
-		// evCriteria.addCriteria(CallEvent.eventRouteReq);
-		// evCriteria.addCriteria(CallEvent.eventDeassignCall);
-		// evCriteria.addCriteria(CallEvent.eventReleaseCall);
-		// m_logger.debug("Finished adding criteria");
-		// nWatcherID = EventObserver.getInstance().addWatcher(this,
-		// evCriteria);
-		// m_logger.debug("Finished registering watcher for call simulator");
-
 		return true;
 	}
 
 	public boolean stopSimulator() {
 		m_logger.info("stopping the call simulator");
-		// EventObserver.getInstance().removeWatcher(nWatcherID);
 		return true;
 	}
 
@@ -86,6 +73,7 @@ public class CallSimulator {
 	public void deassignCall(int callSessionID) throws P_INVALID_SESSION_ID {
 		if (ipCCManager == null) {
 			m_logger.fatal("Register call control manager first");
+			return;
 		}
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
 		// put deassign event to event pool
@@ -104,8 +92,11 @@ public class CallSimulator {
 	public void releaseCall(int callSessionID) throws P_INVALID_SESSION_ID {
 		if (ipCCManager == null) {
 			m_logger.fatal("Register call control manager first");
+			return;
 		}
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
+		m_logger.info("Releasing call between [" + ci.getCallEventInfo().OriginatingAddress.AddrString + 
+				"] and [" + ci.getCallEventInfo().DestinationAddress.AddrString + "]");
 		Subscribers subDB = Subscribers.getInstance();
 		Subscriber subOrig = subDB
 				.getSubscriber(ci.getCallEventInfo().OriginatingAddress.AddrString);
@@ -134,6 +125,7 @@ public class CallSimulator {
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
 		m_logger.info("receive routeReq event with callSessionID: "
 				+ callSessionID);
+		m_logger.info("source: " + originatingAddress.AddrString + ", dest: " + targetAddress.AddrString);
 		// perform requesting for routing
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
@@ -168,7 +160,7 @@ public class CallSimulator {
 		evRouteRes.eventReport.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
 		// get an instance of subscribers
 		Subscribers subColl = Subscribers.getInstance();
-		m_logger.debug(subColl);
+		// m_logger.debug(subColl);
 		// get subscriber pair
 		Subscriber subTarg = subColl.getSubscriber(targetAddress.AddrString);
 		if (subTarg == null) {

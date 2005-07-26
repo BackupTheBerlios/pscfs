@@ -1,8 +1,10 @@
-//$Id: Subscriber.java,v 1.8 2005/07/09 09:23:22 huuhoa Exp $
+//$Id: Subscriber.java,v 1.9 2005/07/26 20:31:54 huuhoa Exp $
 /**
  * 
  */
 package group5.server;
+
+import org.apache.log4j.Logger;
 
 /**
  * Represent for a subscriber
@@ -11,6 +13,7 @@ package group5.server;
  * 
  */
 public class Subscriber {
+	private static Logger m_logger = Logger.getLogger(Subscriber.class);
 	/**
 	 * the status of the subscriber - reachable - unreachable - busy - ...
 	 */
@@ -103,12 +106,14 @@ public class Subscriber {
 	 *            The partnerAddress to set.
 	 */
 	public void receiveCallFrom(String partnerAddr) {
+		m_logger.info("Subscriber [" + subscribeAddress + "] receives a call from [" + partnerAddr + "]");
 		this.partnerAddress = partnerAddr;
 		status |= Busy;
 	}
 
 	public void endCall()
 	{
+		m_logger.info("Subscriber [" + subscribeAddress + "] terminates a call from [" + partnerAddress + "]");
 		status &= ~Busy;
 	}
 	/**

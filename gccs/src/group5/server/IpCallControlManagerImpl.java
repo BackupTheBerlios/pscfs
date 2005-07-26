@@ -1,10 +1,9 @@
-//$Id: IpCallControlManagerImpl.java,v 1.28 2005/07/13 20:45:10 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.29 2005/07/26 20:31:54 huuhoa Exp $
 /**
  * 
  */
 package group5.server;
 
-import group5.CallControlException;
 import group5.server.framework.ServerFramework;
 
 import java.util.HashMap;
@@ -22,11 +21,9 @@ import org.csapi.P_UNSUPPORTED_ADDRESS_PLAN;
 import org.csapi.TpAddressRange;
 import org.csapi.TpCommonExceptions;
 import org.csapi.cc.TpCallLoadControlMechanism;
-import org.csapi.cc.TpCallMonitorMode;
 import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpAppCallControlManager;
 import org.csapi.cc.gccs.IpAppCallControlManagerHelper;
-import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventCriteria;
 import org.csapi.cc.gccs.TpCallEventCriteriaResult;
@@ -41,10 +38,6 @@ import org.csapi.fw.TpServiceProperty;
 public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 
 	private IpAppCallControlManager ipACCM_delegate;
-
-	private IpCallControlManager ipCallControlManager;
-
-	private HashMap administration;
 
 	private int CallSessionID;
 
@@ -91,8 +84,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		ipACCM_delegate = null;
 		notificationObserverID = 0;
 		CallSessionID = 0;
-		ipCallControlManager = _this(ServerFramework.getORB());
-		administration = new HashMap();
 		m_CallList = new HashMap();
 		registerEventWatcher();
 	}
@@ -111,13 +102,12 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions {
 		// TODO Auto-generated method stub
 		if (ipACCM_delegate == null) {
-			m_logger
-					.error("The callback interface should be set first. Call SetCallback before calling this function");
+			m_logger.error("The callback interface should be set first."
+					+ " Call SetCallback before calling this function");
 			return null;
 		}
 		IpCallImpl aCallReference = new IpCallImpl(appCall);
 		if (aCallReference == null) {
-			// TODO: hh
 			m_logger.error("Cannot create IpCall");
 			ipACCM_delegate.callAborted(0);
 			return null;
@@ -126,7 +116,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		CallInfo callInfo = new CallInfo(getCallSessionID());
 		callInfo.CallObject = aCallReference;
 		callInfo.CallRefence = aCallReference._this(ServerFramework.getORB());
-		;
 		m_CallList.put(new Integer(callInfo.getSessionID()), callInfo);
 		return callInfo.getCallIdentifier();
 	}
@@ -158,24 +147,11 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		m_logger.info("Entering enableCallNotification");
 		if (appCallControlManager == null) {
 			String msgErr = "Parameter appCallControlManager is null";
-			m_logger.info(msgErr);
+			m_logger.fatal(msgErr);
 			return 0;
 		} else {
 			m_logger.debug("appCallControlManager is not null");
-			try {
-				callEventCriteria(eventCriteria);
-				return putNotificationObserver(appCallControlManager,
-						eventCriteria);
-			} catch (P_INVALID_CRITERIA e) {
-				String msgErr = "Invalid criteria:" + e.ExtraInformation;
-				m_logger.info(msgErr);
-
-			} catch (P_INVALID_EVENT_TYPE e) {
-				String msgErr = "Error in enableCallNotification() call:"
-						+ e.ExtraInformation;
-				m_logger.info(msgErr);
-			}
-			return 0;
+			return putNotificationObserver(appCallControlManager, eventCriteria);
 		}
 	}
 
@@ -187,7 +163,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 
 	public void disableCallNotification(int assignmentID)
 			throws P_INVALID_ASSIGNMENT_ID, TpCommonExceptions {
-		m_logger.debug("Disable Call Notification: m_Observer = " + m_Observer);
+		m_logger.info("Disable Call Notification: m_Observer = " + m_Observer);
 		m_Observer.remove(new Integer(assignmentID));
 
 	}
@@ -254,75 +230,19 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 */
-
-	/*
-	 * private void checkCriteria(CallCriteria crit) throws CallControlException {
-	 * if (crit == null || crit.getCriteria() == 0) { throw new
-	 * CallControlException("No events specified", 2, 2); } if
-	 * ((crit.getCriteria() & 0xffffe000) != 0) { throw new
-	 * CallControlException("Unknown event", 1, 2); } if
-	 * (analyseEventMask(crit.getCriteria()) == 0) { throw new
-	 * CallControlException( "No callbacks will be received for given events",
-	 * 2, 2); } else { return; } }
-	 */
-	private void callEventCriteria(TpCallEventCriteria tpcalleventcriteria)
-			throws P_INVALID_CRITERIA, P_INVALID_EVENT_TYPE {
-		if (tpcalleventcriteria.MonitorMode == TpCallMonitorMode.P_CALL_MONITOR_MODE_DO_NOT_MONITOR)
-			throw new P_INVALID_CRITERIA("DO_NOT_MONITOR is invalid here");
-		byte byte0 = 6;
-		if ((tpcalleventcriteria.CallEventName | byte0) == byte0) {
-			return;
-		}
-		if ((tpcalleventcriteria.CallEventName & 1) != 0)
-			throw new P_INVALID_EVENT_TYPE(
-					"P_EVENT_GCCS_OFFHOOK_EVENT not supported");
-		else
-			return;
-	}
-
-	public void destroy() throws CallControlException {
-		if (m_logger.isInfoEnabled())
-			m_logger.info("Entering destroy");
-		if (ipCallControlManager == null) {
-			String msgErr = "Already destroyed";
-			if (m_logger.isInfoEnabled())
-				m_logger.info(msgErr);
-			throw new CallControlException("Already destroyed", 0, 2);
-		}
-		int id;
-		try {
-			for (Iterator i = administration.keySet().iterator(); i.hasNext(); disableCallNotification(id))
-				id = ((Integer) i.next()).intValue();
-		} catch (P_INVALID_ASSIGNMENT_ID e) {
-			String msgErr = "Invalid assignment ID" + e.getMessage();
-			if (m_logger.isInfoEnabled())
-				m_logger.info(msgErr);
-		} catch (TpCommonExceptions e) {
-			String msgErr = "Error destroy" + e.getMessage();
-			if (m_logger.isInfoEnabled())
-				m_logger.info(msgErr);
-		}
-		administration.clear();
-		ipCallControlManager._release();
-		ipCallControlManager = null;
-	}
-
 	public boolean onRouteReq(int callSessionID) {
-		m_logger.debug("Got routeReq event with callSessionID: "
-				+ callSessionID);
+		m_logger.debug("callSessionID = " + callSessionID);
 		CallInfo ci;
 		try {
 			ci = getCallInfo(callSessionID);
 		} catch (P_INVALID_SESSION_ID ex) {
-			m_logger
-					.fatal("Invalid session id while trying to call routeReq");
+			m_logger.fatal("Invalid session id while trying to call routeReq");
 			return false;
 		}
-		m_logger.debug("Target Address: " + ci.getCallEventInfo().DestinationAddress.AddrString);
-		m_logger.debug("Originating Address: " + ci.getCallEventInfo().OriginatingAddress.AddrString);
+		m_logger.debug("Target Address: "
+				+ ci.getCallEventInfo().DestinationAddress.AddrString
+				+ "\n\tOriginating Address: "
+				+ ci.getCallEventInfo().OriginatingAddress.AddrString);
 		Iterator iterator = m_Observer.values().iterator();
 		while (iterator.hasNext()) {
 			Observer observer = (Observer) iterator.next();
@@ -330,8 +250,8 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			m_logger.debug("ipAppManager of current observer: "
 					+ observer.getIpAppCallControlManager());
 			// dispatch event notification
-			m_logger.debug("call info: " + ci);
-			m_logger.debug("call session id: " + ci.getSessionID());
+			m_logger.debug("call info: " + ci + "\n\tcall session id: "
+					+ ci.getSessionID());
 
 			// if ((observer.getTpCallEventCriteria().CallNotificationType ==
 			// eventData.callEventInfo.CallNotificationType) &
@@ -341,11 +261,9 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			// ==eventData.callEventInfo.DestinationAddress.AddrString) &
 			// (observer.getTpCallEventCriteria().MonitorMode
 			// ==eventData.callEventInfo.MonitorMode)){
-			m_logger.debug("Check eventCriteria");
-			IpAppCall ipAppCall = observer
-					.getIpAppCallControlManager()
-					.callEventNotify(ci.getCallIdentifier(), ci.getCallEventInfo(),
-							observer.getAssignmentID());
+			IpAppCall ipAppCall = observer.getIpAppCallControlManager()
+					.callEventNotify(ci.getCallIdentifier(),
+							ci.getCallEventInfo(), observer.getAssignmentID());
 			// set ipAppCall to IpCallImpl
 			ci.CallObject.setIpAppCall(ipAppCall);
 			// }
@@ -418,12 +336,10 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			IpAppCallControlManager ipAppCallControlManager,
 			TpCallEventCriteria tpCallEventCriteria) {
 		int notificationObserverId = getObserverID();
-		m_logger.debug("Enterring putNotificationObserver");
 		Observer observer = new Observer(ipAppCallControlManager,
 				tpCallEventCriteria, notificationObserverId);
-		m_logger.debug("Enterring put into Observer: " + m_Observer);
 		m_Observer.put(new Integer(notificationObserverId), observer);
-		m_logger.debug("Returning notification ID: " + notificationObserverId);
+		m_logger.debug("notificationID = " + notificationObserverId);
 		return notificationObserverId;
 	}
 

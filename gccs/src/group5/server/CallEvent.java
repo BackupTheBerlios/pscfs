@@ -1,4 +1,4 @@
-//$Id: CallEvent.java,v 1.15 2005/07/13 19:55:33 hoanghaiham Exp $
+//$Id: CallEvent.java,v 1.16 2005/07/26 20:31:54 huuhoa Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -88,21 +88,12 @@ public class CallEvent {
 	// public TpCallError errorIndication;
 	public CallEvent(int CallSession_ID, int eventType) 
 	throws org.omg.CORBA.BAD_PARAM {
-		System.out.println("Entering constructor of CallEvent");
 		bProvision = true;
 		CallSessionID = CallSession_ID;
 		setTargetAddress(null);
 		originatingAddress = null;
 		eventType_Result = 0;
 		callLegSessionID = 0;
-		//add more information to callEvent 
-		/*callEventInfo= new TpCallEventInfo();
-		callEventInfo.DestinationAddress=null;
-		callEventInfo.OriginalDestinationAddress=null;
-		callEventInfo.RedirectingAddress=null;
-		callEventInfo.CallAppInfo=null;
-		callEventInfo.CallEventName=0;
-		callEventInfo.MonitorMode= TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;*/
 		switch (eventType) {
 		case eventRouteReq:
 		case eventDeassignCall:
@@ -114,7 +105,6 @@ public class CallEvent {
 		default:
 			throw new org.omg.CORBA.BAD_PARAM();
 		}
-		System.out.println("Getting out of constructor");
 	}
 
 	/**

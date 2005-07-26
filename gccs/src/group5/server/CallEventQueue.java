@@ -1,4 +1,4 @@
-//$Id: CallEventQueue.java,v 1.9 2005/07/13 19:55:33 hoanghaiham Exp $
+//$Id: CallEventQueue.java,v 1.10 2005/07/26 20:31:54 huuhoa Exp $
 package group5.server;
 
 import java.util.ArrayList;
@@ -30,12 +30,10 @@ public final class CallEventQueue {
 	}
 
 	public CallEventQueue() {
-		m_logger.debug("Creating new Event Queue");
 		list = new ArrayList();
 	}
 
 	public synchronized void put(CallEvent event) {
-		m_logger.debug("Entering callEvent");
 		list.add(event);
 		notifyAll();
 	}

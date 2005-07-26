@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.13 2005/07/10 10:35:42 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.14 2005/07/26 20:31:54 huuhoa Exp $
 /**
  * 
  */
@@ -163,7 +163,6 @@ public class ServerFramework {
 	 */
 	IpInitial getIpInitial() throws org.omg.CORBA.UserException,
 			P_INVALID_NAME_SERVICE {
-		m_logger.debug("Enterring getIpInital");
 		String CORBA_NameService = System.getProperty("ORB.NameService");
 		if (CORBA_NameService == null)
 			throw new P_INVALID_NAME_SERVICE(
@@ -178,7 +177,6 @@ public class ServerFramework {
 		obj = namingContext.resolve_str("IpInitial");
 
 		m_ipInitial = IpInitialHelper.narrow(obj);
-		m_logger.debug("<----getting out of getIpInitial()");
 		return m_ipInitial;
 	}
 
@@ -188,7 +186,6 @@ public class ServerFramework {
 	 */
 	protected IpAPILevelAuthentication getIpAuthentication()
 			throws TpCommonExceptions {
-		m_logger.debug("ServiceRegistration::getIpAuthentication");
 		if (m_ipAPILevelAuthentication == null) {
 			try {
 				// obtain the authentication interface
@@ -408,7 +405,7 @@ public class ServerFramework {
 		String serviceID = registerService(serviceTypeName, scProp);
 		String s2 = scProp.getServiceName();
 		try {
-			m_logger.debug("serviceID=" + serviceID);
+			m_logger.info("serviceID=" + serviceID);
 			if (serviceID != null) {
 				IpFwServiceRegistration ipFSR = obtainIpFwServiceRegistration();
 				ipFSR.announceServiceAvailability(serviceID, ipSILM._this(orb));

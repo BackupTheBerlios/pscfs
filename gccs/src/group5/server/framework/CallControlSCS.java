@@ -1,4 +1,4 @@
-//$Id: CallControlSCS.java,v 1.11 2005/07/25 20:00:49 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.12 2005/07/26 20:31:54 huuhoa Exp $
 /**
  * 
  */
@@ -113,7 +113,7 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 			m_logger.fatal("Error starting service CallControlSCS", ex);
 			return 2;
 		}
-		m_logger.info("Started service CallControlSCS");
+		m_logger.info("Generic Call Control Service has been started");
 		return 0;
 	}
 

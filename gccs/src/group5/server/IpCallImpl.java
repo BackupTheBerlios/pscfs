@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.25 2005/07/13 20:45:10 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.26 2005/07/26 20:31:54 huuhoa Exp $
 /**
  * 
  */
@@ -96,7 +96,7 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 			throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE,
 			TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID,
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
-		m_logger.info("Route Request");
+		m_logger.info("Got route request");
 		if (targetAddress == null)
 			throw new P_INVALID_ADDRESS("Error in the target address");
 		if (originalDestinationAddress == null)
@@ -108,15 +108,11 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 
 		if (nWatcherID == 0) {
 			// register for event notifications
-			m_logger.debug("About to register watcher");
 			EventCriteria evCriteria = new EventCriteria();
-			m_logger.debug("Event criteria is created");
 			evCriteria.addCriteria(CallEvent.eventRouteRes);
 			evCriteria.addCriteria(CallEvent.eventRouteErr);
-			m_logger.debug("Finished adding criteria");
 			nWatcherID = EventObserver.getInstance().addWatcher(this,
 					evCriteria);
-			m_logger.debug("Finished registering watcher");
 		}
 		CallSimulator.getInstance().routeReq(callSessionID,
 				responseRequested, targetAddress,
@@ -125,12 +121,6 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 		// event_Observer.listen();
 
 		m_logger.debug("Route request successful");
-		/**
-		 * Returns callLegSessionID: Specifies the sessionID assigned by the
-		 * gateway. This is the sessionID of the implicitly created call leg.
-		 * The same ID will be returned in the routeRes or Err. This allows the
-		 * application to correlate the request and the result.
-		 */
 		return 0;
 
 	}
@@ -150,8 +140,6 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	}
 
 	/**
-	 *
-	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#deassignCall(int)
 	 */
 	public void deassignCall(int callSessionID) throws TpCommonExceptions,
@@ -162,7 +150,6 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	}
 
 	/**
-	 * 
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#getCallInfoReq(int, int)
 	 */
@@ -273,11 +260,10 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	public void onRouteRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
 		m_logger.info("Get result of previous request routeReq");
-		m_logger.debug("IpAppCall: " + appCall);
 		m_logger.debug("callsessionID: " + callSessionID);
 		m_logger.debug("eventReport: " + eventReport);
 		if (appCall!=null)
 			appCall.routeRes(callSessionID, eventReport, callLegSessionID);
-		m_logger.info("Finish forwarding that event to client");
+		m_logger.debug("Finish forwarding that event to client");
 	}
 }
