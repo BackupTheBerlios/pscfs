@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.31 2005/07/27 08:59:41 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.32 2005/07/27 09:53:29 aachenner Exp $
 /**
  * 
  */
@@ -123,7 +123,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	public CallInfo getCallInfo(int callSessionID) throws P_INVALID_SESSION_ID {
 		CallInfo ci = (CallInfo) m_CallList.get(new Integer(callSessionID));
 		if (ci == null)
-			throw new P_INVALID_SESSION_ID();
+			throw new P_INVALID_SESSION_ID("Invalid session ID [" + callSessionID + "]");
 		return ci;
 	}
 
@@ -131,7 +131,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			throws P_INVALID_SESSION_ID {
 		CallInfo ciOld = (CallInfo) m_CallList.get(new Integer(callSessionID));
 		if (ciOld == null)
-			throw new P_INVALID_SESSION_ID();
+			throw new P_INVALID_SESSION_ID("Invalid session ID [" + callSessionID + "]");
 		m_CallList.put(new Integer(callSessionID), ci);
 	}
 

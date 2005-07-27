@@ -1,4 +1,4 @@
-//$Id: CallEvent.java,v 1.18 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: CallEvent.java,v 1.19 2005/07/27 09:53:29 aachenner Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -102,7 +102,7 @@ public class CallEvent {
 			this.eventType = eventType;
 			break;
 		default:
-			throw new org.omg.CORBA.BAD_PARAM();
+			throw new org.omg.CORBA.BAD_PARAM("Bad event type: "+ eventType);
 		}
 	}
 
@@ -140,7 +140,7 @@ public class CallEvent {
 			this.eventType = event_Type;
 			break;
 		default:
-			throw new org.omg.CORBA.BAD_PARAM();
+			throw new org.omg.CORBA.BAD_PARAM("Bad event type: "+ eventType);
 		}
 	}
 

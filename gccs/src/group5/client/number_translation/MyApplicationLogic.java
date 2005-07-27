@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.18 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.19 2005/07/27 09:53:29 aachenner Exp $
 /**
  * 
  */
@@ -108,24 +108,26 @@ public class MyApplicationLogic {
 					m_logger.debug("Got callSection: " + callId.CallSessionID
 							+ ", CallIdentifier: "
 							+ callId.CallReference.toString());
-					m_logger.debug("About to call routeReq ...");
-
+				//	m_logger.debug("About to call routeReq ...");
+					m_logger.info("About to RouteReq the 1st time...");
 					doRouteReq(callId, origAddr, destAddr);
 					// wait here until the result of routeReq come
-					m_logger.debug("Waiting for routeRes ...");
-					osaEventQueue.get(ApplicationEvent.evRouteRes);
-					m_logger.debug("Got response for routeRes ...");
-					m_logger.debug("About to call routeReq ...");
+					m_logger.debug("Waiting for routeRes after finishing the 1st RouteReq");
+					osaEventQueue.get(ApplicationEvent.evRouteRes); 
+					m_logger.debug("Got response for routeRes");
+					// m_logger.debug("About to call routeReq ...");
 					// then call routeReq again with swapping the position of
 					// source and destination
+					
+					m_logger.info("About to RouteReq the 2rd time...");
 					doRouteReq(callId, destAddr, origAddr);
 					// then wait again for the result of routeReq
-					m_logger.debug("Waiting for routeRes in Thread 1");
+					m_logger.debug("Waiting for routeRes after finishing the 2rd RouteReq");
 					osaEventQueue.get(ApplicationEvent.evRouteRes);
+					m_logger.debug("Finished routeReq & routeRes twice. About to DeassignCall...");
 					// then deassign the call
 					doDeassignCall(callId);
-					
-					m_logger.debug("Finished doDeassignCall in Thread 1");
+					// m_logger.debug("Finished thread 1: Create Call");
 				} catch (ServantNotActive ex) {
 					m_logger
 							.fatal("Servant not active. Try activate servant first");
@@ -141,32 +143,29 @@ public class MyApplicationLogic {
 				}
 			}
 		});
+		
 		// Thread to wait for network events
 		Thread th2 = new Thread(new Runnable() {
 			public void run() {
 				// wait for network events
-				m_logger.debug("Inside run method in Thread 2");
+				m_logger.debug("Starting to wait for network events");
 				
 				while (true) {
 					ApplicationEvent event = osaEventQueue
 							.get(ApplicationEvent.evCallEventNotify);
 					// got event
-					m_logger.debug("Got event with eventID = "
-							+ event.eventInfo.CallEventName + ", from address "
+					m_logger.debug("Got event with event name = "
+							+ event.eventInfo.CallEventName + ", from the Originating address = "
 							+ event.eventInfo.OriginatingAddress.AddrString);
 					// check event
 					if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
 						// translate the address
 						String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
 						// route to new address
-						
-						m_logger.info("Before doRouteReq in Thread 2");
-						
 						doRouteReq(event, addrString);
 						// deassign from call
-						m_logger.info("Finished doRouteReq and before doDeassignCall in Thread 2");
 						doDeassignCall(event.callId);
-						m_logger.info("Finished doDeassignCall in Thread 2");
+						//	m_logger.info("Finished doDeassignCall in Thread 2");
 					} else {
 						m_logger.info("Unknown event");
 					}
@@ -180,7 +179,7 @@ public class MyApplicationLogic {
 		try {
 			m_logger.debug("Entering dead");
 			System.in.read();
-			m_logger.debug("disabling CallNofitication");
+			m_logger.debug("Disabling CallNofitication");
 			ipCCM.disableCallNotification(assignmentID);
 			th1.stop();
 			th2.stop();
@@ -196,6 +195,9 @@ public class MyApplicationLogic {
 
 	private void doRouteReq(TpCallIdentifier callId, String originatingAddr,
 			String newDestination) {
+		m_logger.info("Entering doRouteReq with callSessionID = " + callId.CallSessionID
+				 + ", originating Address = " + originatingAddr + 
+				", destination address = " + newDestination);
 		try {
 			callId.CallReference.routeReq(callId.CallSessionID,
 					new TpCallReportRequest[0],
@@ -227,22 +229,20 @@ public class MyApplicationLogic {
 		osaEventQueue.put(new ApplicationEvent(
 				ApplicationEvent.evCallEventNotify, callReference, eventInfo,
 				assignmentID));
-		m_logger.debug("Exiting callEventNotify");
+		//m_logger.debug("Exiting callEventNotify");
 	}
 
 	public void routeRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
-		m_logger.debug("Result of routeReq has come");
+		m_logger.debug("Entering routeRes with call sessionID = " + callSessionID);
 		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes,
 				null, null, 0));
-		m_logger.debug("exiting routeRes ...");
-		// m_logger.error("Not implemented");
 	}
 
 	private void doRouteReq(ApplicationEvent event, String newDestination) {
 		try {
 			
-			m_logger.info("Entering doRouteReq " + event.eventInfo.OriginalDestinationAddress);
+			m_logger.info("Entering doRouteReq with Event's CallSessionID = " + event.callId.CallSessionID);
 			
 			event.callId.CallReference.routeReq(event.callId.CallSessionID,
 					new TpCallReportRequest[0],
@@ -251,8 +251,6 @@ public class MyApplicationLogic {
 					event.eventInfo.OriginalDestinationAddress,
 					event.eventInfo.DestinationAddress,
 					event.eventInfo.CallAppInfo);
-			
-			m_logger.info("Finishing doRouteReq ");
 		} catch (P_INVALID_SESSION_ID ex) {
 			m_logger.error("Invalid session id, more " + ex.getMessage());
 		} catch (P_UNSUPPORTED_ADDRESS_PLAN ex) {
@@ -271,6 +269,7 @@ public class MyApplicationLogic {
 	}
 
 	private void doDeassignCall(TpCallIdentifier callID) {
+		m_logger.info("Entering doDessignCall with Event's CallSessionID = " + callID.CallSessionID);
 		try {
 			callID.CallReference.deassignCall(callID.CallSessionID);
 		} catch (P_INVALID_SESSION_ID ex) {
@@ -335,26 +334,8 @@ public class MyApplicationLogic {
 
 	String translateModulo10(String addressToTranslate) {
 		m_logger.info("Address to be translated: " + addressToTranslate);
-		// if (addressToTranslate.compareTo("123456789021") == 0) {
-		// m_logger.info("Route to 000180074992");
 		return "4";
-		// }
-		// try {
-		// String lastAddress = addressToTranslate.substring(addressToTranslate
-		// .length() - 2, addressToTranslate.length());
-		//
-		// m_logger.info("lastAddress = " + lastAddress);
-		// int addrInt = Integer.parseInt(lastAddress);
-		// if (addrInt < 20)
-		// return "000180074992";
-		// else
-		// return addressToTranslate;
-		// } catch (NumberFormatException ex) {
-		// m_logger.error("Invalid number format " + ex.getMessage());
-		// } catch (StringIndexOutOfBoundsException ex) {
-		// m_logger.fatal("String index out of bounds. " + ex.getMessage());
-		// }
-		// return addressToTranslate;
+		
 	}
 
 }

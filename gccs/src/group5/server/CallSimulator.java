@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.14 2005/07/27 08:59:41 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.15 2005/07/27 09:53:28 aachenner Exp $
 /**
  * 
  */
@@ -144,9 +144,12 @@ public class CallSimulator {
 				originatingAddress, originalDestinationAddress,
 				redirectingAddress, appInfo);
 		queue.put(evtCall);
-		if (ipCCManager == null)
-			throw new P_INVALID_NETWORK_STATE();
+		m_logger.debug("CCManager = " + ipCCManager);
+		if (ipCCManager==null)
+			throw new P_INVALID_NETWORK_STATE("Invalid network state");
+		m_logger.debug("herhere");
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
+		m_logger.debug("ci = " + ci);
 		TpCallEventInfo cei = ci.getCallEventInfo();
 		cei.CallAppInfo = appInfo;
 		cei.CallEventName = P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value;
@@ -164,6 +167,7 @@ public class CallSimulator {
 		}
 		// just wait here
 
+		m_logger.debug("hehehe");
 		// returning the result
 		CallEvent evRouteRes = new CallEvent(callSessionID,
 				CallEvent.eventRouteRes);
