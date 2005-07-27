@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.10 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.11 2005/07/27 08:03:12 aachenner Exp $
 /**
  * 
  */
@@ -123,11 +123,19 @@ public class CallSimulator {
 			throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE,
 			TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID,
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
+		// TODO
+		// if targetAddress is different to originalDestinationAddress
+		// then it is the result of another routeReq to indirect the call
+		// must not inform CallControlManager anymore!
+		
 		m_logger.info("receive routeReq event with callSessionID: "
 				+ callSessionID);
 		m_logger.info("source: " + originatingAddress.AddrString + ", dest: " + targetAddress.AddrString);
 		// perform requesting for routing
 		CallEventQueue queue = CallEventQueue.getInstance();
+		
+		m_logger.info("Finished Queue");
+		
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
 				originatingAddress, CallEvent.eventRouteReq, 0, 0,originatingAddress,
 			 originalDestinationAddress, redirectingAddress ,appInfo);
@@ -146,7 +154,10 @@ public class CallSimulator {
 		cei.RedirectingAddress = redirectingAddress;
 		ci.setCallEventInfo(cei);
 		ipCCManager.updateCallInfo(callSessionID, ci);
-		ipCCManager.onRouteReq(callSessionID);
+		if (targetAddress.AddrString.compareToIgnoreCase(originalDestinationAddress.AddrString)==0)
+		{
+			ipCCManager.onRouteReq(callSessionID);
+		}
 		// just wait here
 
 		// returning the result
@@ -192,7 +203,7 @@ public class CallSimulator {
 		// making call
 		subTarg.receiveCallFrom(originatingAddress.AddrString);
 		// making call succeeded
-		m_logger.info("successfully routing call");
+		m_logger.info("Successfully routing call");
 		evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_ANSWER;
 		CallEventQueue.getInstance().put(evRouteRes);
 		m_logger.debug("going out of onRouteReq of CallSimulator");

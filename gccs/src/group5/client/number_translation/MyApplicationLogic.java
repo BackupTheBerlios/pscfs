@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.16 2005/07/09 15:14:28 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.17 2005/07/27 08:03:12 aachenner Exp $
 /**
  * 
  */
@@ -80,6 +80,9 @@ public class MyApplicationLogic {
 			public void run() {
 				try {
 					// setCallback
+					
+					m_logger.debug("Starting Number Translation with createCall");
+					
 					AppCallControlManager appCCM = new AppCallControlManager(
 							MyApplicationLogic.this);
 					// now get the reference so that it is registered with the
@@ -97,7 +100,7 @@ public class MyApplicationLogic {
 									.servant_to_reference(appCall));
 					TpCallIdentifier callId = ipCCM.createCall(ipAppCall);
 					if (callId == null) {
-						m_logger.error("Cannot create call");
+						m_logger.error("Cannot create call because the CallID = Null");
 						return;
 					}
 					String origAddr = "1";
@@ -117,10 +120,12 @@ public class MyApplicationLogic {
 					// source and destination
 					doRouteReq(callId, destAddr, origAddr);
 					// then wait again for the result of routeReq
-					m_logger.debug("Waiting for routeRes ...");
+					m_logger.debug("Waiting for routeRes in Thread 1");
 					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					// then deassign the call
 					doDeassignCall(callId);
+					
+					m_logger.debug("Finished doDeassignCall in Thread 1");
 				} catch (ServantNotActive ex) {
 					m_logger
 							.fatal("Servant not active. Try activate servant first");
@@ -140,7 +145,8 @@ public class MyApplicationLogic {
 		Thread th2 = new Thread(new Runnable() {
 			public void run() {
 				// wait for network events
-				m_logger.debug("Inside run method");
+				m_logger.debug("Inside run method in Thread 2");
+				
 				while (true) {
 					ApplicationEvent event = osaEventQueue
 							.get(ApplicationEvent.evCallEventNotify);
@@ -153,9 +159,14 @@ public class MyApplicationLogic {
 						// translate the address
 						String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
 						// route to new address
+						
+						m_logger.info("Before doRouteReq in Thread 2");
+						
 						doRouteReq(event, addrString);
 						// deassign from call
+						m_logger.info("Finished doRouteReq and before doDeassignCall in Thread 2");
 						doDeassignCall(event.callId);
+						m_logger.info("Finished doDeassignCall in Thread 2");
 					} else {
 						m_logger.info("Unknown event");
 					}
@@ -163,8 +174,9 @@ public class MyApplicationLogic {
 				}
 			}
 		});
-		th1.start();
 		th2.start();
+		th1.start();
+		
 		try {
 			m_logger.debug("Entering dead");
 			System.in.read();
@@ -229,6 +241,9 @@ public class MyApplicationLogic {
 
 	private void doRouteReq(ApplicationEvent event, String newDestination) {
 		try {
+			
+			m_logger.info("Entering doRouteReq " + event.eventInfo.OriginalDestinationAddress);
+			
 			event.callId.CallReference.routeReq(event.callId.CallSessionID,
 					new TpCallReportRequest[0],
 					myAppCreateE164Address(newDestination),
@@ -236,6 +251,8 @@ public class MyApplicationLogic {
 					event.eventInfo.OriginalDestinationAddress,
 					event.eventInfo.DestinationAddress,
 					event.eventInfo.CallAppInfo);
+			
+			m_logger.info("Finishing doRouteReq ");
 		} catch (P_INVALID_SESSION_ID ex) {
 			m_logger.error("Invalid session id, more " + ex.getMessage());
 		} catch (P_UNSUPPORTED_ADDRESS_PLAN ex) {
