@@ -1,4 +1,4 @@
-//$Id: OSAServiceFactoryImpl.java,v 1.12 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: OSAServiceFactoryImpl.java,v 1.13 2005/07/27 14:22:40 huuhoa Exp $
 package group5.server.framework;
 
 import java.lang.reflect.Constructor;
@@ -62,13 +62,12 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 	public IpService createServiceManager(String applicationID,
 			TpServiceProperty srvProp[], String serviceInstanceID)
 			throws TpCommonExceptions {
-		m_logger.info("createServiceManager");
 		try {
 			org.omg.CORBA.Object obj;
 			Servant servant = (Servant) m_constructor
 					.newInstance(new java.lang.Object[] { applicationID,
 							srvProp });
-			m_logger.debug("create new instance for " + applicationID);
+			m_logger.info("create new instance for " + applicationID);
 			Method method = servant.getClass().getMethod("_this",
 					new Class[] { org.omg.CORBA.ORB.class });
 			m_logger.debug("got _this method for " + servant.getClass());
@@ -76,7 +75,7 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 					new java.lang.Object[] { ServerFramework.getORB() });
 			// m_logger.debug("got reference to CORBA interface: " +
 			// obj.toString());
-			m_logger.debug("serviceInstanceID: " + serviceInstanceID);
+			m_logger.info("serviceInstanceID: " + serviceInstanceID);
 			// siTable.put(serviceInstanceID, (ServiceInstance) servant);
 			m_logger.debug("Created new service manager instance");
 			return IpServiceHelper.narrow(obj);
