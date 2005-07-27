@@ -1,4 +1,4 @@
-//$Id: AICClient.java,v 1.4 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: AICClient.java,v 1.5 2005/07/27 08:59:42 huuhoa Exp $
 package group5.client.appinitcall;
 
 import group5.client.ApplicationFramework;
@@ -22,7 +22,6 @@ import org.omg.CORBA.UserException;
 public class AICClient extends ApplicationFramework {
 	AICClient() throws UserException {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

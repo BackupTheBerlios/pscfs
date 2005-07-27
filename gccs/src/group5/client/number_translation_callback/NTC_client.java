@@ -1,4 +1,4 @@
-//$Id: NTC_client.java,v 1.4 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: NTC_client.java,v 1.5 2005/07/27 08:59:41 huuhoa Exp $
 package group5.client.number_translation_callback;
 
 import group5.client.ApplicationFramework;
@@ -22,7 +22,6 @@ import org.omg.CORBA.UserException;
 public class NTC_client extends ApplicationFramework {
 	NTC_client() throws UserException {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.16 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.17 2005/07/27 08:59:42 huuhoa Exp $
 /**
  * 
  */
@@ -919,7 +919,7 @@ public class ServerFramework {
 		}
 
 		public byte[] challenge(byte[] challenge) {
-			// TODO Auto-generated method stub
+			m_logger.info("Framework challenges service in authentication phase");
 			return null;
 		}
 	}

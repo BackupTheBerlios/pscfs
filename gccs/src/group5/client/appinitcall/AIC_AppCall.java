@@ -1,4 +1,4 @@
-//$Id: AIC_AppCall.java,v 1.3 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: AIC_AppCall.java,v 1.4 2005/07/27 08:59:42 huuhoa Exp $
 /**
  * 
  */
@@ -50,43 +50,35 @@ public class AIC_AppCall extends IpAppCallPOA {
 
 	public void getCallInfoRes(int callSessionID,
 			TpCallInfoReport callInfoReport) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void getCallInfoErr(int callSessionID, TpCallError errorIndication) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void superviseCallRes(int callSessionID, int report, int usedTime) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void superviseCallErr(int callSessionID, TpCallError errorIndication) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callFaultDetected(int callSessionID, TpCallFault fault) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void getMoreDialledDigitsRes(int callSessionID, String digits) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void getMoreDialledDigitsErr(int callSessionID,
 			TpCallError errorIndication) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callEnded(int callSessionID, TpCallEndedReport report) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 }

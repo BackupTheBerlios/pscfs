@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.14 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.15 2005/07/27 08:59:42 huuhoa Exp $
 /**
  * 
  */
@@ -947,7 +947,7 @@ public class ApplicationFramework {
 		}
 
 		public byte[] challenge(byte[] arg0) {
-			// TODO Auto-generated method stub
+			m_logger.info("Server challenge the application in authentication phase");
 			return null;
 		}
 	}
@@ -1171,24 +1171,20 @@ public class ApplicationFramework {
 
 		public void extendedStatusReportRes(int arg0,
 				TpUserStatusExtended[] arg1) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void extendedStatusReportErr(int arg0, TpMobilityError arg1,
 				TpMobilityDiagnostic arg2) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void extTriggeredStatusReport(int arg0, TpUserStatusExtended arg1) {
-			// TODO Auto-generated method stub
 
 		}
 
 		public void extTriggeredStatusReportErr(int arg0, TpMobilityError arg1,
 				TpMobilityDiagnostic arg2) {
-			// TODO Auto-generated method stub
 
 		}
 	}

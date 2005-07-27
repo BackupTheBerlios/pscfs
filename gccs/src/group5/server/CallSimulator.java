@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.13 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.14 2005/07/27 08:59:41 huuhoa Exp $
 /**
  * 
  */
@@ -126,8 +126,7 @@ public class CallSimulator {
 			throws P_INVALID_EVENT_TYPE, P_INVALID_NETWORK_STATE,
 			TpCommonExceptions, P_INVALID_ADDRESS, P_INVALID_SESSION_ID,
 			P_UNSUPPORTED_ADDRESS_PLAN, P_INVALID_CRITERIA {
-		// TODO
-		// if targetAddress is different to originalDestinationAddress
+		// TODO if targetAddress is different to originalDestinationAddress
 		// then it is the result of another routeReq to indirect the call
 		// must not inform CallControlManager anymore!
 		

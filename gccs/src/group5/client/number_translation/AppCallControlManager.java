@@ -1,4 +1,4 @@
-//$Id: AppCallControlManager.java,v 1.5 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: AppCallControlManager.java,v 1.6 2005/07/27 08:59:41 huuhoa Exp $
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
@@ -35,8 +35,7 @@ public class AppCallControlManager extends IpAppCallControlManagerPOA {
 	}
 
 	public void callAborted(int callReference) {
-		// TODO Auto-generated method stub
-
+		m_logger.error("Call Aborted");
 	}
 
 	IpAppCallControlManager getServant() {
@@ -53,27 +52,22 @@ public class AppCallControlManager extends IpAppCallControlManagerPOA {
 	}
 
 	public void callNotificationInterrupted() {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callNotificationContinued() {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callOverloadEncountered(int assignmentID) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callOverloadCeased(int assignmentID) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void abortMultipleCalls(int[] callReferenceSet) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 

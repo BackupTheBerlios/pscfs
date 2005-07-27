@@ -1,4 +1,4 @@
-//$Id: AIC_AppCallControlManager.java,v 1.2 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: AIC_AppCallControlManager.java,v 1.3 2005/07/27 08:59:42 huuhoa Exp $
 package group5.client.appinitcall;
 
 import group5.client.ApplicationFramework;
@@ -35,7 +35,7 @@ public class AIC_AppCallControlManager extends IpAppCallControlManagerPOA {
 	}
 
 	public void callAborted(int callReference) {
-		// TODO Auto-generated method stub
+		m_logger.error("Call Aborted");
 
 	}
 
@@ -51,27 +51,22 @@ public class AIC_AppCallControlManager extends IpAppCallControlManagerPOA {
 	}
 
 	public void callNotificationInterrupted() {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callNotificationContinued() {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callOverloadEncountered(int assignmentID) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void callOverloadCeased(int assignmentID) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 
 	public void abortMultipleCalls(int[] callReferenceSet) {
-		// TODO Auto-generated method stub
 		m_logger.info("Unimplemented function");
 	}
 

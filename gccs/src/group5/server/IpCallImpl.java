@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.28 2005/07/27 08:47:08 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.29 2005/07/27 08:59:42 huuhoa Exp $
 /**
  * 
  */
@@ -219,7 +219,6 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	public void setCallbackWithSessionID(IpInterface appInterface, int sessionID)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
 		m_logger
 				.debug("A new call back interface is set for call " + sessionID);
 		appCall = IpAppCallHelper.narrow(appInterface);
@@ -227,23 +226,19 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	}
 
 	public void onEvent(int eventID, CallEvent eventData) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void onRouteReq(int callSessionID, TpAddress targetAddr,
 			TpAddress origAddr) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void onDeassignCall(int callSessionID) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void onReleaseCall(int callSessionID) {
-		// TODO Auto-generated method stub
 
 	}
 

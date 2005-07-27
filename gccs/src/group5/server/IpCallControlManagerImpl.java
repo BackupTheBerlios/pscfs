@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.30 2005/07/27 08:47:08 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.31 2005/07/27 08:59:41 huuhoa Exp $
 /**
  * 
  */
@@ -101,7 +101,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	 */
 	public TpCallIdentifier createCall(IpAppCall appCall)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions {
-		// TODO Auto-generated method stub
 		if (ipACCM_delegate == null) {
 			m_logger.error("The callback interface should be set first."
 					+ " Call SetCallback before calling this function");
@@ -202,7 +201,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	 * @see org.csapi.cc.gccs.IpCallControlManagerOperations#getCriteria()
 	 */
 	public TpCallEventCriteriaResult[] getCriteria() throws TpCommonExceptions {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -213,7 +211,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	 */
 	public void setCallback(IpInterface appInterface)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions {
-		// TODO Auto-generated method stub
 		ipACCM_delegate = IpAppCallControlManagerHelper.narrow(appInterface);
 
 	}
@@ -227,8 +224,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	public void setCallbackWithSessionID(IpInterface appInterface, int sessionID)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
-		// TODO Auto-generated method stub
-
+		m_logger.error("Call to unimplemented function");
 	}
 
 	public boolean onRouteReq(int callSessionID) {
@@ -282,13 +278,11 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	}
 
 	public boolean onDeassignCall(int callSessionID) {
-		// TODO Auto-generated method stub
 		m_CallList.remove(new Integer(callSessionID));
 		return false;
 	}
 
 	public boolean onReleaseCall(int callSessionID) {
-		// TODO Auto-generated method stub
 		m_CallList.remove(new Integer(callSessionID));
 		return false;
 	}
