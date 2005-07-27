@@ -1,4 +1,4 @@
-//$Id: AppCall.java,v 1.3 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: AppCall.java,v 1.4 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -13,8 +13,9 @@ import org.csapi.cc.gccs.TpCallInfoReport;
 import org.csapi.cc.gccs.TpCallReport;
 
 /**
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class AppCall extends IpAppCallPOA {
 	/**

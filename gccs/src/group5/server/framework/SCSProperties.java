@@ -1,4 +1,4 @@
-//$Id: SCSProperties.java,v 1.7 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: SCSProperties.java,v 1.8 2005/07/27 08:47:09 huuhoa Exp $
 package group5.server.framework;
 
 import java.util.HashMap;
@@ -6,7 +6,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.csapi.fw.TpServiceProperty;
-
+/**
+ * 
+ * @author Nguyen Duc Du Khuong
+ * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
+ */
 public final class SCSProperties {
 
 	private Map m_mapProperties;

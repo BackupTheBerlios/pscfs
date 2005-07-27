@@ -1,4 +1,4 @@
-//$Id: GCCSServer.java,v 1.5 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: GCCSServer.java,v 1.6 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * Creation date: 21.06.2005 - 2005
  * Creator: Nguyen Huu Hoa
@@ -19,8 +19,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class GCCSServer {
 	private static Logger m_logger = Logger.getLogger(GCCSServer.class);

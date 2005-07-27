@@ -1,4 +1,4 @@
-//$Id: CallControlSCS.java,v 1.13 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.14 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -18,8 +18,9 @@ import org.omg.CORBA.UserException;
 /**
  * Call control service
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public final class CallControlSCS extends ServerFramework implements IpSCS,
 		ServiceInstance {

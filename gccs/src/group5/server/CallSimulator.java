@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.12 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: CallSimulator.java,v 1.13 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -32,8 +32,9 @@ import org.csapi.cc.gccs.TpCallReportType;
  * <li>Report status of subscribers
  * </ol>
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class CallSimulator {
 	private static Logger m_logger = Logger.getLogger(CallSimulator.class);

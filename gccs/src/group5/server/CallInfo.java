@@ -1,4 +1,4 @@
-//$Id: CallInfo.java,v 1.2 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: CallInfo.java,v 1.3 2005/07/27 08:47:08 huuhoa Exp $
 package group5.server;
 
 import java.util.Calendar;
@@ -12,8 +12,9 @@ import org.csapi.cc.gccs.TpCallIdentifier;
  * Store information about a call at server side: - Call partners - Call start
  * time - Call session id - Call originating, destination, divert
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class CallInfo {
 	private TpCallEventInfo callEventInfo;

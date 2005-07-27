@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.15 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.16 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -66,7 +66,9 @@ import org.omg.PortableServer.POAHelper;
 /**
  * The framework for server service
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
  */
 public class ServerFramework {
 

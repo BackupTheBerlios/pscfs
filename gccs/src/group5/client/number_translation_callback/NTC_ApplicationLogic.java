@@ -1,4 +1,4 @@
-//$Id: NTC_ApplicationLogic.java,v 1.2 2005/07/27 08:33:24 huuhoa Exp $
+//$Id: NTC_ApplicationLogic.java,v 1.3 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -44,8 +44,9 @@ import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 /**
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class NTC_ApplicationLogic {
 	ApplicationEventQueue osaEventQueue;

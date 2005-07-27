@@ -1,6 +1,11 @@
-//$Id: CommonFuntions.java,v 1.4 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: CommonFuntions.java,v 1.5 2005/07/27 08:47:09 huuhoa Exp $
 package group5.utils;
-
+/**
+ * @author Nguyen Duc Du Khuong
+ * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
+ *
+ */
 public class CommonFuntions {
 	// -------------------------------------------------------------------
 	// The following contains utilities for Number Base Conversions.

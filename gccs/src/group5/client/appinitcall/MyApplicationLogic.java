@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.10 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.11 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -41,9 +41,9 @@ import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
 /**
- * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class MyApplicationLogic {
 	ApplicationEventQueue osaEventQueue;

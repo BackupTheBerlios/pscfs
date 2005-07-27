@@ -1,4 +1,4 @@
-//$Id: NTC_AppCallControlManager.java,v 1.1 2005/07/10 12:04:20 aachenner Exp $
+//$Id: NTC_AppCallControlManager.java,v 1.2 2005/07/27 08:47:09 huuhoa Exp $
 package group5.client.number_translation_callback;
 
 import group5.client.ApplicationFramework;
@@ -10,6 +10,11 @@ import org.csapi.cc.gccs.IpAppCallControlManagerPOA;
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
 
+/**
+ * @author Nguyen Duc Du Khuong
+ * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
+ */
 public class NTC_AppCallControlManager extends IpAppCallControlManagerPOA {
 	/**
 	 * m_logger for the system

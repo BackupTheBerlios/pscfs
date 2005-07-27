@@ -1,4 +1,4 @@
-//$Id: CallEvent.java,v 1.17 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: CallEvent.java,v 1.18 2005/07/27 08:47:09 huuhoa Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -9,7 +9,8 @@ import org.csapi.cc.gccs.TpCallReport;
 
 /**
  * @author Nguyen Duc Du Khuong
- * 
+ * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
  */
 public class CallEvent {
 	/**

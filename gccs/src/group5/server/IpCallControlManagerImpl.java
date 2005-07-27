@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.29 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.30 2005/07/27 08:47:08 huuhoa Exp $
 /**
  * 
  */
@@ -32,8 +32,9 @@ import org.csapi.cc.gccs.TpCallTreatment;
 import org.csapi.fw.TpServiceProperty;
 
 /**
+ * @author Nguyen Duc Du Khuong
+ * @author Nguyen Huu Hoa
  * @author Hoang Trung Hai
- * 
  */
 public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 

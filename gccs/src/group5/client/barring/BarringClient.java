@@ -1,4 +1,4 @@
-//$Id: BarringClient.java,v 1.4 2005/07/27 08:33:18 huuhoa Exp $
+//$Id: BarringClient.java,v 1.5 2005/07/27 08:47:09 huuhoa Exp $
 package group5.client.barring;
 
 import group5.client.ApplicationFramework;
@@ -14,6 +14,11 @@ import org.csapi.cc.gccs.IpCallControlManager;
 import org.csapi.cc.gccs.IpCallControlManagerHelper;
 import org.omg.CORBA.UserException;
 
+/**
+ * @author Nguyen Duc Du Khuong
+ * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
+ */
 public class BarringClient extends ApplicationFramework {
 	BarringClient() throws UserException {
 		super();

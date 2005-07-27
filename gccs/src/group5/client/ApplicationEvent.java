@@ -1,4 +1,4 @@
-//$Id: ApplicationEvent.java,v 1.3 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: ApplicationEvent.java,v 1.4 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -12,8 +12,9 @@ import org.csapi.cc.gccs.TpCallIdentifier;
  * callID (call object reference + its descriptor), event details, and so?
  * called assignmentID (integer).
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class ApplicationEvent {
 	public TpCallIdentifier callId;

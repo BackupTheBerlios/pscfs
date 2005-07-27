@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.13 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.14 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -77,8 +77,9 @@ import org.omg.PortableServer.POAHelper;
 
 /**
  * The application framework
- * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
  */
 public class ApplicationFramework {
 

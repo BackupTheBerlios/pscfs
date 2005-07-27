@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.27 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.28 2005/07/27 08:47:08 huuhoa Exp $
 /**
  * 
  */
@@ -29,6 +29,8 @@ import org.csapi.cc.gccs.TpCallReportRequest;
  * Represent each call session by IpCallImpl object
  * 
  * @author Nguyen Duc Du Khuong
+ * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
  */
 
 public class IpCallImpl extends IpCallPOA implements IpEventHandler {

@@ -1,4 +1,4 @@
-//$Id: Subscribers.java,v 1.7 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: Subscribers.java,v 1.8 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -19,8 +19,9 @@ import java.util.Map;
  * subscriber ID
  * </ol>
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class Subscribers {
 	Map m_listSubscribers;

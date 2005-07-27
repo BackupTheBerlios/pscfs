@@ -1,4 +1,4 @@
-//$Id: ApplicationEventQueue.java,v 1.3 2005/07/09 15:14:28 aachenner Exp $
+//$Id: ApplicationEventQueue.java,v 1.4 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -11,8 +11,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class ApplicationEventQueue {
 	List list;

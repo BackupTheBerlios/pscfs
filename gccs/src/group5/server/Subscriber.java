@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.10 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: Subscriber.java,v 1.11 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -9,8 +9,9 @@ import org.apache.log4j.Logger;
 /**
  * Represent for a subscriber
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class Subscriber {
 	private static Logger m_logger = Logger.getLogger(Subscriber.class);

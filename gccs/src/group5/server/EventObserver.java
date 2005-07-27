@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.13 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: EventObserver.java,v 1.14 2005/07/27 08:47:09 huuhoa Exp $
 /**
  * 
  */
@@ -34,8 +34,9 @@ import org.apache.log4j.Logger;
  * 
  * </ol>
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public final class EventObserver {
 

@@ -1,8 +1,13 @@
-//$Id: P_INVALID_NAME_SERVICE.java,v 1.3 2005/06/12 22:46:51 huuhoa Exp $
+//$Id: P_INVALID_NAME_SERVICE.java,v 1.4 2005/07/27 08:47:09 huuhoa Exp $
 package group5;
 
 import org.omg.CORBA.UserException;
 
+/**
+ * @author Nguyen Duc Du Khuong
+ * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
+ */
 public final class P_INVALID_NAME_SERVICE extends UserException {
 	/**
 	 * 

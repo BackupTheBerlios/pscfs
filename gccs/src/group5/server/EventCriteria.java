@@ -1,4 +1,4 @@
-//$Id: EventCriteria.java,v 1.3 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: EventCriteria.java,v 1.4 2005/07/27 08:47:08 huuhoa Exp $
 /**
  * 
  */
@@ -11,8 +11,9 @@ import java.util.ListIterator;
 /**
  * List of events to be watched by observer
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
- * 
+ * @author Hoang Trung Hai
  */
 public class EventCriteria {
 	private List m_eventList;

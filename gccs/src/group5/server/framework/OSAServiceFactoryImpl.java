@@ -1,4 +1,4 @@
-//$Id: OSAServiceFactoryImpl.java,v 1.11 2005/07/27 08:33:11 huuhoa Exp $
+//$Id: OSAServiceFactoryImpl.java,v 1.12 2005/07/27 08:47:09 huuhoa Exp $
 package group5.server.framework;
 
 import java.lang.reflect.Constructor;
@@ -19,7 +19,9 @@ import org.omg.PortableServer.Servant;
  * service (i.e. IpCallControlManager), when the OSA Framework requests that
  * interface.
  * 
+ * @author Nguyen Duc Du Khuong
  * @author Nguyen Huu Hoa
+ * @author Hoang Trung Hai
  * 
  */
 public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA {
