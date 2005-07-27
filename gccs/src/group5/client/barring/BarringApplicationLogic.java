@@ -1,4 +1,4 @@
-//$Id: BarringApplicationLogic.java,v 1.4 2005/07/10 08:13:39 hoanghaiham Exp $
+//$Id: BarringApplicationLogic.java,v 1.5 2005/07/27 08:33:18 huuhoa Exp $
 /**
  * 
  */
@@ -71,35 +71,37 @@ public class BarringApplicationLogic {
 
 	public synchronized void run() {
 		m_logger.info("Start monitoring number: " + number);
-		int assignmentID = monitorOrigNumbers(ipCCM, new BarringAppCallControlManager(this), number);
+		int assignmentID = monitorOrigNumbers(ipCCM,
+				new BarringAppCallControlManager(this), number);
 		m_logger.info("Entering loop with assignmentID: " + assignmentID);
-		
+
 		Thread th = new Thread(new Runnable() {
 			public void run() {
 				try {
 					BarringAppCallControlManager appCCM = new BarringAppCallControlManager(
 							BarringApplicationLogic.this);
 					// now get the reference so that it is registered with the
-					// ORB properly					
+					// ORB properly
 					IpAppCallControlManager ipAppCCM = IpAppCallControlManagerHelper
-					.narrow(ApplicationFramework.getPOA()
-							.servant_to_reference(appCCM));
-					
-					ipCCM.setCallback(ipAppCCM);		
-					
-//					createCall in call Berring					
-					BarringAppCall appCall = new BarringAppCall(BarringApplicationLogic.this);
+							.narrow(ApplicationFramework.getPOA()
+									.servant_to_reference(appCCM));
+
+					ipCCM.setCallback(ipAppCCM);
+
+					// createCall in call Berring
+					BarringAppCall appCall = new BarringAppCall(
+							BarringApplicationLogic.this);
 					IpAppCall ipAppCall = IpAppCallHelper
-					.narrow(ApplicationFramework.getPOA()
-							.servant_to_reference(appCall));
+							.narrow(ApplicationFramework.getPOA()
+									.servant_to_reference(appCall));
 					TpCallIdentifier callId = ipCCM.createCall(ipAppCall);
 					if (callId == null) {
 						m_logger.error("Cannot create call");
 						return;
-					}					
+					}
 					String origAddr = "1";
 					String destAddr = "2";
-					
+
 					m_logger.debug("Got callSection: " + callId.CallSessionID
 							+ ", CallIdentifier: "
 							+ callId.CallReference.toString());
@@ -109,7 +111,7 @@ public class BarringApplicationLogic {
 					m_logger.debug("Waiting for routeRes ...");
 					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					// then deassign the call
-					m_logger.debug("Entering deassignCall");					
+					m_logger.debug("Entering deassignCall");
 					doDeassignCall(callId);
 					m_logger.debug("The end of initCall");
 				} catch (P_INVALID_INTERFACE_TYPE ex) {
@@ -125,7 +127,7 @@ public class BarringApplicationLogic {
 					m_logger.fatal("Wrong policy");
 				}
 			}
-	
+
 		});
 		th.start();
 		try {
@@ -135,21 +137,21 @@ public class BarringApplicationLogic {
 			ipCCM.disableCallNotification(assignmentID);
 			m_logger.debug("Application exit");
 		} catch (TpCommonExceptions ex) {
-		} 
-		catch (P_INVALID_ASSIGNMENT_ID ex) {
-		} 
-		catch ( IOException ex){
-			
+		} catch (P_INVALID_ASSIGNMENT_ID ex) {
+		} catch (IOException ex) {
+
 		}
 	}
 
-	private int monitorOrigNumbers(IpCallControlManager ipCCM2, BarringAppCallControlManager manager, String number2) {
-		TpCallEventCriteria ec = createOrigEventCriteria(number2,
-				new String("*"), P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value);
+	private int monitorOrigNumbers(IpCallControlManager ipCCM2,
+			BarringAppCallControlManager manager, String number2) {
+		TpCallEventCriteria ec = createOrigEventCriteria(number2, new String(
+				"*"), P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value);
 		int assignment = 0;
 		m_logger.info("Calling enableCallNofitication()");
 		try {
-			assignment = ipCCM2.enableCallNotification(manager.getServant(), ec);
+			assignment = ipCCM2
+					.enableCallNotification(manager.getServant(), ec);
 		} catch (P_INVALID_INTERFACE_TYPE ex) {
 			m_logger.error("Invalid interface type: " + ex.getMessage());
 		} catch (P_INVALID_EVENT_TYPE ex) {
@@ -166,13 +168,16 @@ public class BarringApplicationLogic {
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.info("Call event notify");
-		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evCallEventNotify, callReference, eventInfo, assignmentID));
+		osaEventQueue.put(new ApplicationEvent(
+				ApplicationEvent.evCallEventNotify, callReference, eventInfo,
+				assignmentID));
 	}
 
-	public void routeRes(int callSessionID,
-			TpCallReport eventReport, int callLegSessionID) {
+	public void routeRes(int callSessionID, TpCallReport eventReport,
+			int callLegSessionID) {
 		m_logger.debug("Result of routeReq has come");
-		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes, null, null, 0));
+		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes,
+				null, null, 0));
 		m_logger.debug("exiting routeRes ...");
 	}
 

@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.11 2005/07/27 08:03:12 aachenner Exp $
+//$Id: CallSimulator.java,v 1.12 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -95,8 +95,10 @@ public class CallSimulator {
 			return;
 		}
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
-		m_logger.info("Releasing call between [" + ci.getCallEventInfo().OriginatingAddress.AddrString + 
-				"] and [" + ci.getCallEventInfo().DestinationAddress.AddrString + "]");
+		m_logger.info("Releasing call between ["
+				+ ci.getCallEventInfo().OriginatingAddress.AddrString
+				+ "] and ["
+				+ ci.getCallEventInfo().DestinationAddress.AddrString + "]");
 		Subscribers subDB = Subscribers.getInstance();
 		Subscriber subOrig = subDB
 				.getSubscriber(ci.getCallEventInfo().OriginatingAddress.AddrString);
@@ -130,17 +132,19 @@ public class CallSimulator {
 		
 		m_logger.info("receive routeReq event with callSessionID: "
 				+ callSessionID);
-		m_logger.info("source: " + originatingAddress.AddrString + ", dest: " + targetAddress.AddrString);
+		m_logger.info("source: " + originatingAddress.AddrString + ", dest: "
+				+ targetAddress.AddrString);
 		// perform requesting for routing
 		CallEventQueue queue = CallEventQueue.getInstance();
 		
 		m_logger.info("Finished Queue");
 		
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
-				originatingAddress, CallEvent.eventRouteReq, 0, 0,originatingAddress,
-			 originalDestinationAddress, redirectingAddress ,appInfo);
+				originatingAddress, CallEvent.eventRouteReq, 0, 0,
+				originatingAddress, originalDestinationAddress,
+				redirectingAddress, appInfo);
 		queue.put(evtCall);
-		if (ipCCManager==null)
+		if (ipCCManager == null)
 			throw new P_INVALID_NETWORK_STATE();
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
 		TpCallEventInfo cei = ci.getCallEventInfo();

@@ -1,11 +1,8 @@
-//$Id: IpCallImpl.java,v 1.26 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.27 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
 package group5.server;
-
-import group5.client.IpAppCallControlManagerImpl;
-import group5.client.IpAppCallImpl;
 
 import org.apache.log4j.Logger;
 import org.csapi.IpInterface;
@@ -24,7 +21,6 @@ import org.csapi.cc.gccs.IpAppCall;
 import org.csapi.cc.gccs.IpAppCallHelper;
 import org.csapi.cc.gccs.IpCallPOA;
 import org.csapi.cc.gccs.TpCallAppInfo;
-import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportRequest;
@@ -54,14 +50,6 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 
 	public void setIpAppCall(IpAppCall appCall) {
 		this.appCall = appCall;
-	}
-
-	public IpCallImpl(TpCallIdentifier callid, String originatorAddress,
-			String originalDestinationAddress,
-			IpAppCallControlManagerImpl manager, IpAppCallImpl ipAppCallImpl)
-			throws TpCommonExceptions, P_INVALID_SESSION_ID,
-			P_INVALID_INTERFACE_TYPE {
-
 	}
 
 	/**
@@ -114,9 +102,8 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 			nWatcherID = EventObserver.getInstance().addWatcher(this,
 					evCriteria);
 		}
-		CallSimulator.getInstance().routeReq(callSessionID,
-				responseRequested, targetAddress,
-				originatingAddress, originalDestinationAddress,
+		CallSimulator.getInstance().routeReq(callSessionID, responseRequested,
+				targetAddress, originatingAddress, originalDestinationAddress,
 				redirectingAddress, appInfo);
 		// event_Observer.listen();
 
@@ -211,7 +198,7 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 
 	}
 
-	/**	 * 
+	/***************************************************************************
 	 * @see org.csapi.IpServiceOperations#setCallback(org.csapi.IpInterface)
 	 */
 	public void setCallback(IpInterface appInterface)
@@ -226,16 +213,17 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 	 * @see org.csapi.IpServiceOperations#setCallbackWithSessionID(org.csapi.IpInterface,
 	 *      int)
 	 */
-	
+
 	public void setCallbackWithSessionID(IpInterface appInterface, int sessionID)
 			throws P_INVALID_INTERFACE_TYPE, TpCommonExceptions,
 			P_INVALID_SESSION_ID {
 		// TODO Auto-generated method stub
-		m_logger.debug("A new call back interface is set for call " + sessionID);
+		m_logger
+				.debug("A new call back interface is set for call " + sessionID);
 		appCall = IpAppCallHelper.narrow(appInterface);
-		m_logger.info("  Succesfully changed call back interface"); 
+		m_logger.info("  Succesfully changed call back interface");
 	}
-	
+
 	public void onEvent(int eventID, CallEvent eventData) {
 		// TODO Auto-generated method stub
 
@@ -262,7 +250,7 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 		m_logger.info("Get result of previous request routeReq");
 		m_logger.debug("callsessionID: " + callSessionID);
 		m_logger.debug("eventReport: " + eventReport);
-		if (appCall!=null)
+		if (appCall != null)
 			appCall.routeRes(callSessionID, eventReport, callLegSessionID);
 		m_logger.debug("Finish forwarding that event to client");
 	}

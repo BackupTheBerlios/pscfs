@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.9 2005/07/10 13:49:36 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.10 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -81,7 +81,8 @@ public class MyApplicationLogic {
 									.servant_to_reference(appCCM));
 
 					ipCCM.setCallback(ipAppCCM);
-					AIC_AppCall appCall = new AIC_AppCall(MyApplicationLogic.this);
+					AIC_AppCall appCall = new AIC_AppCall(
+							MyApplicationLogic.this);
 					IpAppCall ipAppCall = IpAppCallHelper
 							.narrow(ApplicationFramework.getPOA()
 									.servant_to_reference(appCall));
@@ -139,13 +140,16 @@ public class MyApplicationLogic {
 	public void callEventNotify(TpCallIdentifier callReference,
 			TpCallEventInfo eventInfo, int assignmentID) {
 		m_logger.info("Call event notify");
-		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evCallEventNotify, callReference, eventInfo, assignmentID));
+		osaEventQueue.put(new ApplicationEvent(
+				ApplicationEvent.evCallEventNotify, callReference, eventInfo,
+				assignmentID));
 	}
 
-	public void routeRes(int callSessionID,
-			TpCallReport eventReport, int callLegSessionID) {
+	public void routeRes(int callSessionID, TpCallReport eventReport,
+			int callLegSessionID) {
 		m_logger.debug("Result of routeReq has come");
-		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes, null, null, 0));
+		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes,
+				null, null, 0));
 		m_logger.debug("exiting routeRes ...");
 	}
 

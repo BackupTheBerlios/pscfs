@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.9 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: Subscriber.java,v 1.10 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
  */
 public class Subscriber {
 	private static Logger m_logger = Logger.getLogger(Subscriber.class);
+
 	/**
 	 * the status of the subscriber - reachable - unreachable - busy - ...
 	 */
@@ -24,8 +25,7 @@ public class Subscriber {
 	public static final int Unreachable = 0x0002;
 
 	/**
-	 * subscriber does not take part in any call.
-	 * Feel free to call it :)
+	 * subscriber does not take part in any call. Feel free to call it :)
 	 */
 	public static final int Idle = 0x0004;
 
@@ -33,6 +33,7 @@ public class Subscriber {
 	 * it is busying calling other
 	 */
 	public static final int Busy = 0x0008;
+
 	/**
 	 * Address of the subscriber in the network
 	 */
@@ -106,16 +107,18 @@ public class Subscriber {
 	 *            The partnerAddress to set.
 	 */
 	public void receiveCallFrom(String partnerAddr) {
-		m_logger.info("Subscriber [" + subscribeAddress + "] receives a call from [" + partnerAddr + "]");
+		m_logger.info("Subscriber [" + subscribeAddress
+				+ "] receives a call from [" + partnerAddr + "]");
 		this.partnerAddress = partnerAddr;
 		status |= Busy;
 	}
 
-	public void endCall()
-	{
-		m_logger.info("Subscriber [" + subscribeAddress + "] terminates a call from [" + partnerAddress + "]");
+	public void endCall() {
+		m_logger.info("Subscriber [" + subscribeAddress
+				+ "] terminates a call from [" + partnerAddress + "]");
 		status &= ~Busy;
 	}
+
 	/**
 	 * @return Returns the partnerAddress.
 	 */

@@ -1,4 +1,4 @@
-//$Id: NTC_ApplicationLogic.java,v 1.1 2005/07/10 12:04:20 aachenner Exp $
+//$Id: NTC_ApplicationLogic.java,v 1.2 2005/07/27 08:33:24 huuhoa Exp $
 /**
  * 
  */
@@ -51,7 +51,8 @@ public class NTC_ApplicationLogic {
 	ApplicationEventQueue osaEventQueue;
 
 	IpCallControlManager ipCCM;
-//	IpAppCall ipC;
+
+	// IpAppCall ipC;
 
 	String number;
 
@@ -72,8 +73,8 @@ public class NTC_ApplicationLogic {
 
 	public void run() {
 		m_logger.info("Start monitoring number: " + number);
-		int assignmentID = monitorOrigNumbers(ipCCM, new NTC_AppCallControlManager(
-				this), number);
+		int assignmentID = monitorOrigNumbers(ipCCM,
+				new NTC_AppCallControlManager(this), number);
 		m_logger.info("Entering loop with assignmentID: " + assignmentID);
 
 		// Thread to to createCall
@@ -91,7 +92,8 @@ public class NTC_ApplicationLogic {
 					ipCCM.setCallback(ipAppCCM);
 
 					// createCall in number_translation
-					NTC_AppCall appCall = new NTC_AppCall(NTC_ApplicationLogic.this);
+					NTC_AppCall appCall = new NTC_AppCall(
+							NTC_ApplicationLogic.this);
 					IpAppCall ipAppCall = IpAppCallHelper
 							.narrow(ApplicationFramework.getPOA()
 									.servant_to_reference(appCall));
@@ -121,8 +123,8 @@ public class NTC_ApplicationLogic {
 					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					// then deassign the call
 					doDeassignCall(callId);
-					
-				//set
+
+					// set
 				} catch (ServantNotActive ex) {
 					m_logger
 							.fatal("Servant not active. Try activate servant first");
@@ -146,49 +148,56 @@ public class NTC_ApplicationLogic {
 				while (true) {
 					ApplicationEvent event = osaEventQueue
 							.get(ApplicationEvent.evCallEventNotify);
-					
+
 					// got event
 					m_logger.debug("Got event with eventID = "
 							+ event.eventInfo.CallEventName + ", from address "
 							+ event.eventInfo.OriginatingAddress.AddrString);
 					// check event
-					
+
 					if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
-						try{
-						//setCallbackWithSessionID
-						NTC_AppCall appCall = new NTC_AppCall(NTC_ApplicationLogic.this);
-						// now get the reference so that it is registered with the
-						// ORB properly
-						
-						IpAppCall ipAppCall = IpAppCallHelper
-								.narrow(ApplicationFramework.getPOA()
-										.servant_to_reference(appCall));
-						//TpCallIdentifier callId = ipCCM.createCall(ipAppCall);
-						
-						event.callId.CallReference.setCallbackWithSessionID(ipAppCall, event.callId.CallSessionID);
+						try {
+							// setCallbackWithSessionID
+							NTC_AppCall appCall = new NTC_AppCall(
+									NTC_ApplicationLogic.this);
+							// now get the reference so that it is registered
+							// with the
+							// ORB properly
+
+							IpAppCall ipAppCall = IpAppCallHelper
+									.narrow(ApplicationFramework.getPOA()
+											.servant_to_reference(appCall));
+							// TpCallIdentifier callId =
+							// ipCCM.createCall(ipAppCall);
+
+							event.callId.CallReference
+									.setCallbackWithSessionID(ipAppCall,
+											event.callId.CallSessionID);
 						} catch (P_INVALID_SESSION_ID ex) {
-							m_logger.fatal("Invalid session ID:" + ex.ExtraInformation);
-						} catch (TpCommonExceptions ex) {
-							m_logger.fatal("Common exception with extra information: "
+							m_logger.fatal("Invalid session ID:"
 									+ ex.ExtraInformation);
+						} catch (TpCommonExceptions ex) {
+							m_logger
+									.fatal("Common exception with extra information: "
+											+ ex.ExtraInformation);
 						} catch (P_INVALID_INTERFACE_TYPE ex) {
 							m_logger
 									.fatal("Invalid interface type with extra information: "
 											+ ex.ExtraInformation);
-						}catch (ServantNotActive ex) {
+						} catch (ServantNotActive ex) {
 							m_logger
-							.fatal("Servant not active. Try activate servant first");
+									.fatal("Servant not active. Try activate servant first");
 						} catch (WrongPolicy ex) {
 							m_logger.fatal("Wrong policy");
 						}
-					
+
 						// translate the address
 						String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
 						// route to new address
 						doRouteReq(event, addrString);
 						// deassign from call
 						doDeassignCall(event.callId);
-						} else {
+					} else {
 						m_logger.info("Unknown event");
 					}
 				}

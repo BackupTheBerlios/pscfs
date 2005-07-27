@@ -1,4 +1,4 @@
-//$Id: EventCriteria.java,v 1.2 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: EventCriteria.java,v 1.3 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -10,53 +10,51 @@ import java.util.ListIterator;
 
 /**
  * List of events to be watched by observer
+ * 
  * @author Nguyen Huu Hoa
- *
+ * 
  */
 public class EventCriteria {
 	private List m_eventList;
-	public EventCriteria()
-	{
+
+	public EventCriteria() {
 		m_eventList = new ArrayList();
 	}
+
 	/**
 	 * Add new criteria for watching
 	 */
-	public void addCriteria(int eventID)
-	{
+	public void addCriteria(int eventID) {
 		m_eventList.add(new Integer(eventID));
 	}
-	public void removeCriteria(int eventID)
-	{
+
+	public void removeCriteria(int eventID) {
 		ListIterator iterator = m_eventList.listIterator();
-		while (iterator.hasNext())
-		{
+		while (iterator.hasNext()) {
 			Integer tempEventID = (Integer) iterator.next();
 			if (tempEventID.intValue() == eventID)
 				iterator.remove();
 		}
 	}
+
 	/**
-	 * This function is used to check whether the given eventID
-	 * is contained in the list or not
+	 * This function is used to check whether the given eventID is contained in
+	 * the list or not
 	 */
-	public boolean isWatched(int eventID)
-	{
+	public boolean isWatched(int eventID) {
 		ListIterator iterator = m_eventList.listIterator();
-		while (iterator.hasNext())
-		{
+		while (iterator.hasNext()) {
 			Integer tempEventID = (Integer) iterator.next();
 			if (tempEventID.intValue() == eventID)
 				return true;
 		}
 		return false;
 	}
-	public String toString()
-	{
+
+	public String toString() {
 		String strObject = "Event Criteria: ";
 		ListIterator iterator = m_eventList.listIterator();
-		while (iterator.hasNext())
-		{
+		while (iterator.hasNext()) {
 			Integer tempEventID = (Integer) iterator.next();
 			strObject += tempEventID.intValue();
 			strObject += ", ";

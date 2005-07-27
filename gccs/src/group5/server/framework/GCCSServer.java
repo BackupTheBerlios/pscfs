@@ -1,4 +1,4 @@
-//$Id: GCCSServer.java,v 1.4 2005/07/10 10:32:41 huuhoa Exp $
+//$Id: GCCSServer.java,v 1.5 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * Creation date: 21.06.2005 - 2005
  * Creator: Nguyen Huu Hoa
@@ -71,7 +71,8 @@ public class GCCSServer {
 	public static void main(String[] args) {
 		Properties appProps = new Properties();
 		try {
-			FileInputStream fis = new FileInputStream("etc/GCCSServer.properties");
+			FileInputStream fis = new FileInputStream(
+					"etc/GCCSServer.properties");
 			appProps.load(fis);
 			fis.close();
 		} catch (IOException e) {
@@ -79,7 +80,8 @@ public class GCCSServer {
 		}
 		System.setProperties(appProps);
 		try {
-			PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
+			PropertyConfigurator.configure(System
+					.getProperty("log4j.configuration"));
 		} catch (ExceptionInInitializerError ex) {
 			ex.printStackTrace();
 			return;
@@ -114,12 +116,12 @@ public class GCCSServer {
 				}
 			});
 			th.run();
-			
+
 			// adding some subscribers
 
 			// just wait for enter key
 			System.in.read();
-			
+
 			CallControlSCS serviceInstance = CallControlSCS.getInstance();
 			serviceInstance.stopService();
 			serviceInstance.destroy();
@@ -131,8 +133,8 @@ public class GCCSServer {
 			System.exit(1);
 		}
 	}
-	private static void readSubscribersDatabase()
-	{
+
+	private static void readSubscribersDatabase() {
 		// get an instance of subscribers
 		Subscribers subColl = Subscribers.getInstance();
 		// adding four subscribers

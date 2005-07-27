@@ -1,4 +1,4 @@
-//$Id: OSAServiceFactoryImpl.java,v 1.10 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: OSAServiceFactoryImpl.java,v 1.11 2005/07/27 08:33:11 huuhoa Exp $
 package group5.server.framework;
 
 import java.lang.reflect.Constructor;
@@ -48,8 +48,7 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 		} catch (SecurityException ex) {
 			m_logger.error("Error in getting constructor", ex);
 		} catch (NoSuchMethodException ex) {
-			m_logger.error("Error in getting constructor",
-					ex);
+			m_logger.error("Error in getting constructor", ex);
 			throw new RuntimeException("Give up! manager=" + class1);
 		}
 	}
@@ -73,9 +72,10 @@ public class OSAServiceFactoryImpl extends IpServiceInstanceLifecycleManagerPOA 
 			m_logger.debug("got _this method for " + servant.getClass());
 			obj = (org.omg.CORBA.Object) method.invoke(servant,
 					new java.lang.Object[] { ServerFramework.getORB() });
-			//m_logger.debug("got reference to CORBA interface: " + obj.toString());
+			// m_logger.debug("got reference to CORBA interface: " +
+			// obj.toString());
 			m_logger.debug("serviceInstanceID: " + serviceInstanceID);
-			//siTable.put(serviceInstanceID, (ServiceInstance) servant);
+			// siTable.put(serviceInstanceID, (ServiceInstance) servant);
 			m_logger.debug("Created new service manager instance");
 			return IpServiceHelper.narrow(obj);
 		} catch (IllegalArgumentException ex) {

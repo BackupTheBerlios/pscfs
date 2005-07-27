@@ -1,4 +1,4 @@
-//$Id: CallEvent.java,v 1.16 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: CallEvent.java,v 1.17 2005/07/27 08:33:11 huuhoa Exp $
 package group5.server;
 
 import org.csapi.TpAddress;
@@ -18,12 +18,11 @@ public class CallEvent {
 	public int CallSessionID;
 
 	public TpCallEventInfo callEventInfo;
-	
+
 	private TpAddress targetAddress;
 
 	public TpAddress originatingAddress;
 
-	
 	/**
 	 * There are 3 types of events:
 	 * <ol>
@@ -39,8 +38,7 @@ public class CallEvent {
 	public static final int eventDeassignCall = 2;
 
 	public static final int eventReleaseCall = 3;
-	
-	
+
 	/**
 	 * There are 2 types of events of Routerequest's results: routeRes and
 	 * <ol>
@@ -60,11 +58,11 @@ public class CallEvent {
 	/**
 	 * Set if the event need to be parsed by CallControlManager. bProvision is
 	 * set by default. CallControlManager will be the only one who examines the
-	 * content of events, then forwards events to AIC_AppCallControlManager to have
-	 * it make changes if needed. If there is any changes, CallControlManager
-	 * will put the event back to queue with bProvision unset. Event with
-	 * bProvision unset will be dispatched to other observers not the
-	 * CallControlManager.
+	 * content of events, then forwards events to AIC_AppCallControlManager to
+	 * have it make changes if needed. If there is any changes,
+	 * CallControlManager will put the event back to queue with bProvision
+	 * unset. Event with bProvision unset will be dispatched to other observers
+	 * not the CallControlManager.
 	 */
 	private boolean bProvision;
 
@@ -86,8 +84,8 @@ public class CallEvent {
 	 * Specifies the error which led to the original request failing.
 	 */
 	// public TpCallError errorIndication;
-	public CallEvent(int CallSession_ID, int eventType) 
-	throws org.omg.CORBA.BAD_PARAM {
+	public CallEvent(int CallSession_ID, int eventType)
+			throws org.omg.CORBA.BAD_PARAM {
 		bProvision = true;
 		CallSessionID = CallSession_ID;
 		setTargetAddress(null);
@@ -123,15 +121,15 @@ public class CallEvent {
 		originatingAddress = origAddr;
 		eventType_Result = event_Type_Result;
 		callLegSessionID = callLegsssion_ID;
-//		add more information to callEvent 
-		callEventInfo= new TpCallEventInfo();
-		callEventInfo.DestinationAddress=targetAddr;
+		// add more information to callEvent
+		callEventInfo = new TpCallEventInfo();
+		callEventInfo.DestinationAddress = targetAddr;
 		callEventInfo.OriginalDestinationAddress = originalDestinationAddress;
-		callEventInfo.OriginatingAddress=origAddr;
+		callEventInfo.OriginatingAddress = origAddr;
 		callEventInfo.RedirectingAddress = redirectingAddress;
-		callEventInfo.CallEventName=0;
-		callEventInfo.CallAppInfo=appInfo;
-		callEventInfo.MonitorMode=TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
+		callEventInfo.CallEventName = 0;
+		callEventInfo.CallAppInfo = appInfo;
+		callEventInfo.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
 		switch (event_Type) {
 		case eventRouteReq:
 		case eventDeassignCall:
@@ -161,7 +159,8 @@ public class CallEvent {
 	}
 
 	/**
-	 * @param targetAddress The targetAddress to set.
+	 * @param targetAddress
+	 *            The targetAddress to set.
 	 */
 	public void setTargetAddress(TpAddress targetAddress) {
 		this.targetAddress = targetAddress;

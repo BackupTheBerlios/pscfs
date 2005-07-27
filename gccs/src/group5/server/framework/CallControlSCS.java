@@ -1,4 +1,4 @@
-//$Id: CallControlSCS.java,v 1.12 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: CallControlSCS.java,v 1.13 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -87,13 +87,14 @@ public final class CallControlSCS extends ServerFramework implements IpSCS,
 			m_serviceID = registerService("P_GENERIC_CALL_CONTROL",
 					scsproperties, IpCallControlManagerImpl.class);
 			// after registering the service
-			if (System.getProperty("Framework.writeServiceName").compareToIgnoreCase("1")==0)
-			{
+			if (System.getProperty("Framework.writeServiceName")
+					.compareToIgnoreCase("1") == 0) {
 				// write the service name to a properties file
 				Properties appProps = new Properties();
 				try {
 					appProps.put("Framework.serviceID", m_serviceID);
-					FileOutputStream fos = new FileOutputStream(System.getProperty("Framework.ServiceNameFile"));
+					FileOutputStream fos = new FileOutputStream(System
+							.getProperty("Framework.ServiceNameFile"));
 					appProps.store(fos, "so?");
 					fos.close();
 				} catch (IOException e) {

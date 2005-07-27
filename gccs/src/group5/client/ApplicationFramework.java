@@ -1,4 +1,4 @@
-//$Id: ApplicationFramework.java,v 1.12 2005/07/25 20:00:49 huuhoa Exp $
+//$Id: ApplicationFramework.java,v 1.13 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -93,6 +93,7 @@ public class ApplicationFramework {
 
 	/** The instance of the CORBA Object Request Broker */
 	private static ORB orb;
+
 	private static POA poa;
 
 	public static ORB getORB() {
@@ -102,6 +103,7 @@ public class ApplicationFramework {
 	public static POA getPOA() {
 		return poa;
 	}
+
 	/**
 	 * for synchronization
 	 */
@@ -775,7 +777,8 @@ public class ApplicationFramework {
 				// get service id from a properties file
 				Properties appProps = new Properties();
 				try {
-					FileInputStream fis = new FileInputStream(System.getProperty("Framework.ServiceNameFile"));
+					FileInputStream fis = new FileInputStream(System
+							.getProperty("Framework.ServiceNameFile"));
 					appProps.load(fis);
 					fis.close();
 				} catch (IOException e) {

@@ -1,4 +1,4 @@
-//$Id: NT_client.java,v 1.2 2005/07/10 10:32:41 huuhoa Exp $
+//$Id: NT_client.java,v 1.3 2005/07/27 08:33:11 huuhoa Exp $
 package group5.client.number_translation;
 
 import group5.client.ApplicationFramework;
@@ -52,18 +52,21 @@ public class NT_client extends ApplicationFramework {
 		// run the application
 		Properties appProps = new Properties();
 		try {
-			FileInputStream fis = new FileInputStream("etc/NT_Client.properties");
+			FileInputStream fis = new FileInputStream(
+					"etc/NT_Client.properties");
 			appProps.load(fis);
 			fis.close();
 		} catch (IOException e) {
 			m_logger.fatal("Cannot find properties file");
 		}
 		System.setProperties(appProps);
-		//BasicConfigurator.configure();
-		PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
+		// BasicConfigurator.configure();
+		PropertyConfigurator.configure(System
+				.getProperty("log4j.configuration"));
 		try {
 			NT_client application = new NT_client();
-			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));
+			application.initApplication(System.getProperty("ApplicationID"),
+					System.getProperty("ApplicationPassword"));
 			application.run();
 			application.endApplication();
 		} catch (UserException ex) {

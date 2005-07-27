@@ -1,4 +1,4 @@
-//$Id: BarringClient.java,v 1.3 2005/07/10 10:32:41 huuhoa Exp $
+//$Id: BarringClient.java,v 1.4 2005/07/27 08:33:18 huuhoa Exp $
 package group5.client.barring;
 
 import group5.client.ApplicationFramework;
@@ -40,7 +40,8 @@ public class BarringClient extends ApplicationFramework {
 			}
 			IpCallControlManager ipCCM = IpCallControlManagerHelper
 					.narrow(ipTemp);
-			BarringApplicationLogic appLogic = new BarringApplicationLogic(ipCCM);
+			BarringApplicationLogic appLogic = new BarringApplicationLogic(
+					ipCCM);
 			appLogic.run();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -59,10 +60,12 @@ public class BarringClient extends ApplicationFramework {
 			m_logger.fatal("Cannot find properties file");
 		}
 		System.setProperties(appProps);
-		PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
+		PropertyConfigurator.configure(System
+				.getProperty("log4j.configuration"));
 		try {
 			BarringClient application = new BarringClient();
-			application.initApplication(System.getProperty("ApplicationID"), System.getProperty("ApplicationPassword"));
+			application.initApplication(System.getProperty("ApplicationID"),
+					System.getProperty("ApplicationPassword"));
 			application.run();
 			application.endApplication();
 		} catch (UserException ex) {

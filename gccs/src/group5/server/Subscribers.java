@@ -1,4 +1,4 @@
-//$Id: Subscribers.java,v 1.6 2005/07/06 18:19:53 huuhoa Exp $
+//$Id: Subscribers.java,v 1.7 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -28,8 +28,7 @@ public class Subscribers {
 	private static Subscribers m_subscribers = new Subscribers();
 
 	public static Subscribers getInstance() {
-		if (m_subscribers==null)
-		{
+		if (m_subscribers == null) {
 			m_subscribers = new Subscribers();
 		}
 		return m_subscribers;
@@ -60,17 +59,19 @@ public class Subscribers {
 		Subscriber sub = (Subscriber) m_listSubscribers.get(subscriberAddr);
 		return sub;
 	}
+
 	/**
 	 * Dumping the subscribers database
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString()
-	{
+	public String toString() {
 		String strDumping = "Subscribers Database\n";
 		Iterator iterator = m_listSubscribers.values().iterator();
 		while (iterator.hasNext()) {
 			Subscriber sub = (Subscriber) iterator.next();
-			strDumping = strDumping + "subscriber address: " + sub.getSubscribeAddress() + "\n";
+			strDumping = strDumping + "subscriber address: "
+					+ sub.getSubscribeAddress() + "\n";
 		}
 		return strDumping;
 	}

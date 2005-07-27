@@ -1,4 +1,4 @@
-//$Id: EventObserver.java,v 1.12 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: EventObserver.java,v 1.13 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -54,17 +54,17 @@ public final class EventObserver {
 
 	private EventObserver() {
 		m_logger.debug("EventObserver has been created");
-//		m_ipCallManager = null;
+		// m_ipCallManager = null;
 		m_mapObservers = new HashMap();
 		evListener = new EventListener();
 	}
 
-//	// begin actual observer implementation
-//	private CallControlAdapter m_ipCallManager;
-//
-//	public void SetIpCallControlManager(CallControlAdapter ipCallManager) {
-//		m_ipCallManager = ipCallManager;
-//	}
+	// // begin actual observer implementation
+	// private CallControlAdapter m_ipCallManager;
+	//
+	// public void SetIpCallControlManager(CallControlAdapter ipCallManager) {
+	// m_ipCallManager = ipCallManager;
+	// }
 
 	Map m_mapObservers;
 
@@ -151,24 +151,25 @@ public final class EventObserver {
 				CallEvent ev = evQueue.get();
 				// first examine the bProvision field of CallEvent
 				boolean bStop = false;
-//				if (ev.isProvision()) {
-//					if (m_ipCallManager != null) {
-//						m_logger.debug("dispatching event to ip call manager");
-//						bStop = m_ipCallManager.onEvent(ev.eventType, ev);
-//					}
-//				}
+				// if (ev.isProvision()) {
+				// if (m_ipCallManager != null) {
+				// m_logger.debug("dispatching event to ip call manager");
+				// bStop = m_ipCallManager.onEvent(ev.eventType, ev);
+				// }
+				// }
 				if (bStop == false) {
 					ev.setProvision(false);
 					setWatcherFlag(false);
 					// dispatch events
-//					m_logger.debug("Got event with eventType: " + ev.eventType);
-//					m_logger.debug("Number of Observers: "
-//							+ m_mapObservers.size());
+					// m_logger.debug("Got event with eventType: " +
+					// ev.eventType);
+					// m_logger.debug("Number of Observers: "
+					// + m_mapObservers.size());
 					Iterator iterator = m_mapObservers.values().iterator();
 					while (iterator.hasNext()) {
 						Observer ob = (Observer) iterator.next();
-//						m_logger.debug("The watched criteria: "
-//								+ ob.getCriteria().toString());
+						// m_logger.debug("The watched criteria: "
+						// + ob.getCriteria().toString());
 						if (ob.getCriteria().isWatched(ev.eventType)) {
 							dispatchEvent(ob.getHandler(), ev.eventType, ev);
 						}

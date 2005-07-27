@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.14 2005/07/26 20:31:54 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.15 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -76,7 +76,8 @@ public class ServerFramework {
 	private static Logger m_logger;
 
 	static {
-		m_logger = Logger.getLogger(group5.server.framework.ServerFramework.class);
+		m_logger = Logger
+				.getLogger(group5.server.framework.ServerFramework.class);
 	}
 
 	/** The instance of the CORBA Object Request Broker */
@@ -236,7 +237,7 @@ public class ServerFramework {
 		// to the callback object
 		TpDomainID domainID = new TpDomainID();
 		domainID.ServiceSupplierID("ServiceRegistration");
-		//domainID.ClientAppID(appId);
+		// domainID.ClientAppID(appId);
 		TpAuthDomain authDomain = new TpAuthDomain(domainID, callback);
 
 		/***********************************************************************
@@ -329,22 +330,20 @@ public class ServerFramework {
 			try {
 				IpAccess ipAccess = requestAccess(getIpAuthentication());
 				m_logger.debug("Got the reference to IpAccess");
-				org.csapi.IpInterface ipIF = ipAccess.obtainInterface(regService);
+				org.csapi.IpInterface ipIF = ipAccess
+						.obtainInterface(regService);
 				m_logger.debug("Got the reference to IpFwServiceRegistration");
 				m_ipFwSrvReg = IpFwServiceRegistrationHelper.narrow(ipIF);
 			} catch (P_INVALID_INTERFACE_NAME ex) {
 				m_logger.fatal("Invalid interface name: " + regService);
-				throw new TpCommonExceptions(14,
-						ex.ExtraInformation);
+				throw new TpCommonExceptions(14, ex.ExtraInformation);
 			} catch (P_INVALID_INTERFACE_TYPE ex) {
 				m_logger.fatal("Invalid interface type: " + regService);
-				throw new TpCommonExceptions(14,
-						ex.ExtraInformation);
+				throw new TpCommonExceptions(14, ex.ExtraInformation);
 			} catch (P_ACCESS_DENIED ex) {
 				m_logger.fatal("access denied obtaining interface "
 						+ regService);
-				throw new TpCommonExceptions(14,
-						ex.ExtraInformation);
+				throw new TpCommonExceptions(14, ex.ExtraInformation);
 			} catch (P_INVALID_ACCESS_TYPE ex) {
 				m_logger.fatal("invalid access type while obtaining interface "
 						+ regService);
@@ -860,69 +859,62 @@ public class ServerFramework {
 	 * authentication. The OSA API calls the authenticate() method of this
 	 * class.
 	 */
-	final class IpAppAuthenticationImpl extends IpClientAPILevelAuthenticationPOA
-	{
-	    private Object obj;
-	    private byte password[];
+	final class IpAppAuthenticationImpl extends
+			IpClientAPILevelAuthenticationPOA {
+		private Object obj;
 
-	    public IpAppAuthenticationImpl(Object obj, String s)
-	    {
-	        this.obj = obj;
-	        password = s.getBytes();
-	    }
+		private byte password[];
 
-	    public byte[] authenticate(byte abyte0[])
-	    {
-	        m_logger.debug("IpAppAuthentication::authenticate");
-	        m_logger.debug("Challenge = " + abyte0);
-	        int i = abyte0[2] * 256 + abyte0[3];
-	        byte byte0 = abyte0[4];
-	        int j = i - byte0 - 5;
-	        byte abyte1[] = new byte[1 + password.length + byte0];
-	        abyte1[0] = abyte0[1];
-	        System.arraycopy(password, 0, abyte1, 1, password.length);
-	        System.arraycopy(abyte0, 5, abyte1, 1 + password.length, byte0);
-	        byte abyte2[] = null;
-	        try
-	        {
-	            MessageDigest messagedigest = MessageDigest.getInstance("MD5");
-	            messagedigest.update(abyte1);
-	            abyte2 = messagedigest.digest();
-	        }
-	        catch(NoSuchAlgorithmException ex)
-	        {
-	        	m_logger.fatal("IpAppAuthentication::authenticate: " + ex);
-	            return new byte[0];
-	        }
-	        int k = 5 + abyte2.length + j;
-	        byte abyte3[] = new byte[k];
-	        abyte3[0] = 2;
-	        abyte3[1] = abyte0[1];
-	        abyte3[2] = (new Integer(k / 256)).byteValue();
-	        abyte3[3] = (new Integer(k % 256)).byteValue();
-	        abyte3[4] = (new Integer(abyte2.length)).byteValue();
-	        System.arraycopy(abyte2, 0, abyte3, 5, abyte2.length);
-	        System.arraycopy(abyte0, i - j, abyte3, 5 + abyte2.length, j);
-	        return abyte3;
-	    }
+		public IpAppAuthenticationImpl(Object obj, String s) {
+			this.obj = obj;
+			password = s.getBytes();
+		}
 
-	    public void authenticationSucceeded()
-	    {
-	    	m_logger.debug("IpAppAuthentication::authenticationSucceeded");
-	        synchronized(ServerFramework.this) {
+		public byte[] authenticate(byte abyte0[]) {
+			m_logger.debug("IpAppAuthentication::authenticate");
+			m_logger.debug("Challenge = " + abyte0);
+			int i = abyte0[2] * 256 + abyte0[3];
+			byte byte0 = abyte0[4];
+			int j = i - byte0 - 5;
+			byte abyte1[] = new byte[1 + password.length + byte0];
+			abyte1[0] = abyte0[1];
+			System.arraycopy(password, 0, abyte1, 1, password.length);
+			System.arraycopy(abyte0, 5, abyte1, 1 + password.length, byte0);
+			byte abyte2[] = null;
+			try {
+				MessageDigest messagedigest = MessageDigest.getInstance("MD5");
+				messagedigest.update(abyte1);
+				abyte2 = messagedigest.digest();
+			} catch (NoSuchAlgorithmException ex) {
+				m_logger.fatal("IpAppAuthentication::authenticate: " + ex);
+				return new byte[0];
+			}
+			int k = 5 + abyte2.length + j;
+			byte abyte3[] = new byte[k];
+			abyte3[0] = 2;
+			abyte3[1] = abyte0[1];
+			abyte3[2] = (new Integer(k / 256)).byteValue();
+			abyte3[3] = (new Integer(k % 256)).byteValue();
+			abyte3[4] = (new Integer(abyte2.length)).byteValue();
+			System.arraycopy(abyte2, 0, abyte3, 5, abyte2.length);
+			System.arraycopy(abyte0, i - j, abyte3, 5 + abyte2.length, j);
+			return abyte3;
+		}
+
+		public void authenticationSucceeded() {
+			m_logger.debug("IpAppAuthentication::authenticationSucceeded");
+			synchronized (ServerFramework.this) {
 				ServerFramework.this.authenticated = true;
 				ServerFramework.this.notify();
-	        }
-	    }
+			}
+		}
 
-	    public void abortAuthentication()
-	    {
-	    	m_logger.debug("IpAppAuthentication::abortAuthentication");
-	        synchronized(obj)
-	        {
-	            obj.notify();
-	        }
-	    }
+		public void abortAuthentication() {
+			m_logger.debug("IpAppAuthentication::abortAuthentication");
+			synchronized (obj) {
+				obj.notify();
+			}
+		}
 
 		public byte[] challenge(byte[] challenge) {
 			// TODO Auto-generated method stub

@@ -1,4 +1,4 @@
-//$Id: AIC_AppCall.java,v 1.1 2005/07/09 13:20:33 aachenner Exp $
+//$Id: AIC_AppCall.java,v 1.2 2005/07/27 08:33:11 huuhoa Exp $
 /**
  * 
  */
@@ -39,7 +39,7 @@ public class AIC_AppCall extends IpAppCallPOA {
 		m_logger.debug("CallSessionID: " + callSessionID);
 		m_logger.debug("CallReport: " + eventReport);
 		appLogic.routeRes(callSessionID, eventReport, callLegSessionID);
-		
+
 	}
 
 	public void routeErr(int callSessionID, TpCallError errorIndication,
