@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.33 2005/07/27 14:22:40 huuhoa Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.34 2005/07/28 23:08:39 hoanghaiham Exp $
 /**
  * 
  */
@@ -112,7 +112,6 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			ipACCM_delegate.callAborted(0);
 			return null;
 		}
-
 		CallInfo callInfo = new CallInfo(getCallSessionID());
 		callInfo.CallObject = aCallReference;
 		callInfo.CallRefence = aCallReference._this(ServerFramework.getORB());

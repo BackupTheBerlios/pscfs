@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.15 2005/07/27 09:53:28 aachenner Exp $
+//$Id: CallSimulator.java,v 1.16 2005/07/28 23:08:39 hoanghaiham Exp $
 /**
  * 
  */
@@ -136,9 +136,6 @@ public class CallSimulator {
 				+ targetAddress.AddrString);
 		// perform requesting for routing
 		CallEventQueue queue = CallEventQueue.getInstance();
-		
-		m_logger.info("Finished Queue");
-		
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
 				originatingAddress, CallEvent.eventRouteReq, 0, 0,
 				originatingAddress, originalDestinationAddress,
@@ -147,9 +144,7 @@ public class CallSimulator {
 		m_logger.debug("CCManager = " + ipCCManager);
 		if (ipCCManager==null)
 			throw new P_INVALID_NETWORK_STATE("Invalid network state");
-		m_logger.debug("herhere");
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
-		m_logger.debug("ci = " + ci);
 		TpCallEventInfo cei = ci.getCallEventInfo();
 		cei.CallAppInfo = appInfo;
 		cei.CallEventName = P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value;
@@ -167,7 +162,6 @@ public class CallSimulator {
 		}
 		// just wait here
 
-		m_logger.debug("hehehe");
 		// returning the result
 		CallEvent evRouteRes = new CallEvent(callSessionID,
 				CallEvent.eventRouteRes);
@@ -191,9 +185,9 @@ public class CallSimulator {
 			return;
 		}
 
-		m_logger.debug("destination partner is: "
+		m_logger.debug("Destination partner is: "
 				+ subTarg.getSubscribeAddress());
-		m_logger.debug("Status of subscriber: " + subTarg.getStatus());
+		m_logger.debug("Status of subscriber: " + subTarg.getStatusDescription());
 
 		if ((subTarg.getStatus() & Subscriber.Idle) == 0) {
 			// subscriber is not idle, can not make call

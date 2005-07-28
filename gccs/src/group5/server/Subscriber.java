@@ -1,4 +1,4 @@
-//$Id: Subscriber.java,v 1.11 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: Subscriber.java,v 1.12 2005/07/28 23:08:39 hoanghaiham Exp $
 /**
  * 
  */
@@ -88,6 +88,26 @@ public class Subscriber {
 		return status;
 	}
 
+	public String getStatusDescription(){
+		String strStatus="";
+		if ((status & Idle)!=0)
+		{
+			strStatus += "Idle";
+		}
+		if ((status & Busy)!=0)
+		{
+			strStatus += ", Busy";
+		}
+		if ((status & Reachable)!=0)
+		{
+			strStatus += ", Reachable";
+		}
+		if ((status & Unreachable)!=0)
+		{
+			strStatus += ", Unreachable";
+		}
+		return strStatus;
+	}
 	/**
 	 * @param subscribeAddr
 	 *            The subscribeAddress to set.
@@ -112,12 +132,14 @@ public class Subscriber {
 				+ "] receives a call from [" + partnerAddr + "]");
 		this.partnerAddress = partnerAddr;
 		status |= Busy;
+		status &= ~Idle;
 	}
 
 	public void endCall() {
 		m_logger.info("Subscriber [" + subscribeAddress
 				+ "] terminates a call from [" + partnerAddress + "]");
 		status &= ~Busy;
+		status |= Idle;
 	}
 
 	/**

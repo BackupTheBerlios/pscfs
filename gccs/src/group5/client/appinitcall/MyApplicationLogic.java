@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.11 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: MyApplicationLogic.java,v 1.12 2005/07/28 23:08:39 hoanghaiham Exp $
 /**
  * 
  */
@@ -69,9 +69,10 @@ public class MyApplicationLogic {
 
 	public synchronized void run() {
 		m_logger.info("Start creating call between two parties");
-		Thread th = new Thread(new Runnable() {
+		Thread th = new Thread(new Thread() {
 			public void run() {
 				try {
+
 					AIC_AppCallControlManager appCCM = new AIC_AppCallControlManager(
 							MyApplicationLogic.this);
 					// now get the reference so that it is registered with the
@@ -110,8 +111,9 @@ public class MyApplicationLogic {
 					m_logger.debug("Waiting for routeRes ...");
 					osaEventQueue.get(ApplicationEvent.evRouteRes);
 					// then deassign the call
+					sleep(100000);
 					doDeassignCall(callId);
-					m_logger.debug("The end of initCall");
+					m_logger.info("The end of initCall");
 				} catch (P_INVALID_INTERFACE_TYPE ex) {
 					m_logger
 							.fatal("Why invalid interface type??? Extra information: "
@@ -123,6 +125,9 @@ public class MyApplicationLogic {
 					m_logger.fatal("Try to activate POA first");
 				} catch (WrongPolicy ex) {
 					m_logger.fatal("Wrong policy");
+				}
+				catch (Exception ex) {
+					m_logger.fatal(ex);
 				}
 			}
 		});
@@ -182,6 +187,7 @@ public class MyApplicationLogic {
 
 	private void doDeassignCall(TpCallIdentifier callID) {
 		try {
+			m_logger.info("Call Session ID: " + callID.CallSessionID );			
 			callID.CallReference.deassignCall(callID.CallSessionID);
 		} catch (P_INVALID_SESSION_ID ex) {
 			m_logger.error("Invalid session ID exception, more: "

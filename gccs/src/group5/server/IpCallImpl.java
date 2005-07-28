@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.29 2005/07/27 08:59:42 huuhoa Exp $
+//$Id: IpCallImpl.java,v 1.30 2005/07/28 23:08:39 hoanghaiham Exp $
 /**
  * 
  */
@@ -24,6 +24,7 @@ import org.csapi.cc.gccs.TpCallAppInfo;
 import org.csapi.cc.gccs.TpCallReleaseCause;
 import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportRequest;
+import org.csapi.cc.gccs.TpCallReportType;
 
 /**
  * Represent each call session by IpCallImpl object
@@ -246,7 +247,24 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 			int callLegSessionID) {
 		m_logger.info("Get result of previous request routeReq");
 		m_logger.debug("callsessionID: " + callSessionID);
-		m_logger.debug("eventReport: " + eventReport);
+		String msgError;
+		switch (eventReport.CallReportType.value()){
+			case TpCallReportType._P_CALL_REPORT_UNDEFINED: msgError="Call report undefine"; break;
+			case TpCallReportType._P_CALL_REPORT_PROGRESS: msgError="Call report progress"; break;
+			case TpCallReportType._P_CALL_REPORT_ALERTING: msgError="Call report alerting"; break;
+			case TpCallReportType._P_CALL_REPORT_ANSWER: msgError="Destination partner answer the call"; break;
+			case TpCallReportType._P_CALL_REPORT_BUSY: msgError="Destination partner is busy"; break;
+			case TpCallReportType._P_CALL_REPORT_NO_ANSWER: msgError="Destination partner not anwser the call"; break;
+			case TpCallReportType._P_CALL_REPORT_DISCONNECT: msgError="Call report disconnect"; break;
+			case TpCallReportType._P_CALL_REPORT_REDIRECTED: msgError="Call report redirected"; break;
+			case TpCallReportType._P_CALL_REPORT_SERVICE_CODE: msgError="Call report service code"; break;
+			case TpCallReportType._P_CALL_REPORT_ROUTING_FAILURE: msgError="Call report undefine"; break;
+			case TpCallReportType._P_CALL_REPORT_QUEUED: msgError="Call report queue"; break;
+			case TpCallReportType._P_CALL_REPORT_NOT_REACHABLE: msgError="Destination partner is not reachable"; break;
+			default: msgError="Call report undefine"; break;
+		
+		}
+		m_logger.debug(msgError);
 		if (appCall != null)
 			appCall.routeRes(callSessionID, eventReport, callLegSessionID);
 		m_logger.debug("Finish forwarding that event to client");

@@ -1,4 +1,4 @@
-//$Id: AIC_AppCall.java,v 1.4 2005/07/27 08:59:42 huuhoa Exp $
+//$Id: AIC_AppCall.java,v 1.5 2005/07/28 23:08:39 hoanghaiham Exp $
 /**
  * 
  */
@@ -11,6 +11,7 @@ import org.csapi.cc.gccs.TpCallEndedReport;
 import org.csapi.cc.gccs.TpCallFault;
 import org.csapi.cc.gccs.TpCallInfoReport;
 import org.csapi.cc.gccs.TpCallReport;
+import org.csapi.cc.gccs.TpCallReportType;
 
 /**
  * @author Nguyen Duc Du Khuong
@@ -35,10 +36,36 @@ public class AIC_AppCall extends IpAppCallPOA {
 
 	public void routeRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
-		m_logger.info("Receive result from server about routeReq");
-		m_logger.debug("Current application logic: " + appLogic);
 		m_logger.debug("CallSessionID: " + callSessionID);
-		m_logger.debug("CallReport: " + eventReport);
+		String MsgErr;
+		switch(eventReport.CallReportType.value()){
+			case TpCallReportType._P_CALL_REPORT_UNDEFINED: 
+				MsgErr= "Call report undefine"; break;
+			case TpCallReportType._P_CALL_REPORT_PROGRESS: 
+				MsgErr= "Call report progress"; break;
+			case TpCallReportType._P_CALL_REPORT_ALERTING: 
+				MsgErr= "Call report alerting"; break;
+			case TpCallReportType._P_CALL_REPORT_ANSWER: 
+				MsgErr= "Destination partner answer the call"; break;
+			case TpCallReportType._P_CALL_REPORT_BUSY: 
+				MsgErr= "Destination partner is busy"; break;
+			case TpCallReportType._P_CALL_REPORT_NO_ANSWER: 
+				MsgErr= "Destination partner no anwser the call"; break;
+			case TpCallReportType._P_CALL_REPORT_DISCONNECT:
+				MsgErr= "Call report disconnect"; break;
+			case TpCallReportType._P_CALL_REPORT_REDIRECTED:
+				MsgErr= "Call report redirected"; break;
+			case TpCallReportType._P_CALL_REPORT_SERVICE_CODE:
+				MsgErr= "Call report service code"; break;
+			case TpCallReportType._P_CALL_REPORT_ROUTING_FAILURE: 
+				MsgErr= "Call report no answer"; break;
+			case TpCallReportType._P_CALL_REPORT_QUEUED: 
+				MsgErr= "Call report queued"; break;
+			case TpCallReportType._P_CALL_REPORT_NOT_REACHABLE: 
+				MsgErr= "Destination partner is not reachable"; break;
+			default: MsgErr= "Call report unknow";
+		}
+		m_logger.debug(MsgErr);
 		appLogic.routeRes(callSessionID, eventReport, callLegSessionID);
 
 	}
