@@ -1,4 +1,4 @@
-//$Id: IpCallImpl.java,v 1.30 2005/07/28 23:08:39 hoanghaiham Exp $
+//$Id: IpCallImpl.java,v 1.31 2005/07/28 23:45:22 aachenner Exp $
 /**
  * 
  */
@@ -72,7 +72,7 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 		this.appCall = appCall;
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see org.csapi.cc.gccs.IpCallOperations#routeReq(int,
@@ -97,6 +97,9 @@ public class IpCallImpl extends IpCallPOA implements IpEventHandler {
 		if (redirectingAddress == null)
 			throw new P_INVALID_ADDRESS("Error in redirecting Address");
 
+		if (appCall == null)
+			throw new TpCommonExceptions("P_NO_CALLBACK_ADDRESS_SET", 1,
+					"Should set callback first");
 		if (nWatcherID == 0) {
 			// register for event notifications
 			EventCriteria evCriteria = new EventCriteria();

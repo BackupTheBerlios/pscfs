@@ -1,4 +1,4 @@
-//$Id: NTC_ApplicationLogic.java,v 1.3 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: NTC_ApplicationLogic.java,v 1.4 2005/07/28 23:45:21 aachenner Exp $
 /**
  * 
  */
@@ -198,6 +198,7 @@ public class NTC_ApplicationLogic {
 						doRouteReq(event, addrString);
 						// deassign from call
 						doDeassignCall(event.callId);
+						m_logger.info("Finished doDessignCall with Event's CallSessionID = " + event.callId.CallSessionID );
 					} else {
 						m_logger.info("Unknown event");
 					}

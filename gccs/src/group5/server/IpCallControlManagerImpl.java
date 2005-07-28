@@ -1,4 +1,4 @@
-//$Id: IpCallControlManagerImpl.java,v 1.34 2005/07/28 23:08:39 hoanghaiham Exp $
+//$Id: IpCallControlManagerImpl.java,v 1.35 2005/07/28 23:45:21 aachenner Exp $
 /**
  * 
  */
@@ -121,20 +121,22 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 
 	private void dumpCallInfoDB() {
 		Iterator it = m_CallList.values().iterator();
-		String strDumpInfomation="Call Session ID Database:\n";
-		while (it.hasNext())
-		{
-			CallInfo ci = (CallInfo)it.next();
-			strDumpInfomation += new Integer(ci.getSessionID()).toString() + "\n";
+		String strDumpInfomation = "Call Session ID Database:\n";
+		while (it.hasNext()) {
+			CallInfo ci = (CallInfo) it.next();
+			strDumpInfomation += new Integer(ci.getSessionID()).toString()
+					+ "\n";
 		}
 		m_logger.info(strDumpInfomation);
 	}
+
 	public CallInfo getCallInfo(int callSessionID) throws P_INVALID_SESSION_ID {
 		CallInfo ci = (CallInfo) m_CallList.get(new Integer(callSessionID));
-		if (ci == null)
-		{
+		m_logger.debug("Entering getCallInfo");
+		if (ci == null) {
 			dumpCallInfoDB();
-			throw new P_INVALID_SESSION_ID("Invalid session ID [" + callSessionID + "]");
+			throw new P_INVALID_SESSION_ID("Invalid session ID ["
+					+ callSessionID + "]");
 		}
 		return ci;
 	}
@@ -143,7 +145,8 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			throws P_INVALID_SESSION_ID {
 		CallInfo ciOld = (CallInfo) m_CallList.get(new Integer(callSessionID));
 		if (ciOld == null)
-			throw new P_INVALID_SESSION_ID("Invalid session ID [" + callSessionID + "]");
+			throw new P_INVALID_SESSION_ID("Invalid session ID ["
+					+ callSessionID + "]");
 		m_CallList.put(new Integer(callSessionID), ci);
 	}
 
@@ -156,7 +159,8 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 			IpAppCallControlManager appCallControlManager,
 			TpCallEventCriteria eventCriteria) throws P_INVALID_INTERFACE_TYPE,
 			P_INVALID_EVENT_TYPE, TpCommonExceptions, P_INVALID_CRITERIA {
-		m_logger.info("Application [" + applicationID + "] requires *enableCallNotification*");
+		m_logger.info("Application [" + applicationID
+				+ "] requires *enableCallNotification*");
 		if (appCallControlManager == null) {
 			m_logger.fatal("Parameter appCallControlManager is null");
 			throw new P_INVALID_INTERFACE_TYPE("Invalid interface type");
@@ -174,9 +178,9 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 	public void disableCallNotification(int assignmentID)
 			throws P_INVALID_ASSIGNMENT_ID, TpCommonExceptions {
 		m_logger.info("Disable Call Notification: m_Observer = " + m_Observer);
-		if (m_Observer.containsKey(new Integer(assignmentID))==false)
-		{
-			throw new P_INVALID_ASSIGNMENT_ID("Invalid assignment id", new Integer(assignmentID).toString());
+		if (m_Observer.containsKey(new Integer(assignmentID)) == false) {
+			throw new P_INVALID_ASSIGNMENT_ID("Invalid assignment id",
+					new Integer(assignmentID).toString());
 		}
 		m_Observer.remove(new Integer(assignmentID));
 	}
@@ -269,16 +273,16 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		m_CallList.remove(new Integer(callSessionID));
 		return false;
 	}
-
+	
 	private int notificationObserverID;
-
+	
 	private int getObserverID() {
 		m_logger.debug("Entering getObserverID, notificationID = "
 				+ notificationObserverID);
 		notificationObserverID++;
 		return notificationObserverID;
 	}
-
+	
 	private class Observer {
 		private IpAppCallControlManager ipAppCallControlManager;
 
@@ -320,6 +324,7 @@ public class IpCallControlManagerImpl extends IpCallControlManagerPOA {
 		m_logger.debug("notificationID = " + notificationObserverId);
 		return notificationObserverId;
 	}
+
 	public String toString() {
 		return "CallControlManager for application *" + applicationID + "*";
 	}

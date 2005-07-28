@@ -1,4 +1,4 @@
-//$Id: MyApplicationLogic.java,v 1.19 2005/07/27 09:53:29 aachenner Exp $
+//$Id: MyApplicationLogic.java,v 1.20 2005/07/28 23:45:22 aachenner Exp $
 /**
  * 
  */
@@ -39,6 +39,7 @@ import org.csapi.cc.gccs.TpCallIdentifier;
 import org.csapi.cc.gccs.TpCallNotificationType;
 import org.csapi.cc.gccs.TpCallReport;
 import org.csapi.cc.gccs.TpCallReportRequest;
+import org.csapi.cc.gccs.TpCallReportType;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
 import org.omg.PortableServer.POAPackage.WrongPolicy;
 
@@ -80,9 +81,10 @@ public class MyApplicationLogic {
 			public void run() {
 				try {
 					// setCallback
-					
-					m_logger.debug("Starting Number Translation with createCall");
-					
+
+					m_logger
+							.debug("Starting Number Translation with createCall");
+
 					AppCallControlManager appCCM = new AppCallControlManager(
 							MyApplicationLogic.this);
 					// now get the reference so that it is registered with the
@@ -100,7 +102,8 @@ public class MyApplicationLogic {
 									.servant_to_reference(appCall));
 					TpCallIdentifier callId = ipCCM.createCall(ipAppCall);
 					if (callId == null) {
-						m_logger.error("Cannot create call because the CallID = Null");
+						m_logger
+								.error("Cannot create call because the CallID = Null");
 						return;
 					}
 					String origAddr = "1";
@@ -108,23 +111,36 @@ public class MyApplicationLogic {
 					m_logger.debug("Got callSection: " + callId.CallSessionID
 							+ ", CallIdentifier: "
 							+ callId.CallReference.toString());
-				//	m_logger.debug("About to call routeReq ...");
+					// m_logger.debug("About to call routeReq ...");
 					m_logger.info("About to RouteReq the 1st time...");
 					doRouteReq(callId, origAddr, destAddr);
 					// wait here until the result of routeReq come
-					m_logger.debug("Waiting for routeRes after finishing the 1st RouteReq");
-					osaEventQueue.get(ApplicationEvent.evRouteRes); 
+					m_logger
+							.debug("Waiting for routeRes after finishing the 1st RouteReq");
+					ApplicationEvent callEvent = osaEventQueue.get(ApplicationEvent.evRouteRes);
+					switch (callEvent.eventReport.CallReportType.value())
+					{
+					case TpCallReportType._P_CALL_REPORT_BUSY:
+					case TpCallReportType._P_CALL_REPORT_NO_ANSWER:
+					case TpCallReportType._P_CALL_REPORT_NOT_REACHABLE:
+					case TpCallReportType._P_CALL_REPORT_REDIRECTED:
+					case TpCallReportType._P_CALL_REPORT_ROUTING_FAILURE:
+						m_logger.info("Call is redirected or routing failure");
+						return;
+					}
 					m_logger.debug("Got response for routeRes");
 					// m_logger.debug("About to call routeReq ...");
 					// then call routeReq again with swapping the position of
 					// source and destination
-					
+
 					m_logger.info("About to RouteReq the 2rd time...");
 					doRouteReq(callId, destAddr, origAddr);
 					// then wait again for the result of routeReq
-					m_logger.debug("Waiting for routeRes after finishing the 2rd RouteReq");
+					m_logger
+							.debug("Waiting for routeRes after finishing the 2rd RouteReq");
 					osaEventQueue.get(ApplicationEvent.evRouteRes);
-					m_logger.debug("Finished routeReq & routeRes twice. About to DeassignCall...");
+					m_logger
+							.debug("Finished routeReq & routeRes twice. About to DeassignCall...");
 					// then deassign the call
 					doDeassignCall(callId);
 					// m_logger.debug("Finished thread 1: Create Call");
@@ -143,29 +159,32 @@ public class MyApplicationLogic {
 				}
 			}
 		});
-		
+
 		// Thread to wait for network events
 		Thread th2 = new Thread(new Runnable() {
 			public void run() {
 				// wait for network events
 				m_logger.debug("Starting to wait for network events");
-				
+
 				while (true) {
 					ApplicationEvent event = osaEventQueue
 							.get(ApplicationEvent.evCallEventNotify);
 					// got event
 					m_logger.debug("Got event with event name = "
-							+ event.eventInfo.CallEventName + ", from the Originating address = "
-							+ event.eventInfo.OriginatingAddress.AddrString);
+							+ event.eventInfo.CallEventName
+							+ ", from the Originating address = "
+							+ event.eventInfo.OriginatingAddress.AddrString
+							+ ", assignmentID = " + event.assignmentID);
 					// check event
 					if (event.eventInfo.CallEventName == P_EVENT_GCCS_ADDRESS_ANALYSED_EVENT.value) {
 						// translate the address
 						String addrString = translateModulo10(event.eventInfo.DestinationAddress.AddrString);
 						// route to new address
+						m_logger.debug("Routing request to new address");
 						doRouteReq(event, addrString);
 						// deassign from call
 						doDeassignCall(event.callId);
-						//	m_logger.info("Finished doDeassignCall in Thread 2");
+						// m_logger.info("Finished doDeassignCall in Thread 2");
 					} else {
 						m_logger.info("Unknown event");
 					}
@@ -175,7 +194,7 @@ public class MyApplicationLogic {
 		});
 		th2.start();
 		th1.start();
-		
+
 		try {
 			m_logger.debug("Entering dead");
 			System.in.read();
@@ -195,9 +214,11 @@ public class MyApplicationLogic {
 
 	private void doRouteReq(TpCallIdentifier callId, String originatingAddr,
 			String newDestination) {
-		m_logger.info("Entering doRouteReq with callSessionID = " + callId.CallSessionID
-				 + ", originating Address = " + originatingAddr + 
-				", destination address = " + newDestination);
+		m_logger
+				.info("Entering doRouteReq with callSessionID = "
+						+ callId.CallSessionID + ", originating Address = "
+						+ originatingAddr + ", destination address = "
+						+ newDestination);
 		try {
 			callId.CallReference.routeReq(callId.CallSessionID,
 					new TpCallReportRequest[0],
@@ -229,21 +250,25 @@ public class MyApplicationLogic {
 		osaEventQueue.put(new ApplicationEvent(
 				ApplicationEvent.evCallEventNotify, callReference, eventInfo,
 				assignmentID));
-		//m_logger.debug("Exiting callEventNotify");
+		// m_logger.debug("Exiting callEventNotify");
 	}
 
 	public void routeRes(int callSessionID, TpCallReport eventReport,
 			int callLegSessionID) {
-		m_logger.debug("Entering routeRes with call sessionID = " + callSessionID);
-		osaEventQueue.put(new ApplicationEvent(ApplicationEvent.evRouteRes,
-				null, null, 0));
+		m_logger.debug("Entering routeRes with call sessionID = "
+				+ callSessionID);
+		ApplicationEvent ev = new ApplicationEvent(ApplicationEvent.evRouteRes,
+				null, null, 0);
+		ev.eventReport = eventReport;
+		osaEventQueue.put(ev);
 	}
 
 	private void doRouteReq(ApplicationEvent event, String newDestination) {
 		try {
-			
-			m_logger.info("Entering doRouteReq with Event's CallSessionID = " + event.callId.CallSessionID);
-			
+
+			m_logger.info("Entering doRouteReq with Event's CallSessionID = "
+					+ event.callId.CallSessionID);
+
 			event.callId.CallReference.routeReq(event.callId.CallSessionID,
 					new TpCallReportRequest[0],
 					myAppCreateE164Address(newDestination),
@@ -269,7 +294,8 @@ public class MyApplicationLogic {
 	}
 
 	private void doDeassignCall(TpCallIdentifier callID) {
-		m_logger.info("Entering doDessignCall with Event's CallSessionID = " + callID.CallSessionID);
+		m_logger.info("Entering doDessignCall with CallSessionID = "
+				+ callID.CallSessionID);
 		try {
 			callID.CallReference.deassignCall(callID.CallSessionID);
 		} catch (P_INVALID_SESSION_ID ex) {
@@ -335,7 +361,7 @@ public class MyApplicationLogic {
 	String translateModulo10(String addressToTranslate) {
 		m_logger.info("Address to be translated: " + addressToTranslate);
 		return "4";
-		
+
 	}
 
 }

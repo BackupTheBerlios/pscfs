@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.16 2005/07/28 23:08:39 hoanghaiham Exp $
+//$Id: CallSimulator.java,v 1.17 2005/07/28 23:45:21 aachenner Exp $
 /**
  * 
  */
@@ -54,7 +54,12 @@ public class CallSimulator {
 		ipCCManager = null;
 	}
 
+	private int m_counter = 0;
+
 	public void registerCallControlManager(IpCallControlManagerImpl ipManager) {
+		m_counter++;
+		m_logger.debug("Number of calling register call control manager: "
+				+ m_counter);
 		ipCCManager = ipManager;
 	}
 
@@ -115,6 +120,44 @@ public class CallSimulator {
 		ipCCManager.onReleaseCall(callSessionID);
 	}
 
+	private boolean bCallRedirect = false;
+
+	private synchronized boolean isCallRedirect() {
+		return bCallRedirect;
+	}
+
+	private synchronized void setCallRedirect() {
+		bCallRedirect = true;
+		m_logger.debug("Notify all about the call redirection");
+		notifyAll();
+
+		// block until other thread finish routing old request
+		try {
+			wait();
+		} catch (InterruptedException ex) {
+			m_logger.error(ex);
+		}
+}
+
+	private synchronized boolean waitForAnotherRouteReq() {
+		boolean bResult = isCallRedirect();
+		m_logger.debug("Enter wait with bResult=" + bResult);
+		if (bResult)
+			return true;
+		try {
+			wait(1000);
+		} catch (InterruptedException ex) {
+			m_logger.error(ex);
+		}
+		bResult = isCallRedirect();
+		m_logger.debug("Finish wait with bResult=" + bResult);
+		bCallRedirect = false;
+		return bResult;
+	}
+
+	private synchronized void resumeThread() {
+		notifyAll();
+	}
 	/**
 	 * @see group5.server.EventHandlerImpl#onRouteReq(int, org.csapi.TpAddress,
 	 *      org.csapi.TpAddress)
@@ -129,11 +172,11 @@ public class CallSimulator {
 		// TODO if targetAddress is different to originalDestinationAddress
 		// then it is the result of another routeReq to indirect the call
 		// must not inform CallControlManager anymore!
-		
 		m_logger.info("receive routeReq event with callSessionID: "
 				+ callSessionID);
 		m_logger.info("source: " + originatingAddress.AddrString + ", dest: "
-				+ targetAddress.AddrString);
+				+ targetAddress.AddrString + ", origDest: "
+				+ originalDestinationAddress.AddrString);
 		// perform requesting for routing
 		CallEventQueue queue = CallEventQueue.getInstance();
 		CallEvent evtCall = new CallEvent(callSessionID, targetAddress,
@@ -142,7 +185,7 @@ public class CallSimulator {
 				redirectingAddress, appInfo);
 		queue.put(evtCall);
 		m_logger.debug("CCManager = " + ipCCManager);
-		if (ipCCManager==null)
+		if (ipCCManager == null)
 			throw new P_INVALID_NETWORK_STATE("Invalid network state");
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
 		TpCallEventInfo cei = ci.getCallEventInfo();
@@ -156,13 +199,46 @@ public class CallSimulator {
 		cei.RedirectingAddress = redirectingAddress;
 		ci.setCallEventInfo(cei);
 		ipCCManager.updateCallInfo(callSessionID, ci);
-		if (targetAddress.AddrString.compareToIgnoreCase(originalDestinationAddress.AddrString)==0)
-		{
+
+		boolean bRedirect = false;
+		if (targetAddress.AddrString
+				.compareToIgnoreCase(originalDestinationAddress.AddrString) == 0) {
 			ipCCManager.onRouteReq(callSessionID);
+			m_logger.info("Wait for routeReq for a while");
+			// redirect call
+			bRedirect = waitForAnotherRouteReq();
+			m_logger.debug("Finished waiting");
 		}
-		// just wait here
+		else
+		{
+			m_logger.debug("Received redirect call");
+			setCallRedirect();
+			m_logger.debug("Resume process");
+		}
+		if (bRedirect) {
+			CallEvent evRouteErr = new CallEvent(callSessionID,
+					CallEvent.eventRouteRes);
+			evRouteErr.eventReport = new TpCallReport();
+			evRouteErr.eventReport.AdditionalReportInfo = new TpCallAdditionalReportInfo();
+			evRouteErr.eventReport.AdditionalReportInfo
+					.Busy(new TpCallReleaseCause(0, 1));
+			evRouteErr.eventReport.CallEventTime = "10";
+			evRouteErr.eventReport.MonitorMode = TpCallMonitorMode.P_CALL_MONITOR_MODE_INTERRUPT;
+			// get an instance of subscribers
+
+			// no subscriber
+			m_logger.error("Cannot find any subscriber with address: "
+					+ targetAddress.AddrString);
+			evRouteErr.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_REDIRECTED;
+			CallEventQueue.getInstance().put(evRouteErr);
+
+			m_logger.debug("redirect call");
+			resumeThread();
+			return;
+		}
 
 		// returning the result
+
 		CallEvent evRouteRes = new CallEvent(callSessionID,
 				CallEvent.eventRouteRes);
 		evRouteRes.eventReport = new TpCallReport();
@@ -209,5 +285,7 @@ public class CallSimulator {
 		evRouteRes.eventReport.CallReportType = TpCallReportType.P_CALL_REPORT_ANSWER;
 		CallEventQueue.getInstance().put(evRouteRes);
 		m_logger.debug("going out of onRouteReq of CallSimulator");
+		m_logger.info("RouteReq sucessfully");
+
 	}
 }

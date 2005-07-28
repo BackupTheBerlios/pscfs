@@ -1,4 +1,4 @@
-//$Id: ApplicationEvent.java,v 1.4 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: ApplicationEvent.java,v 1.5 2005/07/28 23:45:22 aachenner Exp $
 /**
  * 
  */
@@ -6,6 +6,7 @@ package group5.client;
 
 import org.csapi.cc.gccs.TpCallEventInfo;
 import org.csapi.cc.gccs.TpCallIdentifier;
+import org.csapi.cc.gccs.TpCallReport;
 
 /**
  * MyAppEvent is a class representing an event. It has 3 public attributes:
@@ -28,6 +29,7 @@ public class ApplicationEvent {
 	public static int evCallEventNotify = 1;
 
 	public static int evRouteRes = 2;
+	public TpCallReport eventReport;
 
 	public ApplicationEvent(int evType, TpCallIdentifier cid,
 			TpCallEventInfo ei, int a) {
