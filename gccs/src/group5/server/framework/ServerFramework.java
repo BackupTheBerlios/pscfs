@@ -1,4 +1,4 @@
-//$Id: ServerFramework.java,v 1.17 2005/07/27 08:59:42 huuhoa Exp $
+//$Id: ServerFramework.java,v 1.18 2005/07/29 00:32:43 huuhoa Exp $
 /**
  * 
  */
@@ -599,161 +599,6 @@ public class ServerFramework {
 		return IpServiceAgreementManagementHelper.narrow(itf);
 	}
 
-	/**
-	 * Initialize the application, connect to framework and obtain IpAccess
-	 * service. Application can use the framework as follows: <code>
-	 * // Be sure to set ORB.NameService to Naming Service of actual ORB
-	 * e.g	System.setProperty("ORB.NameService", "corbaloc::localhost:2050/StandardNS/NameServer-POA/_root");
-	 * ApplicationFramework appFramework = new ApplicationFramework();
-	 * // Init application 
-	 * appFramework.initApplication("<ApplicationID>", "<ApplicationKey>");
-	 * // Get appropriated service
-	 * IpService tempService = selectSCFs("P_USER_STATUS");
-	 * IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
-	 * // consume service
-	 * call to service interface API
-	 * // End application
-	 * appFramework.EndApplication();
-	 * </code>
-	 * TODO: Add more exception specification here
-	 */
-	// public void initApplication(String clAppID, String clAppSharedSecretKey)
-	// throws P_INVALID_NAME_SERVICE, UserException {
-	// // Step 1: get a reference to the OSA IpInitial interface
-	// String CORBA_NameService = System.getProperty("ORB.NameService");
-	// if (CORBA_NameService == null)
-	// throw new P_INVALID_NAME_SERVICE(
-	// "can not get value of property: ORB.NameService",
-	// "set value for that property before calling this function");
-	// try {
-	// IpInitial ipInitial = initializeOSA(CORBA_NameService, "IpInitial");
-	//
-	// if (m_logger.isInfoEnabled()) {
-	// m_logger.info("Obtained IpInitial, starting authentication");
-	// }
-	//
-	// // Step 2: get a reference to the OSA IpAuthentication interface
-	// //
-	// // You could fill in your own application ID and secret to see if
-	// // authentication and service selection succeeds for your app.
-	// IpAPILevelAuthentication ipAuthentication = initializeAuthentication(
-	// ipInitial, clientAppID, clientAppSharedSecret);
-	//
-	// if (m_logger.isInfoEnabled()) {
-	// m_logger.info("Obtained IpAPILevelAuthentication");
-	// }
-	//
-	// // Step 3: perform authentication
-	// authenticate(ipAuthentication);
-	//
-	// if (m_logger.isInfoEnabled()) {
-	// m_logger.info("Authenticated, requesting access");
-	// }
-	//
-	// // Step 4: get a reference to the OSA IpAccess interface
-	// m_ipAccess = requestAccess(ipAuthentication);
-	//
-	// if (m_logger.isInfoEnabled()) {
-	// m_logger.info("Obtained IpAccess");
-	// }
-	//
-	// // Step 5: get a refence to the IpServiceDiscovery interface
-	// m_ipSvcDisc = obtainDiscoveryInterface(m_ipAccess);
-	//
-	// if (m_logger.isInfoEnabled()) {
-	// m_logger.info("Obtained IpServiceDiscovery");
-	// }
-	// // step 6: in selectSCFs
-	//
-	// // Step 7: get a refence to the IpServiceAgreementManagement
-	// // interface
-	// m_ipSvcAgmt = obtainServiceAgreementInterface(m_ipAccess);
-	//
-	// if (m_logger.isInfoEnabled()) {
-	// m_logger.info("Obtained IpServiceAgreementManagement");
-	// }
-	// } catch (P_ACCESS_DENIED ex) {
-	// m_logger
-	// .error("Access denied while requesting access to interface IpAccess. More
-	// information: "
-	// + ex.getMessage());
-	// } catch (P_INVALID_INTERFACE_TYPE ex) {
-	// m_logger.error("Invalid interface type. More information: "
-	// + ex.getMessage());
-	// } catch (P_INVALID_INTERFACE_NAME ex) {
-	// m_logger.error("Invalid interface name. More information: "
-	// + ex.getMessage());
-	// } catch (P_INVALID_ACCESS_TYPE ex) {
-	// m_logger.error("Invalid access type. More information: "
-	// + ex.getMessage());
-	// } catch (P_NO_ACCEPTABLE_ENCRYPTION_CAPABILITY ex) {
-	// m_logger
-	// .error("No acceptable encryption capability. More information: "
-	// + ex.getMessage());
-	// } catch (P_INVALID_AUTH_TYPE ex) {
-	// m_logger.error("Invalid authentication type. More information: "
-	// + ex.getMessage());
-	// } catch (P_INVALID_DOMAIN_ID ex) {
-	// m_logger.error("Invalid domain id. More information: "
-	// + ex.getMessage());
-	// }
-	// }
-	/**
-	 * Use this function to get the reference to service interface.
-	 * 
-	 * @param serviceName
-	 *            Name of the service, according to Parlay spec. (e.g if
-	 *            serviceName = P_USER_STATUS, the return interface will be
-	 *            IpUserStatus
-	 * @return reference to service, with type IpService. In order to get the
-	 *         appropriate service type, one should call:
-	 * 
-	 * <pre>
-	 * IpService tempService = selectSCFs(&quot;P_USER_STATUS&quot;);
-	 * 
-	 * IpUserStatus ipUS = IpUserStatusHelper.narrow(tempService);
-	 * </pre>
-	 * 
-	 * Here is the list of services that can be query from OSA Framework
-	 * <ul>
-	 * <li><b>NULL</b> An empty (NULL) string indicates no SCF name.</li>
-	 * <li><b>P_GENERIC_CALL_CONTROL</b> The name of the Generic Call Control
-	 * SCF.</li>
-	 * <li><b>P_MULTI_PARTY_CALL_CONTROL</b> The name of the MultiParty Call
-	 * Control SCF.</li>
-	 * <li><b>P_MULTI_MEDIA_CALL_CONTROL</b> The name of the MultiMedia Call
-	 * Control SCF.</li>
-	 * <li><b>P_CONFERENCE_CALL_CONTROL</b> The name of the Conference Call
-	 * Control SCF.</li>
-	 * <li><b>P_USER_INTERACTION</b> The name of the User Interaction SCFs.</li>
-	 * <li><b>P_USER_INTERACTION_ADMIN</b> The name of the User Interaction
-	 * Administration SCF.</li>
-	 * <li><b>P_TERMINAL_CAPABILITIES</b> The name of the Terminal
-	 * Capabilities SCF.</li>
-	 * <li><b>P_USER_BINDING</b> The name of the User Binding SCF.</li>
-	 * <li><b>P_USER_LOCATION</b> The name of the User Location SCF.</li>
-	 * <li><b>P_USER_LOCATION_CAMEL</b> The name of the Network User Location
-	 * SCF.</li>
-	 * <li><b>P_USER_LOCATION_EMERGENCY</b> The name of the User Location
-	 * Emergency SCF.</li>
-	 * <li><b>P_USER_STATUS</b> The name of the User Status SCF.</li>
-	 * <li><b>P_EXTENDED_USER_STATUS</b> The name of Extended User Status SCF.</li>
-	 * <li><b>P_DATA_SESSION_CONTROL</b> The name of the Data Session Control
-	 * SCF.</li>
-	 * <li><b>P_GENERIC_MESSAGING</b> The name of the Generic Messaging SCF.</li>
-	 * <li><b>P_CONNECTIVITY_MANAGER</b> The name of the Connectivity Manager
-	 * SCF.</li>
-	 * <li><b>P_CHARGING</b> The name of the Charging SCF.</li>
-	 * <li><b>P_ACCOUNT_MANAGEMENT</b> The name of the Account Management SCF.</li>
-	 * <li><b>P_POLICY_PROVISIONING</b> The name of the Policy Management
-	 * provisioning SCF.</li>
-	 * <li><b>P_POLICY_EVALUATION</b> The name of the Policy Management policy
-	 * evaluation SCF.</li>
-	 * <li><b>P_PAM_ACCESS</b> The name of PAM presentity SCF.</li>
-	 * <li><b>P_PAM_EVENT_MANAGEMENT</b> The name of PAM watcher SCF.</li>
-	 * <li><b>P_PAM_PROVISIONING</b> The name of PAM provisioning SCF.</li>
-	 * </ul>
-	 */
 	// public IpService selectSCFs(String serviceName) {
 	// try {
 	// // Step 6: obtain a service ID for the desired service
@@ -919,8 +764,9 @@ public class ServerFramework {
 		}
 
 		public byte[] challenge(byte[] challenge) {
-			m_logger.info("Framework challenges service in authentication phase");
-			return null;
+			m_logger
+					.info("Framework challenges service in authentication phase");
+			return new byte[] {1, 2, 3};
 		}
 	}
 

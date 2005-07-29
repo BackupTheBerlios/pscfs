@@ -1,4 +1,4 @@
-//$Id: NTC_client.java,v 1.5 2005/07/27 08:59:41 huuhoa Exp $
+//$Id: NTC_client.java,v 1.6 2005/07/29 00:32:43 huuhoa Exp $
 package group5.client.number_translation_callback;
 
 import group5.client.ApplicationFramework;
@@ -63,6 +63,8 @@ public class NTC_client extends ApplicationFramework {
 		} catch (IOException e) {
 			m_logger.fatal("Cannot find properties file");
 		}
+		Properties oldProp = System.getProperties();
+		appProps.putAll(oldProp);
 		System.setProperties(appProps);
 		PropertyConfigurator.configure(System
 				.getProperty("log4j.configuration"));

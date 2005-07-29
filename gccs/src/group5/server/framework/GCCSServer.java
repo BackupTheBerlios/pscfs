@@ -1,4 +1,4 @@
-//$Id: GCCSServer.java,v 1.6 2005/07/27 08:47:09 huuhoa Exp $
+//$Id: GCCSServer.java,v 1.7 2005/07/29 00:32:43 huuhoa Exp $
 /**
  * Creation date: 21.06.2005 - 2005
  * Creator: Nguyen Huu Hoa
@@ -79,6 +79,8 @@ public class GCCSServer {
 		} catch (IOException e) {
 			System.out.println("Cannot find properties file");
 		}
+		Properties oldProp = System.getProperties();
+		appProps.putAll(oldProp);
 		System.setProperties(appProps);
 		try {
 			PropertyConfigurator.configure(System

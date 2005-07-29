@@ -1,4 +1,4 @@
-//$Id: BarringClient.java,v 1.6 2005/07/27 08:59:42 huuhoa Exp $
+//$Id: BarringClient.java,v 1.7 2005/07/29 00:32:43 huuhoa Exp $
 package group5.client.barring;
 
 import group5.client.ApplicationFramework;
@@ -63,6 +63,8 @@ public class BarringClient extends ApplicationFramework {
 		} catch (IOException e) {
 			m_logger.fatal("Cannot find properties file");
 		}
+		Properties oldProp = System.getProperties();
+		appProps.putAll(oldProp);
 		System.setProperties(appProps);
 		PropertyConfigurator.configure(System
 				.getProperty("log4j.configuration"));

@@ -1,4 +1,4 @@
-//$Id: CallSimulator.java,v 1.17 2005/07/28 23:45:21 aachenner Exp $
+//$Id: CallSimulator.java,v 1.18 2005/07/29 00:32:43 huuhoa Exp $
 /**
  * 
  */
@@ -54,12 +54,7 @@ public class CallSimulator {
 		ipCCManager = null;
 	}
 
-	private int m_counter = 0;
-
 	public void registerCallControlManager(IpCallControlManagerImpl ipManager) {
-		m_counter++;
-		m_logger.debug("Number of calling register call control manager: "
-				+ m_counter);
 		ipCCManager = ipManager;
 	}
 
@@ -184,7 +179,6 @@ public class CallSimulator {
 				originatingAddress, originalDestinationAddress,
 				redirectingAddress, appInfo);
 		queue.put(evtCall);
-		m_logger.debug("CCManager = " + ipCCManager);
 		if (ipCCManager == null)
 			throw new P_INVALID_NETWORK_STATE("Invalid network state");
 		CallInfo ci = ipCCManager.getCallInfo(callSessionID);
